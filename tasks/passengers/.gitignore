@@ -1,0 +1,11 @@
+cmake-build-debug/
+nohup.out
+peda-session-main.txt
+main
+.gdb_history
+*.id0
+*.id1
+*.id2
+*.nam
+*.til
+input
