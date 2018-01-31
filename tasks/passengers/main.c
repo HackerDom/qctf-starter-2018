@@ -1,3 +1,5 @@
+// gcc main.c -o main -no-pie
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
