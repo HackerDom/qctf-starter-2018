@@ -1,5 +1,9 @@
+##!/usr/bin/python3
+
 import struct
+
 from abc import abstractmethod, ABC
+from functools import wraps
 
 
 BYTE  = 1
@@ -16,22 +20,23 @@ INTEGER   = '\x65'
 SIZES = [BYTE, WORD, DWORD]
 
 SIZE2FMT = {
-    BYTE:  'B',
-    WORD:  'H',
-    DWORD: 'I',
+    BYTE:  'b',
+    WORD:  'h',
+    DWORD: 'i',
 }
 
-MEMORY_SIZE = 0xfffff
+MEMORY_SIZE = 0x6000
 
-TEXT_SECTION_RANGE  = (0x00000, 0x0ffff)
-BSS_SECTION_RANGE   = (0x1ffff, 0x4ffff)
-STACK_SECTION_RANGE = (0x5ffff, 0xfffff)
+TEXT_SECTION_RANGE  = (0x0000, 0x0fff)
+HEAP_SECTION_RANGE  = (0x1fff, 0x2fff)
+STACK_SECTION_RANGE = (0x3fff, 0x5fff)
 
-MEMORY = ''
+MEMORY = "\x11\x52\x01\x00\x65\x04\x00\x00\x00\x00\x11\x52\x00\x00\x65\x04\x00\x00\x00\x00\x11\x52\x02\x00\x65\x04\x03\x00\x00\x00\x20\x52\x00\x00\x52\x02\x00\x31\x65\x04\x41\x00\x00\x00\x13\x52\x01\x00\x65\x04\x05\x00\x00\x00\x16\x52\x00\x00\x30\x65\x04\x1e\x00\x00\x00\x11\x52\x03\x00\x52\x01\x00"
+MEMORY = MEMORY + '\x00' * (MEMORY_SIZE - len(MEMORY))
 
 
 def int_from_bytes(bts, size='B'):
-    return struct.unpack(size, bts)[0]
+    return struct.unpack(size, bytes([ord(x) for x in bts]))[0]
 
 
 class InvalidOperandPointer(Exception):
@@ -58,8 +63,12 @@ class InstructionError(Exception):
     pass
 
 
+class StackRangeCorrupted(Exception):
+    pass
+
+
 class Operand(ABC):
-    def __init__(self, size=BYTE, val=0):
+    def __init__(self, val=0, size=BYTE):
         if size not in SIZES:
             raise InvalidOperandSize("You have an invalid operand size!")
 
@@ -67,10 +76,6 @@ class Operand(ABC):
 
         self.size  = size
         self.set_const_value(val)
-
-    @property
-    def value(self):
-        return self.value
 
     @abstractmethod
     def get_value(self, *args):
@@ -90,31 +95,29 @@ class Operand(ABC):
 
 
 class MemoryPointer(Operand):
-    def __init__(self, size=DWORD, ptr=-1):
-        super().__init__(size)
-        if ptr > 0:
-            self.value = self.get_value(ptr)
+    def __init__(self, ptr, size=DWORD):
+        super().__init__(size=size)
 
-    def get_value(self, ptr):
-        return self.get_value_from_memory(ptr)
+        self.ptr   = ptr
+        self.value = self.get_value()
 
-    def set_value(self, ptr, operand: Operand):
-        if (TEXT_SECTION_RANGE[0] <= ptr <= TEXT_SECTION_RANGE[1]) or (BSS_SECTION_RANGE[0] <= ptr <= BSS_SECTION_RANGE[1]):
-            raise PermissionException("You don't have a permission to write into .text section!")
-        global MEMORY
-        write_val = struct.pack(SIZE2FMT[self.size], Operand.get_value())
-        MEMORY = MEMORY[:ptr] + write_val + MEMORY[ptr+self.size:]
-
-    def get_value_from_memory(self, ptr):
+    def get_value(self):
         try:
-            return struct.unpack(SIZE2FMT[self.size], MEMORY[ptr:ptr + self.size])[0]
+            return struct.unpack(SIZE2FMT[self.size], MEMORY[self.ptr:self.ptr + self.size].encode())[0]
         except Exception:
             raise InvalidPointerValue("Pointer is invalid.")
 
+    def set_value(self, operand: Operand):
+        if (TEXT_SECTION_RANGE[0] <= self.ptr <= TEXT_SECTION_RANGE[1]):
+            raise PermissionException("You don't have a permission to write into .text section!")
+        global MEMORY
+        write_val = struct.pack(SIZE2FMT[self.size], operand.get_value()).decode('unicode_escape')
+        MEMORY = MEMORY[:self.ptr] + write_val + MEMORY[self.ptr+self.size:]
+
 
 class NotMemoryPtr(Operand):
-    def __init__(self, size, val):
-        super().__init__(size, val)
+    def __init__(self, val, size):
+        super().__init__(val, size)
 
     def get_value(self):
         return self.value
@@ -128,76 +131,92 @@ class NotMemoryPtr(Operand):
 
 
 class Integer(NotMemoryPtr):
-    def __init__(self, size=DWORD, val=0):
-        super().__init__(size, val)
+    def __init__(self, val=0, size=DWORD):
+        super().__init__(val, size)
 
 
 class Register(NotMemoryPtr):
-    def __init__(self, size, val=0):
-        super().__init__(size, val)
+    def __init__(self, val=0, size=DWORD):
+        super().__init__(val, size)
 
     def cast(self, rtype):
         reg = rtype()
         reg.set_value(self)
         return reg
 
+    def deref(self):
+        return MemoryPointer(self.value, self.size)
+
 
 class ByteRegister(Register):
     def __init__(self, val=0):
-        super().__init__(BYTE, val)
+        super().__init__(val, BYTE)
 
 
-class WordRegister(ByteRegister):
+class WordRegister(Register):
     def __init__(self, val=0):
-        super().__init__(WORD, val)
+        super().__init__(val, WORD)
 
 
-class DwordRegister(WordRegister):
+class DwordRegister(Register):
     def __init__(self, val=0):
-        super().__init__(DWORD, val)
+        super().__init__(val, DWORD)
 
 
 class InvalidArgumentType(ValueError):
     pass
 
 
-def register_memory(instruction):
-    def val_reg2mem(f, s):
-        if (not isinstance(f, Register)) or (not isinstance(s, MemoryPointer)):
+def try2invoke(*args, count=1):
+    if count == 1:
+        if not isinstance(args[1], args[2]):
             raise InvalidArgumentType()
-        instruction(f, s)
+        args[3](args[0], args[1])
+    else:
+        if (not isinstance(args[1], args[2])) or (not isinstance(args[3], args[4])):
+            raise InvalidArgumentType()
+        args[5](args[0], args[1], args[3])
+
+
+def register_operand(instruction):
+    @wraps(instruction)
+    def val_reg2opr(self, f, s):
+        try2invoke(self, f, Register, s, Operand, instruction, count=2)
+    return val_reg2opr
+
+
+def register_memory(instruction):
+    @wraps(instruction)
+    def val_reg2mem(self, f, s):
+        try2invoke(self, f, Register, s, MemoryPointer, instruction, count=2)
     return val_reg2mem
 
 
 def register_register(instruction):
-    def val_reg2reg(f, s):
-        if (not isinstance(f, Register)) or (not isinstance(s, Register)):
-            raise InvalidArgumentType()
-        instruction(f, s)
+    @wraps(instruction)
+    def val_reg2reg(self, f, s):
+        try2invoke(self, f, Register, s, Register, instruction, count=2)
     return val_reg2reg
 
 
 def memory(instruction):
-    def val_mem(mem):
-        if not isinstance(mem, MemoryPointer):
-            raise InvalidArgumentType()
-        instruction(mem)
+    @wraps(instruction)
+    def val_mem(self, mem):
+        try2invoke(self, mem, MemoryPointer, instruction)
     return val_mem
 
 
 def register(instruction):
-    def val_reg(reg):
-        if not isinstance(reg, Register):
-            raise InvalidArgumentType()
-        instruction(reg)
+    @wraps(instruction)
+    def val_reg(self, reg):
+        try2invoke(self, reg, Register, instruction)
     return val_reg
 
 
 def integer(instruction):
-    def val(val):
-        if not isinstance(val, Integer):
-            raise InvalidArgumentType()
-        instruction(val)
+    @wraps(instruction)
+    def val(self, val):
+        try2invoke(self, val, Integer, instruction)
     return val
 
 
@@ -215,47 +234,47 @@ class Assembly:
         else:
             self.FLAGS[1] = 1
 
-    @register_memory
-    def load(self, f: Register, s: MemoryPointer):
+    @register_operand
+    def load(self, f: Register, s: Operand):
         f.set_value(s)
 
     @register_memory
     def store(self, f: Register, s: MemoryPointer):
         s.set_value(f)
 
-    @register_register
-    def add(self, f: Register, s: Register):
+    @register_operand
+    def add(self, f: Register, s: Operand):
         fval = f.get_value()
         sval = s.get_value()
-        f.set_value(Integer(f.size, fval + sval))
+        f.set_value(Integer(fval + sval, f.size))
 
-    @register_register
-    def sub(self, f: Register, s: Register):
+    @register_operand
+    def sub(self, f: Register, s: Operand):
         fval = f.get_value()
         sval = s.get_value()
-        f.set_value(Integer(f.size, fval - sval))
+        f.set_value(Integer(fval - sval, f.size))
 
-    @register_register
-    def xor(self, f: Register, s: Register):
+    @register_operand
+    def xor(self, f: Register, s: Operand):
         fval = f.get_value()
         sval = s.get_value()
-        f.set_value(Integer(f.size, fval ^ sval))
+        f.set_value(Integer(fval ^ sval, f.size))
 
     @register
     def inc(self, f: Register):
         fval = f.get_value()
-        f.set_value(Integer(f.size, fval + 1))
+        f.set_value(Integer(fval + 1, f.size))
 
     @register
     def dec(self, f: Register):
         fval = f.get_value()
-        f.set_value(Integer(f.size, fval - 1))
+        f.set_value(Integer(fval - 1, f.size))
 
     @register_register
     def cmp(self, f: Register, s: Register):
         fval = f.get_value()
         sval = s.get_value()
-        self.update_flags(Integer(f.size, fval - sval).get_value())
+        self.update_flags(Integer(fval - sval, f.size).get_value())
 
     @integer
     def jmp(self, f: Integer):
@@ -264,17 +283,17 @@ class Assembly:
     @integer
     def je(self, f: Integer):
         if self.FLAGS[2]:
-            self.IP.set_value(f)
+            self.jmp(f)
 
     @integer
     def jg(self, f: Integer):
         if self.FLAGS[1]:
-            self.IP.set_value(f)
+            self.jmp(f)
 
     @integer
     def jl(self, f: Integer):
         if self.FLAGS[0]:
-            self.IP.set_value(f)
+            self.jmp(f)
 
     @register
     def hash(self, f: Register):
@@ -282,29 +301,31 @@ class Assembly:
 
     @register
     def push(self, reg: Register):
-        memptr = MemoryPointer(DWORD)
-        val    = reg.get_value()
-        nreg   = DwordRegister(Integer(DWORD, val).get_value())
-        memptr.set_value(self.SP.get_value(), nreg)
+        if self.SP.get_value() <= STACK_SECTION_RANGE[0]:
+            raise StackRangeCorrupted("Pushing is happening when the stack is full.")
         self.SP.set_value(Integer(val=self.SP.get_value() - DWORD))
+        memptr = MemoryPointer(self.SP.get_value(), DWORD)
+        nreg   = reg.cast(DwordRegister)
+        memptr.set_value(nreg)
 
     @register
     def pop(self, reg: Register):
-        memptr = MemoryPointer()
-        val    = memptr.get_value(self.SP.get_value())
-        reg.set_value(Integer(val=val))
+        if self.SP.get_value() >= STACK_SECTION_RANGE[1]:
+            raise StackRangeCorrupted("Pop is happening when the stack is empty!")
+        memptr = MemoryPointer(self.SP.get_value(), DWORD)
+        reg.set_value(memptr)
         self.SP.set_value(Integer(val=self.SP.get_value() + DWORD))
 
 
 class VirtualMachine:
     def __init__(self):
-        self.init_matches()
-
         self.IP   = DwordRegister(0)
         self.SP   = DwordRegister(STACK_SECTION_RANGE[1])
         self.regs = self.init_regs()
 
-        self.asm    = Assembly(MEMORY)
+        self.asm  = Assembly(self.IP, self.SP)
+
+        self.init_matches()
 
     def init_matches(self):
         self.oprdcode = {
@@ -316,21 +337,21 @@ class VirtualMachine:
         }
 
         self.opcode = {
-            '\x01': self.asm.load,
-            '\x02': self.asm.store,
-            '\x03': self.asm.add,
-            '\x04': self.asm.sub,
-            '\x05': self.asm.xor,
-            '\x06': self.asm.inc,
-            '\x07': self.asm.dec,
-            '\x10': self.asm.cmp,
-            '\x20': self.asm.jmp,
-            '\x21': self.asm.je,
-            '\x22': self.asm.jg,
-            '\x23': self.asm.jl,
-            '\x30': self.asm.hash,
-            '\x40': self.asm.push,
-            '\x41': self.asm.pop,
+            '\x11': self.asm.load,
+            '\x12': self.asm.store,
+            '\x13': self.asm.add,
+            '\x14': self.asm.sub,
+            '\x15': self.asm.xor,
+            '\x16': self.asm.inc,
+            '\x17': self.asm.dec,
+            '\x20': self.asm.cmp,
+            '\x30': self.asm.jmp,
+            '\x31': self.asm.je,
+            '\x32': self.asm.jg,
+            '\x33': self.asm.jl,
+            '\x40': self.asm.hash,
+            '\x25': self.asm.push,
+            '\x26': self.asm.pop,
         }
 
         self.double_op = [self.asm.load, self.asm.store, self.asm.add,
@@ -344,8 +365,12 @@ class VirtualMachine:
             regs.append(DwordRegister())
         return regs
 
+    def add2IP(self, offset):
+        val = self.IP.get_value()
+        self.IP.set_value(Integer(val=(val+offset)))
+
     def get_val_size(self, IP):
-        sz = MEMORY[IP+1]
+        sz = int_from_bytes(MEMORY[IP+1])
         if sz not in [BYTE, WORD, DWORD]:
             raise InstructionError("Invalid value for pointer size")
         return sz
@@ -353,22 +378,24 @@ class VirtualMachine:
     def get_operand(self, IP):
         ptype = MEMORY[IP]
         if ptype in self.reg_code:
-            num = int_from_bytes(MEMORY[IP+1])
-            return self.regs[num].cast(self.oprdcode[ptype]), 2
+            num   = int_from_bytes(MEMORY[IP+1])
+            deref = int_from_bytes(MEMORY[IP+2])
+            self.regs[num].cast(self.oprdcode[ptype])
+            return (self.regs[num].deref() if deref else self.regs[num]), 3
         elif ptype == MEMORYPTR:
             ptr_sz = self.get_val_size(IP)
             ptr    = int_from_bytes(MEMORY[IP+2:IP+2+ptr_sz], SIZE2FMT[ptr_sz])
             size   = MEMORY[IP+2+ptr_sz]
-            return MemoryPointer(size, ptr), 3+ptr_sz
+            return MemoryPointer(ptr, size), 3+ptr_sz
         elif ptype == INTEGER:
             val_sz = self.get_val_size(IP)
             val    = int_from_bytes(MEMORY[IP+2:IP+2+val_sz], SIZE2FMT[val_sz])
-            return Integer(val_sz, val), 3+val_sz
+            return Integer(val, val_sz), 2+val_sz
         else:
             raise InstructionError("Error occurred while executing an instruction")
 
     def exec(self, IP):
-        offset = 1
+        offset, oprs = 1, ()
         inst = self.opcode[MEMORY[IP]]
         foper, f_sz  = self.get_operand(IP + offset)
 
@@ -377,20 +404,20 @@ class VirtualMachine:
         if inst in self.double_op:
             soper, s_sz = self.get_operand(IP + offset)
             offset += s_sz
-            inst(foper, soper)
+            oprs = (foper, soper)
         else:
-            inst(foper)
-        return offset
+            oprs = (foper,)
+        self.add2IP(offset)
+        inst(*oprs)
 
     @property
     def IP_byte(self):
-        return self.memory[self.IP.value]
+        return MEMORY[self.IP.get_value()]
 
     def run(self):
-        while self.IP_byte != 0:
-            IP_val = self.IP.value
-            offset = self.exec(IP_val)
-            self.IP.set_value(IP_val + offset)
+        while self.IP_byte != '\x00':
+            IP_val = self.IP.get_value()
+            self.exec(IP_val)
 
 
 def main():
