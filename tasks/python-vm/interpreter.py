@@ -87,6 +87,8 @@ class Interpreter:
                 inst, op = match_1.groups()
                 buf += self.opcode[inst]
                 buf += self.parse_op(op)
+            elif 'exit' in line:
+                buf += '\x00'
             else:
                 raise InvalidOperation("You have an invalid operation in your code")
             bpref.append(len(bytecode))
@@ -111,21 +113,30 @@ class Interpreter:
         return self.__trans(ncode)[0]
 
 
+def gen_bytecode():
+    '''
+    Positions of different strings:
+
+    heap_start:        8191
+    first_bytes:       10239
+    middle_bytes_hash: 10339
+    last_bytes_hash:   10439
+    enflag:            10539
+    memory_end:        24575
+    '''
+
+    code = ''
+    with open('asm_code', 'r') as asmfile:
+        code = asmfile.read()
+
+    vm = VirtualMachine()
+    inter = Interpreter({v.__name__: k for k, v in vm.opcode.items()})
+    bytecode = inter.translate(code.split('\n'))
+    return bytecode
+
+
 def main():
-    vm       = VirtualMachine()
-    inter    = Interpreter({v.__name__: k for k, v in vm.opcode.items()})
-    bytecode = inter.translate(
-'''
-load R1, 0
-load R0, 0
-load R2, 3
-cmp  R0, R2
-je   9
-add R1, 5
-inc R0
-jmp  4
-load R3, R1
-'''.split('\n'))
+    bytecode = gen_bytecode()
     for x in bytecode:
         print("\\x{:02x}".format(ord(x)), end="")
 

@@ -1,0 +1,16 @@
+load R0, 8191
+gets R0
+load R1, 0
+load R2, 0
+load R3, [R0]
+cmp  R3B, R2B
+je   11
+inc  R0
+inc  R1
+jmp  5
+load R3, 12
+cmp  R1, R3
+je   15
+exit
+load R0, 8191
+puts R0

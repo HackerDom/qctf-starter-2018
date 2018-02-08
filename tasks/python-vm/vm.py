@@ -16,6 +16,7 @@ DWORDREG  = '\x52'
 MEMORYPTR = '\x60'
 INTEGER   = '\x65'
 
+NULLBYTE = '\x00'
 
 SIZES = [BYTE, WORD, DWORD]
 
@@ -31,12 +32,17 @@ TEXT_SECTION_RANGE  = (0x0000, 0x0fff)
 HEAP_SECTION_RANGE  = (0x1fff, 0x2fff)
 STACK_SECTION_RANGE = (0x3fff, 0x5fff)
 
-MEMORY = "\x11\x52\x01\x00\x65\x04\x00\x00\x00\x00\x11\x52\x00\x00\x65\x04\x00\x00\x00\x00\x11\x52\x02\x00\x65\x04\x03\x00\x00\x00\x20\x52\x00\x00\x52\x02\x00\x31\x65\x04\x41\x00\x00\x00\x13\x52\x01\x00\x65\x04\x05\x00\x00\x00\x16\x52\x00\x00\x30\x65\x04\x1e\x00\x00\x00\x11\x52\x03\x00\x52\x01\x00"
-MEMORY = MEMORY + '\x00' * (MEMORY_SIZE - len(MEMORY))
+MEMORY = ""
 
 
 def int_from_bytes(bts, size='B'):
     return struct.unpack(size, bytes([ord(x) for x in bts]))[0]
+
+
+def load_memory():
+    global MEMORY
+    with open('memory', 'r') as mem:
+        MEMORY = mem.read()
 
 
 class InvalidOperandPointer(Exception):
@@ -126,7 +132,7 @@ class NotMemoryPtr(Operand):
         write_val = operand.get_value()
         if self.size < operand.size:
             # If right operand's size is greater then left's. Like mov ax, ebx. Then we have to convert ebx to bx.
-            write_val = struct.unpack(SIZE2FMT[self.size], struct.pack(SIZE2FMT[operand.size], write_val)[:self.size])
+            write_val = struct.unpack(SIZE2FMT[self.size], struct.pack(SIZE2FMT[operand.size], write_val)[:self.size])[0]
         self.value = write_val
 
 
@@ -142,7 +148,7 @@ class Register(NotMemoryPtr):
     def cast(self, rtype):
         reg = rtype()
         reg.set_value(self)
-        return reg
+        self.set_value(reg)
 
     def deref(self):
         return MemoryPointer(self.value, self.size)
@@ -234,6 +240,9 @@ class Assembly:
         else:
             self.FLAGS[1] = 1
 
+    def clear_flags(self):
+        self.FLAGS = [0, 0, 0]
+
     @register_operand
     def load(self, f: Register, s: Operand):
         f.set_value(s)
@@ -284,20 +293,37 @@ class Assembly:
     def je(self, f: Integer):
         if self.FLAGS[2]:
             self.jmp(f)
+            self.clear_flags()
 
     @integer
     def jg(self, f: Integer):
         if self.FLAGS[1]:
             self.jmp(f)
+            self.clear_flags()
 
     @integer
     def jl(self, f: Integer):
         if self.FLAGS[0]:
             self.jmp(f)
+            self.clear_flags()
 
     @register
     def hash(self, f: Register):
         pass
+
+    @register
+    def puts(self, f: Register):
+        buf, ptr = '', f.get_value()
+        while MEMORY[ptr] != NULLBYTE:
+            buf += MEMORY[ptr]
+            ptr += 1
+        print(buf)
+
+    @register
+    def gets(self, f: Register, msg: str = "Enter a string: "):
+        global MEMORY
+        buf, ptr = input(msg), f.get_value()
+        MEMORY = MEMORY[:ptr] + buf + MEMORY[ptr + len(buf):]
 
     @register
     def push(self, reg: Register):
@@ -315,6 +341,9 @@ class Assembly:
         memptr = MemoryPointer(self.SP.get_value(), DWORD)
         reg.set_value(memptr)
         self.SP.set_value(Integer(val=self.SP.get_value() + DWORD))
+
+    def exit(self):
+        pass
 
 
 class VirtualMachine:
@@ -350,8 +379,11 @@ class VirtualMachine:
             '\x32': self.asm.jg,
             '\x33': self.asm.jl,
             '\x40': self.asm.hash,
+            '\x41': self.asm.puts,
+            '\x42': self.asm.gets,
             '\x25': self.asm.push,
             '\x26': self.asm.pop,
+            '\x00': self.asm.exit
         }
 
         self.double_op = [self.asm.load, self.asm.store, self.asm.add,
@@ -415,12 +447,14 @@ class VirtualMachine:
         return MEMORY[self.IP.get_value()]
 
     def run(self):
-        while self.IP_byte != '\x00':
+        while self.IP_byte != NULLBYTE:
             IP_val = self.IP.get_value()
             self.exec(IP_val)
 
 
 def main():
+    load_memory()
+
     vm = VirtualMachine()
     vm.run()
 
