@@ -385,17 +385,17 @@ void update_info() {
         switch(choice) {
             case 1:
                 printf("\nNew first name: ");
-                input_string(buf, IN_LEN);
+                input_string(buf, sizeof(applier->first_name));
                 strcpy(applier->first_name, buf);
                 break;
             case 2:
                 printf("\nNew last name: ");
-                input_string(buf, 2 * IN_LEN + 10);
+                input_string(buf, sizeof(applier->last_name) + 10);
                 strcpy(applier->last_name, buf);
                 break;
             case 3:
                 printf("\nNew country: ");
-                input_string(buf, IN_LEN);
+                input_string(buf, sizeof(applier->country));
                 strcpy(applier->country, buf);
                 break;
             case 4:
