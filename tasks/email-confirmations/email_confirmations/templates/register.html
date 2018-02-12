@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% from "_formhelpers.html" import render_field %}
 {% block body %}
+    {% if show_confirmation_message %}
+        Confirmation email has been sent to {{ form.email.data }}
+    {% endif %}
     <form method="post">
         <dl>
             {{ render_field(form.username) }}

@@ -1,7 +1,7 @@
 from sqlalchemy import or_, exists
 from wtforms import Form, StringField, PasswordField, validators
 
-from email_confirmations.models import db, User
+from email_confirmations.models import User
 
 
 class LoginForm(Form):
@@ -22,6 +22,9 @@ class LoginForm(Form):
             return False
         if not user.check_password(self.password.data):
             self.password.errors.append('Invalid password')
+            return False
+        if not user.confirmed:
+            self.username.errors.append('User\'s email not confirmed')
             return False
 
         self.user = user

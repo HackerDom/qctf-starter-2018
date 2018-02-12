@@ -12,6 +12,7 @@ class User(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password_hash = db.Column(db.Binary(60), nullable=False)
+    confirmed = db.Column(db.Boolean, nullable=False, default=False, server_default='FALSE')
 
     @classmethod
     def with_password(cls, password, **kwargs):
