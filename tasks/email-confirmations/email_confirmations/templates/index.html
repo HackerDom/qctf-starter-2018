@@ -1,13 +1,30 @@
 {% extends "layout.html" %}
+{% from "_formhelpers.html" import render_field %}
 {% block body %}
-  <h1>Hey!</h1>
-  <p>You are logged in as <strong>{{ current_user.username }}</strong></p>
-  <p><a href="{{ url_for('logout') }}">Log out</a></p>
-  <h3>Your notes (<a href="{{ url_for('new_note') }}">add new</a>):</h3>
-  {% for note in notes: %}
-    <div class="Note">
-      <h4>{{ note.title }}</h4>
-      <p>{{ note.content }}</p>
+    <div class="col-12 vertical-align text-center notes-header">
+        <h1 class="align-middle">Your notes:</h1>
     </div>
-  {% endfor %}
+
+    {% do notes.append('CREATE') %}
+    {% for first_note in range(0, notes|length, 3): %}
+        <div class="row">
+            {% for note in notes[first_note: first_note + 3]: %}
+                <div class="col-md-4 note-col">
+                    {% if note == 'CREATE' %}
+                        <form class="new-note-form" method="post">
+                            <h4>Create new note:</h4>
+                            <dl>
+                                {{ render_field(form.title) }}
+                                {{ render_field(form.content) }}
+                            </dl>
+                            <p><input type="submit" value="Create" class="btn">
+                        </form>
+                    {% else %}
+                            <h2>{{ note.title }}</h2>
+                            <p>{{ note.content }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
 {% endblock %}

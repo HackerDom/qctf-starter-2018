@@ -24,7 +24,7 @@ class LoginForm(Form):
             self.password.errors.append('Invalid password')
             return False
         if not user.confirmed:
-            self.username.errors.append('User\'s email not confirmed')
+            self.username.errors.append('User\'s email not confirmed. Please check your email')
             return False
 
         self.user = user
@@ -34,7 +34,7 @@ class LoginForm(Form):
 class RegistrationForm(Form):
     username = StringField('Username', [validators.Length(min=3, max=50)])
     password = PasswordField('Password', [validators.InputRequired()])
-    email = StringField('Email address', [validators.Length(min=6, max=100)])
+    email = StringField('Email address', [validators.Length(min=6, max=100), validators.email()])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

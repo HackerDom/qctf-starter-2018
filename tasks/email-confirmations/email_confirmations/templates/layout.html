@@ -1,4 +1,41 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>Title</title>
-{% block body %}{% endblock %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Notemaster</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="navbar navbar-inverse bg-inverse">
+        <div class="container d-flex justify-content-between vertical-align">
+            <div id="logo">
+                <a href="{{ url_for('index') }}">
+                    <img height="80px" src="{{ url_for('static', filename='logo.png') }}" />
+                </a>
+            </div>
+            <div class="user-status">
+            {% if current_user.is_authenticated %}
+                You are logged in as <strong>{{ current_user.username }}</strong>
+                <form action="/logout" method="GET">
+                    <input type="submit" value="Log out" class="btn btn-primary" />
+                </form>
+            {% else %}
+                You are not logged in
+            {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        {% block body %}
+        {% endblock %}
+
+        <hr>
+
+        <footer>
+            <p>&copy; QCTF Incorporated 2018</p>
+        </footer>
+    </div>
+</body>
+</html>

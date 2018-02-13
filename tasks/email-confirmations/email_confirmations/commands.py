@@ -20,7 +20,7 @@ class GenerateFlagOwnerCommand(Command):
     def run(self, flag):
         user, notes = generate_dummy_with_notes(username='admin')
         flag_note = Note(
-            title='Hope no one sees this',
+            title='Hope no one sees this note',
             content=flag,
             author=user)
         db.session.add(user)
