@@ -1,7 +1,7 @@
-from sqlalchemy import or_, exists
-from wtforms import Form, StringField, PasswordField, validators
+from wtforms import Form, StringField, PasswordField, TextAreaField, validators
+from flask_login import current_user
 
-from email_confirmations.models import User
+from email_confirmations.models import User, Note
 
 
 class LoginForm(Form):
@@ -55,4 +55,23 @@ class RegistrationForm(Form):
             username=self.username.data,
             password=self.password.data,
             email=self.email.data)
+        return True
+
+
+class NewNoteForm(Form):
+    title = StringField('Title', [validators.Length(min=1, max=200)])
+    content = TextAreaField('Content', [validators.Length(min=0, max=5000)])
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.note = None
+
+    def validate(self):
+        if not super().validate():
+            return False
+
+        self.note = Note(
+            title=self.title.data,
+            content=self.content.data,
+            author=current_user)
         return True

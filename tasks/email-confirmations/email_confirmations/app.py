@@ -4,8 +4,8 @@ from flask import Flask, render_template, request, url_for, redirect, g, abort
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from flask_mail import Mail, Message
 
-from email_confirmations.models import db, User
-from email_confirmations.forms import LoginForm, RegistrationForm
+from email_confirmations.models import db, User, Note
+from email_confirmations.forms import LoginForm, RegistrationForm, NewNoteForm
 
 
 app = Flask(__name__)
@@ -54,7 +54,8 @@ def add_user():
 @app.route('/')
 @login_required
 def index():
-    return render_template('index.html')
+    user_notes = Note.query.filter_by(author=current_user).all()
+    return render_template('index.html', notes=user_notes)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -93,6 +94,17 @@ def confirm(user_id):
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+@app.route('/new_note', methods=['GET', 'POST'])
+@login_required
+def new_note():
+    form = NewNoteForm(request.form)
+    if request.method == 'POST' and form.validate():
+        db.session.add(form.note)
+        db.session.commit()
+        return redirect(url_for('index'))
+    return render_template('new_note.html', form=form)
 
 
 if __name__ == '__main__':
