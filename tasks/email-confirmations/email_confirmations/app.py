@@ -54,7 +54,10 @@ def add_user():
 @app.route('/')
 @login_required
 def index():
-    user_notes = Note.query.filter_by(author=current_user).all()
+    user_notes = Note.query \
+        .filter_by(author=current_user) \
+        .order_by(Note.id) \
+        .all()
     return render_template('index.html', notes=user_notes)
 
 

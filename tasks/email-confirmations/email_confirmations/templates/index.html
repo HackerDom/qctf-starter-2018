@@ -3,12 +3,11 @@
   <h1>Hey!</h1>
   <p>You are logged in as <strong>{{ current_user.username }}</strong></p>
   <p><a href="{{ url_for('logout') }}">Log out</a></p>
-  <h3>Your notes:</h3>
+  <h3>Your notes (<a href="{{ url_for('new_note') }}">add new</a>):</h3>
   {% for note in notes: %}
     <div class="Note">
       <h4>{{ note.title }}</h4>
       <p>{{ note.content }}</p>
     </div>
   {% endfor %}
-  <a href="{{ url_for('new_note') }}">New note</a>
 {% endblock %}
