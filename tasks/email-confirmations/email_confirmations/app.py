@@ -9,9 +9,9 @@ from email_confirmations.utils import mail_manager, send_confirmation_email
 
 
 app = Flask(__name__)
-app.config.from_object('default_config')
+app.config.from_object('email_confirmations.default_config')
 if os.getenv('ENVIRONMENT') == 'DEV':
-    app.config.from_object('development_config')
+    app.config.from_object('email_confirmations.development_config')
 else:
     app.config.from_envvar('APP_CONFIG')
 app.jinja_env.add_extension('jinja2.ext.do')
