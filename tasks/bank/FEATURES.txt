@@ -2,12 +2,11 @@
 - amount (int)
 - duration (int, years)
 
-- location (cat)
+- education (cat)
 - married (bool)
 - dependents (int)
-- education (cat)
 
-person_income:
+applicant_income:
     - type (cat)
     - amount (int)
     - job_experience (int)
@@ -17,7 +16,7 @@ spouse_income:
     - amount (int)
     - job_experience (int)
 
-family_expenses:
+expense:
     - type (cat)
     - amount (int)
 
@@ -25,7 +24,6 @@ property:
     - type (cat)
     - price (int)
 
-- had_overdue (bool)
+- have_overdue_debts (bool)
+- missed_deadlines (bool)
 - was_bankrupt (bool)
-- was_convicted (bool)
-- having_lawsuit (bool)

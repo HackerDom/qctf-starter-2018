@@ -1,150 +1,301 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
 
-    <title>Кредиты в банке Мечта</title>
+  <title>Кредиты в банке Мечта</title>
 
-    <link rel="stylesheet" href="css/bootswatch-lux.css">
-    <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/bootswatch-lux.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body class="pt-5">
 <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 bg-white border-bottom box-shadow fixed-top">
-    <h5 class="my-0 mr-md-auto font-weight-normal">Банк Мечта</h5>
-    <nav class="my-2 my-md-0 mr-md-3">
-        <a class="p-3 text-dark" href="#">Кредиты</a>
-        <a class="p-3 text-dark" href="#">Вклады</a>
-        <a class="p-3 text-dark" href="#">Поддержка</a>
-    </nav>
+  <h5 class="my-0 mr-md-auto font-weight-normal">Банк Мечта</h5>
+  <nav class="my-2 my-md-0 mr-md-3">
+    <a class="p-3 text-dark" href="#">Кредиты</a>
+    <a class="p-3 text-dark" href="#">Вклады</a>
+    <a class="p-3 text-dark" href="#">Поддержка</a>
+  </nav>
 </div>
 
 <div class="row m-0">
-    <div class="col-md-6 position-fixed photo-col">
-        <img class="photo" src="img/happy-woman-cropped.jpg" />
-    </div>
-    <div class="col-md-6 form-col">
-        <div class="container">
-            <div class="pricing-header mx-auto text-center pt-5 pb-4">
-                <h1 class="display-5 font-weight-light">ВОЗЬМИТЕ КРЕДИТ</h1>
-                <p class="lead">Воплотите свою мечту в жизнь</p>
+  <div class="col-md-6 position-fixed photo-col">
+    <img class="photo" src="img/happy-woman-cropped.jpg" />
+  </div>
+  <div class="col-md-6 form-col">
+    <div class="container">
+      <div class="pricing-header mx-auto text-center pt-5 pb-4">
+        <h1 class="display-5 font-weight-light">ВОЗЬМИТЕ КРЕДИТ</h1>
+        <p class="lead">Воплотите свою мечту в жизнь</p>
+      </div>
+
+      <div class="bs-component">
+        <form>
+          <fieldset id="step1">
+            <legend class="pb-2">Первый шаг</legend>
+
+            <div class="card bg-light mb-4 border-secondary">
+              <div class="card-header">Заполните анкету</div>
+              <div class="card-body">
+                <p class="card-text">
+                  По этим данным мы вычислим процентную ставку, которую мы готовы вам предоставить.
+                  Банк обязуется выдать кредит по этой ставке в случае, если все данные достоверны.
+                </p>
+              </div>
             </div>
 
-            <div class="card bg-light mb-4">
-                <div class="card-header">Заполните анкету</div>
-                <div class="card-body">
-                    <p class="card-text">
-                        По этим данным мы вычислим процентную ставку, которую мы готовы вам предоставить.
-                        Банк обязуется выдать кредит по этой ставке в случае, если все данные достоверны.
-                    </p>
+            <div class="form-group">
+              <label for="purpose">Цель кредита:</label>
+              <select class="form-control" id="purpose" name="purpose">
+                <option value="1">Покупка недвижимости</option>
+                <option value="2">Покупка автомобиля</option>
+                <option value="3">Оплата высшего образования</option>
+                <option value="4">Начальный капитал для бизнеса</option>
+                <option value="5">Другое</option>
+              </select>
+            </div>
+
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="credit_amount">Сумма (от 100 тыс до 5 млн):</label>
+                <div class="input-group">
+                  <input type="text" class="form-control amount-input"
+                         id="credit_amount" name="credit_amount" value="1 000 000">
+                  <div class="input-group-append">
+                    <span class="input-group-text px-4">₽</span>
+                  </div>
                 </div>
+              </div>
+
+              <div class="form-group col-sm-6">
+                <label for="duration">Срок:</label>
+                <select class="form-control" id="duration" name="duration">
+                  <option value="1">1 год</option>
+                  <option value="2">2 года</option>
+                  <option value="3">3 года</option>
+                  <option value="4">4 года</option>
+                  <option value="5">5 лет</option>
+                </select>
+              </div>
             </div>
-            <div class="bs-component">
-                <form>
-                    <fieldset>
-                        <legend class="pb-2">Первый шаг</legend>
 
-                        <div class="form-group">
-                            <label for="purpose">Цель кредита:</label>
-                            <select class="form-control" id="purpose">
-                                <option value="1">Покупка недвижимости</option>
-                                <option value="2">Покупка автомобиля</option>
-                                <option value="3">Оплата высшего образования</option>
-                                <option value="4">Начальный капитал для бизнеса</option>
-                                <option value="5">Другое</option>
-                            </select>
-                        </div>
-
-                        <div class="row">
-                            <div class="form-group col-sm-6">
-                                <label for="amount">Сумма (от 100 тыс до 5 млн):</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="amount" value="1 000 000">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text px-4">₽</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group col-sm-6">
-                                <label for="duration">Срок:</label>
-                                <select class="form-control" id="duration">
-                                    <option value="1">1 год</option>
-                                    <option value="2">2 года</option>
-                                    <option value="3">3 года</option>
-                                    <option value="4">4 года</option>
-                                    <option value="5">5 лет</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="location">Место жительства:</label>
-                            <select class="form-control" id="location">
-                                <option value="1">Москва или Московская область</option>
-                                <option value="2">Санкт-Петербург или Ленинградская область</option>
-                                <option value="3">Колонии</option>
-                            </select>
-                        </div>
-
-                        <div class="row">
-                            <div class="form-group col-sm-6">
-                                <label for="married">Семейное положение:</label>
-                                <select class="form-control" id="married">
-                                    <option value="0">Не женат/не замужем</option>
-                                    <option value="1">Женат/замужем</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group col-sm-6">
-                                <label for="dependents">Дети и иждивенцы:</label>
-                                <select class="form-control" id="dependents">
-                                    <option value="0">Нет</option>
-                                    <option value="1">1 человек</option>
-                                    <option value="2">2 человека</option>
-                                    <option value="3">3 человека</option>
-                                    <option value="4">Больше 3 человек</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="education">Образование:</label>
-                            <select class="form-control" id="education">
-                                <option value="1">Среднее</option>
-                                <option value="2">Неоконченное высшее</option>
-                                <option value="3">Высшее</option>
-                                <option value="4">Кандидат наук или доктор наук</option>
-                            </select>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary mt-3 mb-5">Дальше</button>
-                    </fieldset>
-                </form>
+            <div class="form-group">
+              <label for="education">Образование:</label>
+              <select class="form-control" id="education" name="education">
+                <option value="1">Среднее</option>
+                <option value="2">Неоконченное высшее</option>
+                <option value="3">Высшее</option>
+                <option value="4">Кандидат наук или доктор наук</option>
+              </select>
             </div>
-        </div>
+
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="married">Семейное положение:</label>
+                <select class="form-control" id="married" name="married">
+                  <option value="0">Не женат/не замужем</option>
+                  <option value="1">Женат/замужем</option>
+                </select>
+              </div>
+
+              <div class="form-group col-sm-6">
+                <label for="dependents">Дети и иждивенцы:</label>
+                <select class="form-control" id="dependents" name="dependents">
+                  <option value="0">Нет</option>
+                  <option value="1">1 человек</option>
+                  <option value="2">2 человека</option>
+                  <option value="3">3 человека</option>
+                  <option value="4">Больше 3 человек</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset id="step2" style="display: none;">
+            <legend class="pb-2">Второй шаг</legend>
+
+            <p>Укажите доходы вашей семьи:</p>
+
+            <div class="extending-list">
+              <div class="row">
+                <div class="form-group col-sm-6">
+                  <select class="form-control" name="income_type">
+                    <option value="0">Не выбрано</option>
+                    <option value="1">Зарплата (наёмный сотрудник)</option>
+                    <option value="1">Зарплата (госслужащий)</option>
+                    <option value="1">Проценты и дивиденды</option>
+                    <option value="1">Сдача в аренду недвижимости</option>
+                    <option value="1">Другое</option>
+                  </select>
+                </div>
+                <div class="form-group col-sm-6">
+                  <div class="input-group">
+                    <input type="text" class="form-control amount-input"
+                           name="income_amount" value="0">
+                    <div class="input-group-append">
+                      <span class="input-group-text px-4">₽</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p>Укажите расходы вашей семьи:</p>
+
+            <div class="extending-list">
+              <div class="row">
+                <div class="form-group col-sm-6">
+                  <select class="form-control" name="expense_type">
+                    <option value="0">Не выбрано</option>
+                    <option value="1">Жильё, коммунальные услуги</option>
+                    <option value="1">Обслуживание автомобиля</option>
+                    <option value="1">Налоги</option>
+                    <option value="1">Алименты</option>
+                    <option value="1">Выплаты по кредитам</option>
+                    <option value="1">Страховые платежи</option>
+                    <option value="1">Другое</option>
+                  </select>
+                </div>
+                <div class="form-group col-sm-6">
+                  <div class="input-group">
+                    <input type="text" class="form-control amount-input"
+                           name="expense_amount" value="0">
+                    <div class="input-group-append">
+                      <span class="input-group-text px-4">₽</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset id="step3" style="display: none;">
+            <legend class="pb-2">Третий шаг</legend>
+
+            <p>Укажите имущество вашей семьи и его стоимость:</p>
+
+            <div class="extending-list">
+              <div class="row">
+                <div class="form-group col-sm-6">
+                  <select class="form-control" name="property_type">
+                    <option value="0">Не выбрано</option>
+                    <option value="1">Квартира</option>
+                    <option value="2">Загородный дом</option>
+                    <option value="3">Автомобиль</option>
+                  </select>
+                </div>
+                <div class="form-group col-sm-6">
+                  <div class="input-group">
+                    <input type="text" class="form-control amount-input"
+                           name="property_price" value="0">
+                    <div class="input-group-append">
+                      <span class="input-group-text px-4">₽</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset id="step4" style="display: none;">
+            <legend class="pb-2">Последний шаг</legend>
+
+            <p>Отметьте соответствующие пункты, если вы:</p>
+
+            <div class="form-group">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="have_overdue_debts" name="has_overdue_debts">
+                <label class="custom-control-label" for="have_overdue_debts">
+                  Имеете просроченные долги
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="missed_deadlines" name="missed_deadlines">
+                <label class="custom-control-label" for="missed_deadlines">
+                  Когда-либо задерживали выплаты по кредитам на срок более 1 месяца
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="was_bankrupt" name="was_bankrupt">
+                <label class="custom-control-label" for="was_bankrupt">
+                  Когда-либо проходили процедуру банкротства физического лица
+                </label>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset id="step5" style="display: none;">
+            <div class="pb-4 text-center">
+              <h5>Вычисляем ставку...</h5>
+
+              <h5>Ваша ставка</h5>
+              <div class="font-weight-light" style="font-size: 65px; color: black;">15%</div>
+              <div>годовых</div>
+            </div>
+
+            <div class="py-4 text-center">
+              <h5>Ежемесячные выплаты</h5>
+              <div class="font-weight-light" style="font-size: 35px; color: black;">30 000</div>
+              <div>рублей</div>
+            </div>
+
+            <div class="py-4">
+              <h5 class="text-center">Что дальше?</h5>
+              <div class="card bg-light mt-4 border-secondary">
+                <div class="card-header">Подойдите в отделение банка</div>
+                <div class="card-body">
+                  <p class="card-text">
+                    Мы сохранили введённые вами данные и вычисленную процентную ставку.
+                    Вам остаётся подойти в отделение банка,
+                    назвать код <b style="font-weight: bold; color: black;">QCTF_KEK</b> и
+                    заполнить ваши паспортные данные. Деньги уже почти в вашем кармане!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="row mt-3 mb-5">
+            <button type="button" class="btn btn-outline-secondary mx-3"
+                    id="prev-page-btn" style="display: none;">Назад</button>
+            <button type="submit" class="btn btn-primary mx-3"
+                    id="next-page-btn">Дальше</button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<!--<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"-->
-        <!--integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"-->
-        <!--crossorigin="anonymous"></script>-->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
 <!--<script>window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>-->
 <!--<script src="../../../../assets/js/vendor/popper.min.js"></script>-->
 <!--<script src="../../../../dist/js/bootstrap.min.js"></script>-->
 <!--<script src="../../../../assets/js/vendor/holder.min.js"></script>-->
 <!--<script>-->
-    <!--Holder.addTheme('thumb', {-->
-        <!--bg: '#55595c',-->
-        <!--fg: '#eceeef',-->
-        <!--text: 'Thumbnail'-->
-    <!--});-->
+  <!--Holder.addTheme('thumb', {-->
+    <!--bg: '#55595c',-->
+    <!--fg: '#eceeef',-->
+    <!--text: 'Thumbnail'-->
+  <!--});-->
 <!--</script>-->
+
+<script src="js/form.js"></script>
+
 </body>
 </html>

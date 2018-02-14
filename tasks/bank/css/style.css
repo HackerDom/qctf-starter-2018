@@ -35,3 +35,7 @@ select.form-control {
 legend {
     font-size: 1.35rem;
 }
+
+#step5 h5 {
+    color: #919aa1;
+}
