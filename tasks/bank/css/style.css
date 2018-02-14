@@ -1,0 +1,37 @@
+.form-control {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+select.form-control {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: #f7f7f9 url(data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0Ljk1IDEwIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2Y3ZjdmOTt9LmNscy0ye2ZpbGw6IzQ0NDt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPmFycm93czwvdGl0bGU+PHJlY3QgY2xhc3M9ImNscy0xIiB3aWR0aD0iNC45NSIgaGVpZ2h0PSIxMCIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMiIgcG9pbnRzPSIxLjQxIDQuNjcgMi40OCAzLjE4IDMuNTQgNC42NyAxLjQxIDQuNjciLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iMy41NCA1LjMzIDIuNDggNi44MiAxLjQxIDUuMzMgMy41NCA1LjMzIi8+PC9zdmc+) no-repeat calc(100% - 10px) 50%;
+    background-size: 17px;
+    border-radius: 5px;
+}
+
+.photo-col {
+    position: fixed;
+    overflow: hidden;
+    background-color: #ffdbe5;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+}
+
+.photo {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+}
+
+.form-col {
+    position: absolute;
+    right: 0;
+}
+
+legend {
+    font-size: 1.35rem;
+}
