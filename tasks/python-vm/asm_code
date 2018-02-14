@@ -1,16 +1,32 @@
-load R0, 8191
-gets R0
-load R1, 0
-load R2, 0
-load R3, [R0]
-cmp  R3B, R2B
-je   11
-inc  R0
-inc  R1
-jmp  5
-load R3, 12
-cmp  R1, R3
-je   15
+mov   R0, 10839
+puts  R0
+mov   R0, 8191
+gets  R0
+mov   R1, 0
+mov   R2, 0
+load  R3B, R0
+cmp   R3B, R2B
+je    13
+inc   R0
+inc   R1
+jmp   7
+mov   R3, 12
+cmp   R1, R3
+je    19
+mov   R0, 10639
+puts  R0
 exit
-load R0, 8191
-puts R0
+mov   R0, 8203
+mov   R1, 8202
+mov   R2, 8191
+cmp   R1, R2
+jl    29
+load  R4, R1
+store R4, R0
+dec   R1
+inc   R0
+jmp   22
+mov   R2, 0
+store R2, R0
+mov   R0, 8191
+puts  R0

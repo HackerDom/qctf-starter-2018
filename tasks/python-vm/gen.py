@@ -9,6 +9,7 @@ from interpreter import gen_bytecode
 
 INPUT_STR_LEN = 12
 ALPHABET      = string.ascii_letters + string.digits
+HARDCODED     = 'konata'
 
 def gen_enc_flag(flag):
     if len(flag) != 36:
@@ -33,12 +34,11 @@ def gen_enc_str(input_str):
         print('[-] Invalid length of input string!')
         return
 
-    hardcoded   = 'konata'
-    to_validate = input_str[::-1] + input_str + input_str[::3]
+    to_validate = input_str[::-1] + input_str #+ input_str[::3]
     nvalid      = ''
 
     for i in range(len(to_validate)):
-        nvalid += chr((ord(to_validate[i]) + 4) ^ ord(hardcoded[i % len(hardcoded)]))
+        nvalid += chr((ord(to_validate[i]) + 4) ^ ord(HARDCODED[i % len(HARDCODED)]))
     return nvalid
 
 
@@ -60,24 +60,27 @@ def gen_checks(val):
 
 def gen_task(enflag, checks):
     def insert2mem(mem, s, bytes):
-        return mem[:s] + bytes + mem[s + len(bytes):]
+        mem[s:s+len(bytes)] = bytes
 
     hp_s, hp_f = HEAP_SECTION_RANGE
     m_hp       = hp_s + (hp_f - hp_s) // 2
 
-    r_mem    = MEMORY_SIZE * '\x00'
+    r_mem    = MEMORY_SIZE * bytearray(b'\x00')
 
     bytecode = gen_bytecode()
-    r_mem = insert2mem(r_mem, 0, bytecode)
-    r_mem = insert2mem(r_mem, m_hp,     checks['first_bytes'])
-    r_mem = insert2mem(r_mem, m_hp+100, checks['middle_bytes_hash'])
-    r_mem = insert2mem(r_mem, m_hp+200, checks['last_bytes_hash'])
-    r_mem = insert2mem(r_mem, m_hp+300, enflag)
+    insert2mem(r_mem, 0, bytecode)
+    insert2mem(r_mem, m_hp,     bytearray(checks['first_bytes'].encode()))
+    insert2mem(r_mem, m_hp+100, bytearray(checks['middle_bytes_hash'].encode()))
+    insert2mem(r_mem, m_hp+200, bytearray(checks['last_bytes_hash'].encode()))
+    insert2mem(r_mem, m_hp+300, bytearray(enflag.encode()))
+    insert2mem(r_mem, m_hp+400, bytearray(b"[-] Incorrect input! You're failed :c"))
+    insert2mem(r_mem, m_hp+500, bytearray(HARDCODED.encode()))
+    insert2mem(r_mem, m_hp+600, bytearray(b"Enter a string: "))
 
     # print(repr(r_mem))
 
     with open('memory', 'wb') as mem:
-        mem.write(r_mem.encode())
+        mem.write(r_mem)
 
 
 def validating_algo(inp, checks):

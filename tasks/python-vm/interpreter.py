@@ -3,7 +3,7 @@ import struct
 import binascii
 
 from vm import VirtualMachine
-from vm import BYTEREG, WORDREG, DWORDREG, MEMORYPTR, INTEGER
+from vm import REGISTER, CONSTANT
 
 
 WORD = 'W'
@@ -25,7 +25,6 @@ class Interpreter:
         self.opcode = opcodes
 
         self.reg    = re.compile(r'^((R\d)|(R\d(W|B)))$')
-        self.ptr    = re.compile(r'^\[((R\d)|(R\d(W|B)))\]$')
         self.num    = re.compile(r'^(\d+)$')
         self.r_two  = re.compile(r'^(\w+)[ ]+(.*?),[ ]+(.*?)$')
         self.r_one  = re.compile(r'^(\w+)[ ]+(.*?)$')
@@ -35,7 +34,7 @@ class Interpreter:
 
     def find_size(self, num):
         rsz = -1
-        for fmt, sz in [('B', 1), ('H', 2), ('I', 4)][::-1]:
+        for fmt, sz in [('b', 1), ('h', 2), ('i', 4)][::-1]:
             try:
                 struct.pack(fmt, num)
                 rsz = (fmt, sz)
@@ -46,49 +45,43 @@ class Interpreter:
     def parse_op(self, op):
         def parse_reg(reg):
             if reg[-1] == BYTE:
-                return BYTEREG + self.to_bytes(int(reg[1]))
+                return bytearray([REGISTER, int(reg[1]), 0x01])
             elif reg[-1] == WORD:
-                return WORDREG + self.to_bytes(int(reg[1]))
+                return bytearray([REGISTER, int(reg[1]), 0x02])
             else:
-                return DWORDREG + self.to_bytes(int(reg[1]))
+                return bytearray([REGISTER, int(reg[1]), 0x04])
 
         reg = self.reg.match(op)
-        ptr = self.ptr.match(op)
         num = self.num.match(op)
         if reg:
             r = reg.groups()[0]
-            return parse_reg(r) + '\x00'
-        elif ptr:
-            p = ptr.groups()[0]
-            return parse_reg(p) + '\x01'
+            return parse_reg(r)
         elif num:
             n = int(num.groups()[0])
-            # fmt, rsz = self.find_size(n)
-            fmt, rsz = 'I', 4
-            return INTEGER + (struct.pack('B', rsz) + struct.pack(fmt, n)).decode('unicode_escape')
+            return bytearray([CONSTANT]) + struct.pack('B', 4) + struct.pack('i', n)
         else:
             raise InvalidOperand("Your code have an invalid operand")
 
     def __trans(self, code: list):
         bpref    = []
-        bytecode = ''
+        bytecode = bytearray(b'')
         for line in code:
             if line == '':
                 continue
-            buf     = ''
+            buf     = bytearray(b'')
             match_2 = self.r_two.match(line)
             match_1 = self.r_one.match(line)
             if match_2:
                 inst, op1, op2 = match_2.groups()
-                buf += self.opcode[inst]
+                buf += bytearray([self.opcode[inst]])
                 buf += self.parse_op(op1)
                 buf += self.parse_op(op2)
             elif match_1:
                 inst, op = match_1.groups()
-                buf += self.opcode[inst]
+                buf += bytearray([self.opcode[inst]])
                 buf += self.parse_op(op)
             elif 'exit' in line:
-                buf += '\x00'
+                buf.append(0x00)
             else:
                 raise InvalidOperation("You have an invalid operation in your code")
             bpref.append(len(bytecode))
@@ -122,6 +115,9 @@ def gen_bytecode():
     middle_bytes_hash: 10339
     last_bytes_hash:   10439
     enflag:            10539
+    error_msg:         10639
+    hardcoded:         10739
+    enter_string:      10839
     memory_end:        24575
     '''
 
@@ -129,9 +125,10 @@ def gen_bytecode():
     with open('asm_code', 'r') as asmfile:
         code = asmfile.read()
 
-    vm = VirtualMachine()
+    vm = VirtualMachine(bytearray(b''), bytearray([0] * 0xfff))
     inter = Interpreter({v.__name__: k for k, v in vm.opcode.items()})
     bytecode = inter.translate(code.split('\n'))
+
     return bytecode
 
 
