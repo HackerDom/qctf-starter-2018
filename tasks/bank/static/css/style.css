@@ -39,3 +39,18 @@ legend {
 #step5 h5 {
     color: #919aa1;
 }
+
+#interest-rate {
+    font-size: 65px;
+    color: black;
+}
+
+#monthly-payment {
+    font-size: 35px;
+    color: black;
+}
+
+#bank-code {
+    font-weight: bold;
+    color: black;
+}

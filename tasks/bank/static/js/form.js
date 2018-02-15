@@ -1,4 +1,5 @@
 function makeReadable(number) {
+    number = number.toString();
     var result = '';
     for (var i = 0; i < number.length; i++) {
         if (i >= 1 && (number.length - i) % 3 === 0)
@@ -9,6 +10,17 @@ function makeReadable(number) {
 }
 
 $(function () {
+    $('#credits-link').click(function () {
+        event.preventDefault();
+        $('#credit-page').show();
+        $('#unavailable-page').hide();
+    });
+    $('#deposits-link, #support-link').click(function () {
+        event.preventDefault();
+        $('#credit-page').hide();
+        $('#unavailable-page').show();
+    });
+
     $('.amount-input')
         .keypress(function (event) {
             if (event.which !== 0 && event.which !== 8 &&
@@ -26,14 +38,14 @@ $(function () {
                 .prop('selectionEnd', value.length - selEndOffset);
         });
 
-    var MAX_STEP = 5;
+    var FINAL_STEP = 5;
     var step = 1;
 
-    function validate() {
+    function validateForm() {
         if (step === 1) {
             var creditAmountInput = $('#credit_amount');
             var creditAmount = parseInt(creditAmountInput.val().replace(/ /g, ''));
-            if (1e5 <= creditAmount && creditAmount <= 5e6)
+            if (1e5 <= creditAmount && creditAmount <= 3e6)
                 creditAmountInput.removeClass('is-invalid');
             else {
                 creditAmountInput.addClass('is-invalid');
@@ -43,9 +55,35 @@ $(function () {
         return true;
     }
 
+    function submitForm() {
+        $('#result-loading').show();
+        $('#result-negative, #result-positive, #result-error').hide();
+
+        $.post('/api/submit_credit_form', $('#credit-page').find('form').serialize())
+            .done(function (response) {
+                $('#result-loading').hide();
+                if (response.result === 'positive') {
+                    $('#result-positive').show();
+                    $('#interest-rate').html(response.interest_rate + '%');
+                    $('#monthly-payment').html(makeReadable(response.monthly_payment));
+                    $('#bank-code').html(response.bank_code);
+                } else
+                if (response.result === 'negative') {
+                    $('#result-negative').show();
+                } else
+                    $('#result-error').show();
+            })
+            .fail(function() {
+                $('#result-loading').hide();
+                $('#result-error').show();
+            });
+    }
+
     function changeStep(value) {
-        if (!validate())
+        if (!validateForm())
             return;
+        if (value === FINAL_STEP)
+            submitForm();
 
         $('#step' + step).hide();
         step = value;
@@ -55,7 +93,7 @@ $(function () {
             $('#prev-page-btn').hide();
         else
             $('#prev-page-btn').show();
-        if (step === MAX_STEP)
+        if (step === FINAL_STEP)
             $('#next-page-btn').hide();
         else
             $('#next-page-btn').show();
