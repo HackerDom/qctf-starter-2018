@@ -84,6 +84,7 @@ class Interpreter:
                 buf.append(0x00)
             else:
                 raise InvalidOperation("You have an invalid operation in your code")
+            print(line)
             bpref.append(len(bytecode))
             bytecode += buf
         return bytecode, bpref

@@ -22,11 +22,30 @@ mov   R2, 8191
 cmp   R1, R2
 jl    29
 load  R4, R1
-store R4, R0
+store R4B, R0
 dec   R1
 inc   R0
 jmp   22
 mov   R2, 0
-store R2, R0
+store R2B, R0
+mov   R1, R0
+mov   R0, 8191
+mov   R2, 10739
+mov   R4, 0
+mov   R5, 6
+cmp   R0, R1
+je    49
+load  R6B, R0
+add   R6, 4
+mov   R8, R4
+add   R8, R2
+load  R7B, R8
+xor   R6, R7
+store R6B, R0
+inc   R0
+inc   R4
+mod   R4, R5
+jmp   36
 mov   R0, 8191
 puts  R0
+exit

@@ -2,6 +2,7 @@
 
 import struct
 import sys
+import inspect
 
 from inspect import signature, BoundArguments
 
@@ -50,27 +51,15 @@ def get_params_count(func):
 
 def type_correct(instruction):
     @wraps(instruction)
-    def two_validation(self, f, s):
-        local_args = locals()
-        args_info  = instruction.__annotations__
-        for arg_name, arg_type in args_info.items():
-            if not isinstance(local_args[arg_name], arg_type):
+    def validation(*args):
+        sign = signature(instruction)
+        bound_args = sign.bind(*args)
+        for arg_name, arg_value in bound_args.arguments.items():
+            annotation = sign.parameters[arg_name].annotation
+            if annotation != inspect._empty and (not isinstance(arg_value, annotation)):
                 raise InvalidArgumentType("Incorrect argument type!")
-        instruction(self, f, s)
-
-    @wraps(instruction)
-    def one_validation(self, f):
-        local_args = locals()
-        args_info  = instruction.__annotations__
-        for arg_name, arg_type in args_info.items():
-            if not isinstance(local_args[arg_name], arg_type):
-                raise InvalidArgumentType("Incorrect argument type!")
-        instruction(self, f)
-
-    if get_params_count(instruction) == 3:
-        return two_validation
-    else:
-        return one_validation
+        instruction(*args)
+    return validation
 
 
 def find_size(num):
@@ -82,10 +71,6 @@ def find_size(num):
         except Exception:
             return size_info
     return size_info
-
-
-class InvalidOperandPointer(Exception):
-    pass
 
 
 class PermissionException(Exception):
@@ -315,7 +300,7 @@ class Assembly:
 
     @type_correct
     def add(self, f: BaseRegister, s: Operand):
-        f.value = s.value
+        f.value = f.value + s.value
 
     @type_correct
     def sub(self, f: BaseRegister, s: Operand):
@@ -334,10 +319,16 @@ class Assembly:
         f.value = f.value - 1
 
     @type_correct
+    def div(self, f: BaseRegister, s: Operand):
+        f.value = f.value // s.value
+
+    @type_correct
+    def mod(self, f: BaseRegister, s: Operand):
+        f.value = f.value % s.value
+
+    @type_correct
     def cmp(self, f: BaseRegister, s: BaseRegister):
-        fval = f.value
-        sval = s.value
-        self.update_flags(Constant(fval - sval, f.size).value)
+        self.update_flags(Constant(f.value - s.value, f.size).value)
 
     @type_correct
     def jmp(self, f: Constant):
@@ -428,16 +419,18 @@ class VirtualMachine:
             0x15: self.asm.xor,
             0x16: self.asm.inc,
             0x17: self.asm.dec,
-            0x20: self.asm.cmp,
-            0x30: self.asm.jmp,
-            0x31: self.asm.je,
-            0x32: self.asm.jg,
-            0x33: self.asm.jl,
-            0x40: self.asm.hash,
-            0x41: self.asm.puts,
-            0x42: self.asm.gets,
-            0x25: self.asm.push,
-            0x26: self.asm.pop,
+            0x18: self.asm.cmp,
+            0x19: self.asm.jmp,
+            0x1a: self.asm.je,
+            0x1b: self.asm.jg,
+            0x1c: self.asm.jl,
+            0x1d: self.asm.hash,
+            0x1e: self.asm.puts,
+            0x1f: self.asm.gets,
+            0x20: self.asm.push,
+            0x21: self.asm.pop,
+            0x22: self.asm.div,
+            0x23: self.asm.mod,
             0x00: self.asm.exit
         }
 
