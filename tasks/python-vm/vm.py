@@ -3,6 +3,7 @@
 import struct
 import sys
 import inspect
+import hashlib
 
 from inspect import signature, BoundArguments
 
@@ -135,6 +136,7 @@ class BaseRegister(Operand):
 
         self.memory_handler = memory_handler
         self.offset = mem_offset
+        self.value  = val
 
     @property
     def value(self):
@@ -194,6 +196,18 @@ class Register:
 class MemoryHandler:
     def __init__(self, memory):
         self.memory = memory
+
+    def read_string(self, address):
+        buf = bytearray(b'')
+        while self.read_byte(address) != NULLVALUE:
+            buf.append(self.read_byte(address))
+            address += 1
+        return buf
+
+    def write_string(self, address, string):
+        string += b'\x00'
+        for index in range(len(string)):
+            self.write_byte(address+index, string[index])
 
     def read(self, address, size):
         try:
@@ -261,9 +275,10 @@ class MemoryStream:
 
 
 class Assembly:
-    def __init__(self, mem_handler: MemoryHandler, IP: DwordRegister, SP: DwordRegister):
-        self.IP = IP
-        self.SP = SP
+    def __init__(self, mem_handler: MemoryHandler, IP: DwordRegister, SP: DwordRegister, regs: list):
+        self.IP   = IP
+        self.SP   = SP
+        self.regs = regs
         self.FLAGS = [0, 0, 0] # Is Less [IL], Is Greater [IG], Is Equal [IE]
 
         self.mem_handler = mem_handler
@@ -300,7 +315,7 @@ class Assembly:
 
     @type_correct
     def add(self, f: BaseRegister, s: Operand):
-        f.value = f.value + s.value
+        f.value += s.value
 
     @type_correct
     def sub(self, f: BaseRegister, s: Operand):
@@ -308,27 +323,28 @@ class Assembly:
 
     @type_correct
     def xor(self, f: BaseRegister, s: Operand):
-        f.value = f.value ^ s.value
+        f.value ^= s.value
 
     @type_correct
     def inc(self, f: BaseRegister):
-        f.value = f.value + 1
+        f.value += 1
 
     @type_correct
     def dec(self, f: BaseRegister):
-        f.value = f.value - 1
+        f.value -= 1
 
     @type_correct
     def div(self, f: BaseRegister, s: Operand):
-        f.value = f.value // s.value
+        f.value //= s.value
 
     @type_correct
     def mod(self, f: BaseRegister, s: Operand):
-        f.value = f.value % s.value
+        f.value %= s.value
 
     @type_correct
-    def cmp(self, f: BaseRegister, s: BaseRegister):
-        self.update_flags(Constant(f.value - s.value, f.size).value)
+    def cmp(self, f: BaseRegister, s: Operand):
+        self.clear_flags()
+        self.update_flags(f.value - s.value)
 
     @type_correct
     def jmp(self, f: Constant):
@@ -338,38 +354,51 @@ class Assembly:
     def je(self, f: Constant):
         if self.FLAGS[2]:
             self.jmp(f)
-            self.clear_flags()
+
+    @type_correct
+    def jne(self, f: Constant):
+        if not self.FLAGS[2]:
+            self.jmp(f)
 
     @type_correct
     def jg(self, f: Constant):
         if self.FLAGS[1]:
             self.jmp(f)
-            self.clear_flags()
 
     @type_correct
     def jl(self, f: Constant):
         if self.FLAGS[0]:
             self.jmp(f)
-            self.clear_flags()
+
+    def __hash(self, hash_handler, value_address, address):
+        buf = self.mem_handler.read_string(value_address)
+        hash_handler.update(buf)
+        hex_hash = hash_handler.hexdigest()
+        self.mem_handler.write_string(address, hex_hash.encode())
 
     @type_correct
-    def hash(self, f: BaseRegister):
-        pass
+    def hash_md5(self, f: BaseRegister, s: Constant):
+        self.__hash(hashlib.md5(), f.value, s.value)
+
+    @type_correct
+    def hash_sha1(self, f: BaseRegister, s: Constant):
+        self.__hash(hashlib.sha1(), f.value, s.value)
 
     @type_correct
     def puts(self, f: BaseRegister):
-        buf, ptr = bytearray(b''), f.value
-        while self.mem_handler.read_byte(ptr) != NULLVALUE:
-            buf.append(self.mem_handler.read_byte(ptr))
-            ptr += 1
+        buf = self.mem_handler.read_string(f.value)
         print(buf.decode())
 
     @type_correct
     def gets(self, f: BaseRegister):
         buf = bytearray(input().encode())
-        ptr = f.value
-        for index in range(len(buf)):
-            self.mem_handler.write_byte(ptr+index, buf[index])
+        self.mem_handler.write_string(f.value, buf)
+
+    @type_correct
+    def strcmp(self, f: BaseRegister, s: BaseRegister, t: BaseRegister):
+        buf1 = self.mem_handler.read_string(f.value)
+        buf2 = self.mem_handler.read_string(s.value)
+        t.value = int(buf1 == buf2)
 
     @type_correct
     def push(self, reg: BaseRegister):
@@ -398,7 +427,7 @@ class VirtualMachine:
         self.reg_mem_handler = MemoryHandler(register_memory)
 
         self.init_registers(self.reg_mem_handler)
-        self.asm = Assembly(self.memory_handler, self.IP, self.SP)
+        self.asm = Assembly(self.memory_handler, self.IP, self.SP, self.regs)
 
         self.init_matches()
 
@@ -424,23 +453,26 @@ class VirtualMachine:
             0x1a: self.asm.je,
             0x1b: self.asm.jg,
             0x1c: self.asm.jl,
-            0x1d: self.asm.hash,
+            0x26: self.asm.jne,
             0x1e: self.asm.puts,
             0x1f: self.asm.gets,
             0x20: self.asm.push,
             0x21: self.asm.pop,
             0x22: self.asm.div,
             0x23: self.asm.mod,
+            0x24: self.asm.hash_md5,
+            0x25: self.asm.hash_sha1,
+            0x27: self.asm.strcmp,
             0x00: self.asm.exit
         }
 
     def init_registers(self, mem_handler):
         self.IP = DwordRegister(mem_handler, 0)
-        self.SP = DwordRegister(mem_handler, STACK_SECTION_RANGE[1])
+        self.SP = DwordRegister(mem_handler, 8, STACK_SECTION_RANGE[1])
 
         self.regs = []
         for i in range(16):
-            offset = 8 * (i+2)
+            offset = 8 * (i+3)
             self.regs.append(Register(mem_handler, offset))
 
     def get_operand(self):

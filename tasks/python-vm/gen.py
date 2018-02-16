@@ -10,10 +10,12 @@ from interpreter import gen_bytecode
 INPUT_STR_LEN = 12
 ALPHABET      = string.ascii_letters + string.digits
 HARDCODED     = 'konata'
+XOR_NUMBER    = 42
+
 
 def gen_enc_flag(flag):
     if len(flag) != 36:
-        print('[-] Invalid flag length!')
+        print('[-] Invalid flag length! Must be 36.')
         return
 
     numbers = [123, 28, 72, 41, 15, 55]
@@ -34,7 +36,7 @@ def gen_enc_str(input_str):
         print('[-] Invalid length of input string!')
         return
 
-    to_validate = input_str[::-1] + input_str #+ input_str[::3]
+    to_validate = input_str  + input_str[::-1]
     nvalid      = ''
 
     for i in range(len(to_validate)):
@@ -44,15 +46,15 @@ def gen_enc_str(input_str):
 
 def gen_checks(val):
     last_hash = hashlib.sha1()
-    last_hash.update(val[-5:].encode('utf-8'))
+    last_hash.update(val[-3:].encode('utf-8'))
     last_hash = last_hash.hexdigest()
 
     mid_hash  = hashlib.md5()
-    mid_hash.update(val[5:-5].encode('utf-8'))
+    mid_hash.update(val[-6:-3].encode('utf-8'))
     mid_hash = mid_hash.hexdigest()
 
     return {
-        'first_bytes':       val[:5],
+        'first_bytes':       ''.join([chr(ord(x) ^ XOR_NUMBER) for x in val[:-6]]),
         'middle_bytes_hash': mid_hash,
         'last_bytes_hash':   last_hash
     }
@@ -68,6 +70,7 @@ def gen_task(enflag, checks):
     r_mem    = MEMORY_SIZE * bytearray(b'\x00')
 
     bytecode = gen_bytecode()
+
     insert2mem(r_mem, 0, bytecode)
     insert2mem(r_mem, m_hp,     bytearray(checks['first_bytes'].encode()))
     insert2mem(r_mem, m_hp+100, bytearray(checks['middle_bytes_hash'].encode()))
@@ -76,8 +79,6 @@ def gen_task(enflag, checks):
     insert2mem(r_mem, m_hp+400, bytearray(b"[-] Incorrect input! You're failed :c"))
     insert2mem(r_mem, m_hp+500, bytearray(HARDCODED.encode()))
     insert2mem(r_mem, m_hp+600, bytearray(b"Enter a string: "))
-
-    # print(repr(r_mem))
 
     with open('memory', 'wb') as mem:
         mem.write(r_mem)
@@ -106,10 +107,9 @@ def main():
     checks = gen_checks(val)
     enflag = gen_enc_flag(flag)
 
-    # print(checks)
-    # print(repr(enflag))
-
     gen_task(enflag, checks)
+
+    print('Correct input: ' + inp)
 
 
 if __name__ == '__main__':
