@@ -5,32 +5,26 @@ import sys
 import inspect
 import hashlib
 
-from inspect import signature, BoundArguments
+from inspect import signature
 
-from abc import abstractmethod, ABC
+from abc import ABC
 from functools import wraps
 
 
-BYTE_VALUE  = 1
-WORD_VALUE  = 2
-DWORD_VALUE = 4
+BYTE_SIZE  = 1
+WORD_SIZE  = 2
+DWORD_SIZE = 4
 
 BYTE_FMT  = 'b'
 WORD_FMT  = 'h'
 DWORD_FMT = 'i'
 
-REGISTER = 0x50
-CONSTANT = 0x60
+REGISTER_OPERAND = 0x50
+CONSTANT_OPERAND = 0x60
 
-NULLVALUE = 0
+NULLBYTE = 0
 
-SIZES = [BYTE_VALUE, WORD_VALUE, DWORD_VALUE]
-
-SIZE2FMT = {
-    BYTE_VALUE:  BYTE_FMT,
-    WORD_VALUE:  WORD_FMT,
-    DWORD_VALUE: DWORD_FMT,
-}
+SUPPORTED_SIZES = [BYTE_SIZE, WORD_SIZE, DWORD_SIZE]
 
 MEMORY_SIZE = 0x6000
 
@@ -40,17 +34,16 @@ STACK_SECTION_RANGE = (0x3fff, 0x5fff)
 
 
 def load_memory():
-    program_memory = ''
     with open('memory', 'rb') as mem:
         program_memory = bytearray(mem.read())
-    return program_memory, bytearray([0] * 0xfff)
+    return program_memory
 
 
 def get_params_count(func):
     return len(signature(func).parameters)
 
 
-def type_correct(instruction):
+def type_checking(instruction):
     @wraps(instruction)
     def validation(*args):
         sign = signature(instruction)
@@ -65,7 +58,7 @@ def type_correct(instruction):
 
 def find_size(num):
     size_info = -1
-    for fmt, size in [('b', BYTE_VALUE), ('h', WORD_VALUE), ('i', DWORD_VALUE)][::-1]:
+    for fmt, size in [('i', DWORD_SIZE), ('h', WORD_SIZE), ('b', BYTE_SIZE)]:
         try:
             struct.pack(fmt, num)
             size_info = size
@@ -102,13 +95,16 @@ class WriteMemoryException(Exception):
     pass
 
 
-class StackRangeCorrupted(Exception):
+class InvalidStackRange(Exception):
+    pass
+
+class ExitInterruption(Exception):
     pass
 
 
 class Operand(ABC):
-    def __init__(self, val, size=BYTE_VALUE):
-        if size not in SIZES:
+    def __init__(self, val, size=BYTE_SIZE):
+        if size not in SUPPORTED_SIZES:
             raise InvalidOperandSize("You have an invalid operand size!")
 
         super().__init__()
@@ -126,12 +122,12 @@ class Operand(ABC):
 
 
 class Constant(Operand):
-    def __init__(self, val=0, size=DWORD_VALUE):
+    def __init__(self, val=0, size=DWORD_SIZE):
         super().__init__(val, size)
 
 
 class BaseRegister(Operand):
-    def __init__(self, memory_handler, mem_offset, val=0, size=DWORD_VALUE):
+    def __init__(self, memory_handler, mem_offset, val=0, size=DWORD_SIZE):
         super().__init__(val, size)
 
         self.memory_handler = memory_handler
@@ -144,32 +140,32 @@ class BaseRegister(Operand):
 
     @value.setter
     def value(self, operand):
-        def set_value(value, size):
-            if size > self.size:
-                raise InvalidOperandSize("Invalid operand size!")
-            self.memory_handler.write(self.offset, self.size, value)
-
         if isinstance(operand, Operand):
-            set_value(operand.value, operand.size)
+            self.set_value(operand.value, operand.size)
         elif isinstance(operand, int):
-            set_value(operand, find_size(operand))
+            self.set_value(operand, find_size(operand))
         else:
-            raise InstructionError("Incorrect instruction")
+            raise InstructionError("Cannot assign a value to the register's value")
+
+    def set_value(self, value, size):
+        if size > self.size:
+            raise InvalidOperandSize("Size of a source operand greater than the size of a destination operand!")
+        self.memory_handler.write(self.offset, self.size, value)
 
 
 class ByteRegister(BaseRegister):
     def __init__(self, memory_handler, mem_offset, val=0):
-        super().__init__(memory_handler, mem_offset, val, BYTE_VALUE)
+        super().__init__(memory_handler, mem_offset, val, BYTE_SIZE)
 
 
 class WordRegister(BaseRegister):
     def __init__(self, memory_handler, mem_offset, val=0):
-        super().__init__(memory_handler, mem_offset, val, WORD_VALUE)
+        super().__init__(memory_handler, mem_offset, val, WORD_SIZE)
 
 
 class DwordRegister(BaseRegister):
     def __init__(self, memory_handler, mem_offset, val=0):
-        super().__init__(memory_handler, mem_offset, val, DWORD_VALUE)
+        super().__init__(memory_handler, mem_offset, val, DWORD_SIZE)
 
 
 class Register:
@@ -184,9 +180,9 @@ class Register:
         self.reg_dword.value = value
 
         self.matching = {
-            BYTE_VALUE:  self.reg_byte,
-            WORD_VALUE:  self.reg_word,
-            DWORD_VALUE: self.reg_dword
+            BYTE_SIZE:  self.reg_byte,
+            WORD_SIZE:  self.reg_word,
+            DWORD_SIZE: self.reg_dword
         }
 
     def get(self, size):
@@ -195,11 +191,16 @@ class Register:
 
 class MemoryHandler:
     def __init__(self, memory):
-        self.memory = memory
+        self.memory   = memory
+        self.size2fmt = {
+            BYTE_SIZE: BYTE_FMT,
+            WORD_SIZE: WORD_FMT,
+            DWORD_SIZE: DWORD_FMT,
+        }
 
     def read_string(self, address):
         buf = bytearray(b'')
-        while self.read_byte(address) != NULLVALUE:
+        while self.read_byte(address) != NULLBYTE:
             buf.append(self.read_byte(address))
             address += 1
         return buf
@@ -211,34 +212,34 @@ class MemoryHandler:
 
     def read(self, address, size):
         try:
-            return struct.unpack(SIZE2FMT[size], self.memory[address:address+size])[0]
+            return struct.unpack(self.size2fmt[size], self.memory[address:address+size])[0]
         except Exception:
             raise ReadMemoryException('Error occurred while trying to read a memory')
 
     def write(self, address, size, value):
         try:
-            write_value = struct.pack(SIZE2FMT[size], value)
+            write_value = struct.pack(self.size2fmt[size], value)
             self.memory[address:address+len(write_value)] = write_value
         except Exception:
             raise WriteMemoryException('Error occurred while trying to write to a memory')
 
     def read_byte(self, address):
-        return self.read(address, BYTE_VALUE)
+        return self.read(address, BYTE_SIZE)
 
     def read_word(self, address):
-        return self.read(address, WORD_VALUE)
+        return self.read(address, WORD_SIZE)
 
     def read_dword(self, address):
-        return self.read(address, DWORD_VALUE)
+        return self.read(address, DWORD_SIZE)
 
     def write_byte(self, address, value):
-        self.write(address, BYTE_VALUE, value)
+        self.write(address, BYTE_SIZE, value)
 
     def write_word(self, address, value):
-        self.write(address, WORD_VALUE, value)
+        self.write(address, WORD_SIZE, value)
 
     def write_dword(self, address, value):
-        self.write(address, DWORD_VALUE, value)
+        self.write(address, DWORD_SIZE, value)
 
 
 class MemoryStream:
@@ -250,9 +251,9 @@ class MemoryStream:
         self.memory_handler = memory_handler
 
         self.size_to_read = {
-            BYTE_VALUE:  self.read_byte,
-            WORD_VALUE:  self.read_word,
-            DWORD_VALUE: self.read_dword
+            BYTE_SIZE:  self.read_byte,
+            WORD_SIZE:  self.read_word,
+            DWORD_SIZE: self.read_dword
         }
 
     def read(self, size):
@@ -260,17 +261,17 @@ class MemoryStream:
 
     def read_byte(self):
         byte = self.memory_handler.read_byte(self.get_value_func(self.pointer))
-        self.add_func(self.pointer, BYTE_VALUE)
+        self.add_func(self.pointer, BYTE_SIZE)
         return byte
 
     def read_word(self):
         word = self.memory_handler.read_word(self.get_value_func(self.pointer))
-        self.add_func(self.pointer, WORD_VALUE)
+        self.add_func(self.pointer, WORD_SIZE)
         return word
 
     def read_dword(self):
         dword = self.memory_handler.read_dword(self.get_value_func(self.pointer))
-        self.add_func(self.pointer, DWORD_VALUE)
+        self.add_func(self.pointer, DWORD_SIZE)
         return dword
 
 
@@ -294,18 +295,18 @@ class Assembly:
     def clear_flags(self):
         self.FLAGS = [0, 0, 0]
 
-    @type_correct
+    @type_checking
     def mov(self, f: BaseRegister, s: Operand):
         f.value = s
 
-    @type_correct
+    @type_checking
     def load(self, f: BaseRegister, s: Operand):
         mem_ptr  = s.value
         reg_size = f.size
         memory_value = self.mem_handler.read(mem_ptr, reg_size)
         f.value = Constant(memory_value, reg_size)
 
-    @type_correct
+    @type_checking
     def store(self, f: BaseRegister, s: Operand):
         mem_ptr  = s.value
         reg_size = f.size
@@ -313,59 +314,59 @@ class Assembly:
             raise PermissionException("You don't have a permission to write into .text section!")
         self.mem_handler.write(mem_ptr, reg_size, f.value)
 
-    @type_correct
+    @type_checking
     def add(self, f: BaseRegister, s: Operand):
         f.value += s.value
 
-    @type_correct
+    @type_checking
     def sub(self, f: BaseRegister, s: Operand):
         f.value = f.value - s.value
 
-    @type_correct
+    @type_checking
     def xor(self, f: BaseRegister, s: Operand):
         f.value ^= s.value
 
-    @type_correct
+    @type_checking
     def inc(self, f: BaseRegister):
         f.value += 1
 
-    @type_correct
+    @type_checking
     def dec(self, f: BaseRegister):
         f.value -= 1
 
-    @type_correct
+    @type_checking
     def div(self, f: BaseRegister, s: Operand):
         f.value //= s.value
 
-    @type_correct
+    @type_checking
     def mod(self, f: BaseRegister, s: Operand):
         f.value %= s.value
 
-    @type_correct
+    @type_checking
     def cmp(self, f: BaseRegister, s: Operand):
         self.clear_flags()
         self.update_flags(f.value - s.value)
 
-    @type_correct
+    @type_checking
     def jmp(self, f: Constant):
         self.IP.value = f
 
-    @type_correct
+    @type_checking
     def je(self, f: Constant):
         if self.FLAGS[2]:
             self.jmp(f)
 
-    @type_correct
+    @type_checking
     def jne(self, f: Constant):
         if not self.FLAGS[2]:
             self.jmp(f)
 
-    @type_correct
+    @type_checking
     def jg(self, f: Constant):
         if self.FLAGS[1]:
             self.jmp(f)
 
-    @type_correct
+    @type_checking
     def jl(self, f: Constant):
         if self.FLAGS[0]:
             self.jmp(f)
@@ -376,52 +377,54 @@ class Assembly:
         hex_hash = hash_handler.hexdigest()
         self.mem_handler.write_string(address, hex_hash.encode())
 
-    @type_correct
+    @type_checking
     def hash_md5(self, f: BaseRegister, s: Constant):
         self.__hash(hashlib.md5(), f.value, s.value)
 
-    @type_correct
+    @type_checking
     def hash_sha1(self, f: BaseRegister, s: Constant):
         self.__hash(hashlib.sha1(), f.value, s.value)
 
-    @type_correct
+    @type_checking
     def puts(self, f: BaseRegister):
         buf = self.mem_handler.read_string(f.value)
         print(buf.decode())
 
-    @type_correct
+    @type_checking
     def gets(self, f: BaseRegister):
         buf = bytearray(input().encode())
         self.mem_handler.write_string(f.value, buf)
 
-    @type_correct
+    @type_checking
     def strcmp(self, f: BaseRegister, s: BaseRegister, t: BaseRegister):
         buf1 = self.mem_handler.read_string(f.value)
         buf2 = self.mem_handler.read_string(s.value)
         t.value = int(buf1 == buf2)
 
-    @type_correct
+    @type_checking
     def push(self, reg: BaseRegister):
         if self.SP.value <= STACK_SECTION_RANGE[0]:
-            raise StackRangeCorrupted("Pushing is happening when the stack is full.")
-        self.SP.value = self.SP.value - DWORD_VALUE
+            raise InvalidStackRange("Pushing is happening when the stack is full.")
+        self.SP.value = self.SP.value - DWORD_SIZE
         self.store(reg, self.SP)
 
-    @type_correct
+    @type_checking
     def pop(self, reg: BaseRegister):
         if self.SP.value >= STACK_SECTION_RANGE[1]:
-            raise StackRangeCorrupted("Pop is happening when the stack is empty!")
+            raise InvalidStackRange("Pop is happening when the stack is empty!")
         self.load(reg, self.SP)
-        self.SP.value = self.SP.value + DWORD_VALUE
+        self.SP.value = self.SP.value + DWORD_SIZE
 
     def exit(self):
-        sys.exit()
+        raise ExitInterruption()
 
 
 class VirtualMachine:
-    def __init__(self, program_memory, register_memory):
+    def __init__(self, program_memory):
         def add_value(operand, value):
-            operand.value = operand.value + value
+            operand.value += value
+
+        register_memory = bytearray([0] * 0xfff)
 
         self.memory_handler = MemoryHandler(program_memory)
         self.reg_mem_handler = MemoryHandler(register_memory)
@@ -434,11 +437,6 @@ class VirtualMachine:
         self.IP_stream = MemoryStream(self.memory_handler, self.IP, lambda operand: operand.value, add_value)
 
     def init_matches(self):
-        self.oprdcode = {
-            REGISTER: Register,
-            CONSTANT: Constant
-        }
-
         self.opcode = {
             0x10: self.asm.mov,
             0x11: self.asm.load,
@@ -467,21 +465,22 @@ class VirtualMachine:
         }
 
     def init_registers(self, mem_handler):
+        offset  = 8
         self.IP = DwordRegister(mem_handler, 0)
-        self.SP = DwordRegister(mem_handler, 8, STACK_SECTION_RANGE[1])
+        self.SP = DwordRegister(mem_handler, offset, STACK_SECTION_RANGE[1])
 
         self.regs = []
         for i in range(16):
-            offset = 8 * (i+3)
-            self.regs.append(Register(mem_handler, offset))
+            reg_offset = offset * (i+3)
+            self.regs.append(Register(mem_handler, reg_offset))
 
     def get_operand(self):
         operand_type = self.IP_stream.read_byte()
-        if operand_type == REGISTER:
+        if operand_type == REGISTER_OPERAND:
             reg_index   = self.IP_stream.read_byte()
             size        = self.IP_stream.read_byte()
             return self.regs[reg_index].get(size)
-        elif operand_type == CONSTANT:
+        elif operand_type == CONSTANT_OPERAND:
             val_size = self.IP_stream.read_byte()
             val      = self.IP_stream.read(val_size)
             return Constant(val, val_size)
@@ -497,13 +496,16 @@ class VirtualMachine:
 
     def run(self):
         while True:
-            self.exec()
+            try:
+                self.exec()
+            except ExitInterruption:
+                return
 
 
 def main():
-    program_memory, register_memory = load_memory()
+    program_memory = load_memory()
 
-    vm = VirtualMachine(program_memory, register_memory)
+    vm = VirtualMachine(program_memory)
     vm.run()
 
 

@@ -3,7 +3,7 @@ import struct
 import binascii
 
 from vm import VirtualMachine
-from vm import REGISTER, CONSTANT
+from vm import REGISTER_OPERAND, CONSTANT_OPERAND
 
 
 # WARNING!
@@ -88,11 +88,11 @@ class Interpreter:
     def parse_op(self, op):
         def parse_reg(reg):
             if reg[-1] == BYTE:
-                return bytearray([REGISTER, int(reg[1]), 0x01])
+                return bytearray([REGISTER_OPERAND, int(reg[1]), 0x01])
             elif reg[-1] == WORD:
-                return bytearray([REGISTER, int(reg[1]), 0x02])
+                return bytearray([REGISTER_OPERAND, int(reg[1]), 0x02])
             else:
-                return bytearray([REGISTER, int(reg[1]), 0x04])
+                return bytearray([REGISTER_OPERAND, int(reg[1]), 0x04])
 
         reg  = self.reg.match(op)
         num  = self.num.match(op)
@@ -103,7 +103,7 @@ class Interpreter:
             return parse_reg(r)
         elif num:
             n = int(num.groups()[0])
-            return bytearray([CONSTANT]) + struct.pack('B', 4) + struct.pack('i', n)
+            return bytearray([CONSTANT_OPERAND]) + struct.pack('B', 4) + struct.pack('i', n)
         elif _str:
             label = _str.groups()[0]
             return bytearray(b'\x00\x00\x00\x00\x00\x00')
@@ -167,7 +167,7 @@ def gen_bytecode():
     with open('asm_code', 'r') as asmfile:
         code = asmfile.read()
 
-    vm = VirtualMachine(bytearray(b''), bytearray([0] * 0xfff))
+    vm = VirtualMachine(bytearray(b''))
     inter = Interpreter({v.__name__: k for k, v in vm.opcode.items()})
     bytecode = inter.translate(code.split('\n'))
 

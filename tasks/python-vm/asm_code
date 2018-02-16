@@ -142,8 +142,8 @@ mov R5, 10569
 mov R6, 8800
 
 1_decoding:
-cmp R5, 10575
-je 2_decoding
+cmp R5, 10575    ; decoding is just a
+je 2_decoding    ; reshuffle of blocks of the flag
 load R7B, R5
 xor R7, 123
 store R7B, R6
@@ -203,6 +203,6 @@ jmp 6_decoding
 
 end_decoding:
 mov R6, 8800
-puts R6
+puts R6         ; print the flag
 
 exit

@@ -3,7 +3,7 @@ import random
 import string
 import hashlib
 
-from vm import TEXT_SECTION_RANGE, HEAP_SECTION_RANGE, STACK_SECTION_RANGE, MEMORY_SIZE
+from vm import HEAP_SECTION_RANGE, MEMORY_SIZE
 from interpreter import gen_bytecode
 
 
