@@ -15,10 +15,6 @@ BYTE_SIZE  = 1
 WORD_SIZE  = 2
 DWORD_SIZE = 4
 
-BYTE_FMT  = 'b'
-WORD_FMT  = 'h'
-DWORD_FMT = 'i'
-
 REGISTER_OPERAND = 0x50
 CONSTANT_OPERAND = 0x60
 
@@ -131,13 +127,13 @@ class BaseRegister(Operand):
     def __init__(self, memory_handler, mem_offset, val=0, size=DWORD_SIZE):
         super().__init__(size)
 
-        self.memory_handler = memory_handler
+        self.bytes_handler = memory_handler
         self.offset = mem_offset
         self.value  = val
 
     @property
     def value(self):
-        return self.memory_handler.read(self.offset, self.size)
+        return self.bytes_handler.read(self.offset, self.size)
 
     @value.setter
     def value(self, operand):
@@ -151,7 +147,7 @@ class BaseRegister(Operand):
     def set_value(self, value, size):
         if size > self.size:
             raise InvalidOperandSize("Size of a source operand greater than the size of a destination operand!")
-        self.memory_handler.write(self.offset, self.size, value)
+        self.bytes_handler.write(self.offset, self.size, value)
 
 
 class ByteRegister(BaseRegister):
@@ -194,9 +190,9 @@ class MemoryHandler:
     def __init__(self, memory):
         self.memory   = memory
         self.size2fmt = {
-            BYTE_SIZE: BYTE_FMT,
-            WORD_SIZE: WORD_FMT,
-            DWORD_SIZE: DWORD_FMT,
+            BYTE_SIZE:  'b',
+            WORD_SIZE:  'h',
+            DWORD_SIZE: 'i',
         }
 
     def read_string(self, address):
@@ -397,10 +393,12 @@ class Assembly:
         self.mem_handler.write_string(f.value, buf)
 
     @type_checking
-    def strcmp(self, f: BaseRegister, s: BaseRegister, t: BaseRegister):
-        buf1 = self.mem_handler.read_string(f.value)
-        buf2 = self.mem_handler.read_string(s.value)
-        t.value = int(buf1 == buf2)
+    def strcmp(self, f: BaseRegister, s: BaseRegister):
+        buf1 = self.mem_handler.read_string(f.value).hex()
+        buf2 = self.mem_handler.read_string(s.value).hex()
+
+        self.clear_flags()
+        self.update_flags(int(buf1, 16) - int(buf2, 16))
 
     @type_checking
     def push(self, reg: BaseRegister):
@@ -466,14 +464,14 @@ class VirtualMachine:
         }
 
     def init_registers(self, mem_handler):
-        offset  = 8
         self.IP = DwordRegister(mem_handler, 0)
-        self.SP = DwordRegister(mem_handler, offset, STACK_SECTION_RANGE[1])
+        self.SP = DwordRegister(mem_handler, 4, STACK_SECTION_RANGE[1])
 
         self.regs = []
+        offset = 8
         for i in range(16):
-            reg_offset = offset * (i+3)
-            self.regs.append(Register(mem_handler, reg_offset))
+            self.regs.append(Register(mem_handler, offset))
+            offset += DWORD_SIZE
 
     def get_operand(self):
         operand_type = self.IP_stream.read_byte()

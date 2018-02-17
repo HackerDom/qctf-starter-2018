@@ -7,7 +7,7 @@ mov   R2, 0
 
 start_len_calc:
 load  R3B, R0
-cmp   R3B, R2B   ; calculate length of entered string
+cmp   R3B, 0       ; calculate length of entered string
 je    end_len_calc
 inc   R0
 inc   R1
@@ -40,9 +40,7 @@ mov   R2, 0      ; null byte to the end of the new string
 store R2B, R0
 mov   R1, R0
 mov   R0, 8191
-mov   R2, 10739
 mov   R4, 0
-mov   R5, 6
 
 start_str_encoding:
 cmp   R0, R1            ; encode string like that:
@@ -50,13 +48,13 @@ je    end_str_encoding  ; str[i] = (str[i] + 4) ^ "konata"[i % 6]
 load  R6B, R0           ; get str[i]
 add   R6, 4             ; str[i] + 4
 mov   R8, R4
-add   R8, R2
+add   R8, 10739
 load  R7B, R8           ; "konata"[i % 6]
 xor   R6, R7            ; xor them
 store R6B, R0           ; put into [R0]
 inc   R0
 inc   R4
-mod   R4, R5
+mod   R4, 6
 jmp   start_str_encoding
 
 end_str_encoding:
@@ -66,8 +64,7 @@ hash_sha1 R0, 9000
 mov R0, 9000
 mov R1, 10439
 
-strcmp R0, R1, R2
-cmp R2, 1   ; if [R0] and [R1] strings are equal
+strcmp R0, R1
 jne print_fail_message
 
 mov R0, 8209
@@ -92,8 +89,7 @@ hash_md5 R0, 8900
 mov R0, 8900
 mov R1, 10339
 
-strcmp R0, R1, R2
-cmp R2, 1    ; if [R0] and [R1] strings are equal
+strcmp R0, R1
 jne print_fail_message
 
 mov R0, 8800
@@ -127,8 +123,7 @@ end_encode_prefix:
 mov R0, 8800
 mov R1, 10239
 
-strcmp R0, R1, R2
-cmp R2, 1
+strcmp R0, R1
 jne print_fail_message
 
 flag_decoding:
