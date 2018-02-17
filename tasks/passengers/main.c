@@ -9,18 +9,19 @@
 
 
 const int MAX_LEN   = 0xfffff;
-const int PASS_LEN  = 50;
 const int INPUT_LEN = 50;
 const int AGE_LEN   = 25;
 
+const int MAX_PASSENGERS_COUNT  = 50;
+
 int PASSENGERS_COUNT = 0;
+int CREWMANS_COUNT   = 0;
 int PASSANGER_NUMBER = 0;
 
 
 struct passenger {
     int id;
     unsigned char is_frozen;
-    unsigned char is_captain;
 
     unsigned char age;
     unsigned char is_crewman;
@@ -38,13 +39,7 @@ struct passenger {
 struct passenger *ship[50];
 struct passenger *applier;
 
-
-char* concat(const char s1[], const char s2[]) {
-    char *buf = malloc(strlen(s1) + strlen(s2));
-    strcpy(buf, s1);
-    strcat(buf, s2);
-    return buf;
-}
+char **used_tokens;
 
 
 void on_unfreeze(struct passenger *pass) {
@@ -84,7 +79,6 @@ struct passenger* create_passenger(char *first_name, char *last_name, char *coun
 
     passng->id         = PASSENGERS_COUNT++;
     passng->is_frozen  = 0;
-    passng->is_captain = 0;
 
     passng->on_freeze_ptr   = on_freeze;
     passng->on_unfreeze_ptr = on_unfreeze;
@@ -112,12 +106,15 @@ struct passenger* set_crewman_privilege(struct passenger *pass, char *token) {
 
     pass->is_crewman = 1;
     strcpy(pass->token, token);
+
+    used_tokens[CREWMANS_COUNT] = malloc(strlen(pass->token));
+    strcpy(used_tokens[CREWMANS_COUNT++], pass->token);
     return pass;
 }
 
 
 int add_passenger(struct passenger *pass) {
-    if (PASS_LEN <= PASSANGER_NUMBER) {
+    if (MAX_PASSENGERS_COUNT <= PASSANGER_NUMBER) {
         return 1;
     }
     ship[PASSANGER_NUMBER] = pass;
@@ -127,6 +124,8 @@ int add_passenger(struct passenger *pass) {
 
 
 void init_ship() {
+    used_tokens = malloc(MAX_PASSENGERS_COUNT * sizeof(char *));
+
     add_passenger(set_crewman_privilege(create_passenger("John", "Smith", "ENG", 39), "rim96z"));
     add_passenger(set_crewman_privilege(create_passenger("Maria", "Garcia", "ENG", 24), "tjqb2v"));
     add_passenger(set_crewman_privilege(create_passenger("Konata", "Izumi", "JAP", 18), "99iap3"));
@@ -215,8 +214,8 @@ int crewman_enter(struct passenger *pass) {
     printf("[*] Checking is running...\n");
     sleep(2);
     if (pass->is_crewman == 1) {
-        for (int i = 0; i < PASSANGER_NUMBER; i++) {
-            if (ship[i]->is_crewman && !strcmp(ship[i]->token, pass->token))
+        for (int i = 0; i < CREWMANS_COUNT; i++) {
+            if (ship[i]->is_crewman && !strcmp(used_tokens[i], pass->token))
                 printf("[+] Done. Welcome!\n");
                 return 1;
         }
@@ -338,7 +337,7 @@ void update_info() {
                 break;
             case 2:
                 printf("\nNew last name: ");
-                input_string(buf, sizeof(applier->last_name) + 10);
+                input_string(buf, sizeof(applier->last_name) + 11);
                 strcpy(applier->last_name, buf);
                 break;
             case 3:
