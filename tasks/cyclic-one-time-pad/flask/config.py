@@ -1,0 +1,4 @@
+#!/usr/bin/python3
+WTF_CSRF_ENABLED = False
+CIPHER_GLOBAL_SEED = 42
+CIPHER_KEY_LEN = 1024

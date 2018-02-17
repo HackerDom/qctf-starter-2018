@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<pre class="lead code">
+class Cipher:
+    def __init__(self, key, seed):
+        self.key = key
+        self.seed = seed
+
+    def encrypt(self, data):
+        if len(data) &gt; len(self.key):
+            raise Exception(&quot;Can encrypt only blocks which are no longer than key length&quot;)
+        data = [x ^ y for (x, y) in zip(data, self.key)]
+        random.seed(self.seed)
+        random.shuffle(data)
+        data = [x ^ y for (x, y) in zip(data, self.key)]
+        return bytes(data)
+
+    def decrypt(self, data):
+        if len(data) &gt; len(self.key):
+            raise Exception(&quot;Can decrypt only blocks which are no longer than key length&quot;)
+        data = [x ^ y for (x, y) in zip(data, self.key)]
+        perm = list(range(len(data)))
+        random.seed(self.seed)
+        random.shuffle(perm)
+        unshuffled = [0] * len(data)
+        for pos, value in enumerate(perm):
+            unshuffled[value] = data[pos]
+        data = [x ^ y for (x, y) in zip(unshuffled, self.key)]
+        return bytes(data)
+</pre>
+{% endblock %}

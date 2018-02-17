@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="lead">
+Encryption result
+</p>
+{% if plain is defined %}
+<p>Plain bytes:</p>
+<p class="code">{{ plain }}</p>
+{% endif %}
+{% if hex_repr is defined %}
+<p>Hex:</p>
+<p class="code">{{ hex_repr }}</p>
+{% endif %}
+{% if base64 is defined %}
+<p>Base64:</p>
+<p class="code">{{ base64 }}</p>
+{% endif %}
+{% endblock %}

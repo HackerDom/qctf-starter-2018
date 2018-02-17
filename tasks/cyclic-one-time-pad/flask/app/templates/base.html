@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<title>Cipher</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
+		<link rel="stylesheet" href="https://getbootstrap.com/dist/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link href="static/css/cipher.css" rel="stylesheet">
+		<!--TODO favicon-->
+	</head>
+<body class="text-center">
+	<div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
+		<header class="masthead mb-auto">
+			<div class="inner">
+				<h3 class="masthead-brand">Cipher</h3>
+				<nav class="nav nav-masthead justify-content-center">
+					<a class="nav-link {% if active == 'encrypt' %} active {% endif %}" href="/encrypt">Encrypt</a>
+					<a class="nav-link {% if active == 'decrypt' %} active {% endif %}" href="/decrypt">Decrypt</a>
+					<a class="nav-link {% if active == 'about' %} active {% endif %}" href="/about">About</a>
+				</nav>
+			</div>
+		</header>
+
+		<main role="main" class="inner cover">
+		<!--<hr>
+			{% with messages = get_flashed_messages() %}
+			{% if messages %}
+			<ul>
+			{% for message in messages %}
+				<li>{{ message }} </li>
+			{% endfor %}
+			</ul>
+			{% endif %}
+		</hr>
+		{% endwith %}-->
+			{% block content %}{% endblock %}
+		</main>
+
+		<footer class="mastfoot mt-auto">
+			<div class="inner">
+				<p>Cipher. Providing security since the beginning of internet.</p>
+			</div>
+		</footer>
+	</div>
+</body>
+</html>
