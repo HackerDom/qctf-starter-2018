@@ -1,0 +1,20 @@
+version: '2'
+services:
+  symlink-archive:
+    build: ./flask
+    restart: always
+    volumes:
+      - ./user_data:/var/user_data
+      - ./tmp_user_data:/var/tmp_user_data
+      - ./db:/var/db
+
+  nginx:
+    image: nginx
+    depends_on:
+      - symlink-archive
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
