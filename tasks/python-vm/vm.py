@@ -94,6 +94,7 @@ class WriteMemoryException(Exception):
 class InvalidStackRange(Exception):
     pass
 
+
 class ExitInterruption(Exception):
     pass
 
@@ -124,11 +125,11 @@ class Constant(Operand):
 
 
 class BaseRegister(Operand):
-    def __init__(self, memory_handler, mem_offset, val=0, size=DWORD_SIZE):
+    def __init__(self, bytes_handler, offset, val=0, size=DWORD_SIZE):
         super().__init__(size)
 
-        self.bytes_handler = memory_handler
-        self.offset = mem_offset
+        self.bytes_handler = bytes_handler
+        self.offset = offset
         self.value  = val
 
     @property
@@ -151,18 +152,18 @@ class BaseRegister(Operand):
 
 
 class ByteRegister(BaseRegister):
-    def __init__(self, memory_handler, mem_offset, val=0):
-        super().__init__(memory_handler, mem_offset, val, BYTE_SIZE)
+    def __init__(self, bytes_handler, offset, val=0):
+        super().__init__(bytes_handler, offset, val, BYTE_SIZE)
 
 
 class WordRegister(BaseRegister):
-    def __init__(self, memory_handler, mem_offset, val=0):
-        super().__init__(memory_handler, mem_offset, val, WORD_SIZE)
+    def __init__(self, bytes_handler, offset, val=0):
+        super().__init__(bytes_handler, offset, val, WORD_SIZE)
 
 
 class DwordRegister(BaseRegister):
-    def __init__(self, memory_handler, mem_offset, val=0):
-        super().__init__(memory_handler, mem_offset, val, DWORD_SIZE)
+    def __init__(self, bytes_handler, offset, val=0):
+        super().__init__(bytes_handler, offset, val, DWORD_SIZE)
 
 
 class Register:
@@ -186,9 +187,9 @@ class Register:
         return self.matching[size]
 
 
-class MemoryHandler:
-    def __init__(self, memory):
-        self.memory   = memory
+class BytesHandler:
+    def __init__(self, bytes):
+        self.bytes   = bytes
         self.size2fmt = {
             BYTE_SIZE:  'b',
             WORD_SIZE:  'h',
@@ -209,14 +210,14 @@ class MemoryHandler:
 
     def read(self, address, size):
         try:
-            return struct.unpack(self.size2fmt[size], self.memory[address:address+size])[0]
+            return struct.unpack(self.size2fmt[size], self.bytes[address:address + size])[0]
         except Exception:
             raise ReadMemoryException('Error occurred while trying to read a memory')
 
     def write(self, address, size, value):
         try:
             write_value = struct.pack(self.size2fmt[size], value)
-            self.memory[address:address+len(write_value)] = write_value
+            self.bytes[address:address + len(write_value)] = write_value
         except Exception:
             raise WriteMemoryException('Error occurred while trying to write to a memory')
 
@@ -240,7 +241,7 @@ class MemoryHandler:
 
 
 class MemoryStream:
-    def __init__(self, memory_handler: MemoryHandler, pointer, pointer_get_value_func, pointer_add_func):
+    def __init__(self, memory_handler: BytesHandler, pointer, pointer_get_value_func, pointer_add_func):
         self.pointer        = pointer
         self.add_func       = pointer_add_func
         self.get_value_func = pointer_get_value_func
@@ -273,7 +274,7 @@ class MemoryStream:
 
 
 class Assembly:
-    def __init__(self, mem_handler: MemoryHandler, IP: DwordRegister, SP: DwordRegister, regs: list):
+    def __init__(self, mem_handler: BytesHandler, IP: DwordRegister, SP: DwordRegister, regs: list):
         self.IP   = IP
         self.SP   = SP
         self.regs = regs
@@ -425,8 +426,8 @@ class VirtualMachine:
 
         register_memory = bytearray([0] * 0xfff)
 
-        self.memory_handler = MemoryHandler(program_memory)
-        self.reg_mem_handler = MemoryHandler(register_memory)
+        self.memory_handler = BytesHandler(program_memory)
+        self.reg_mem_handler = BytesHandler(register_memory)
 
         self.init_registers(self.reg_mem_handler)
         self.asm = Assembly(self.memory_handler, self.IP, self.SP, self.regs)
