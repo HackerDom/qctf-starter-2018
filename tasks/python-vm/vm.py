@@ -103,32 +103,33 @@ class ExitInterruption(Exception):
 
 
 class Operand(ABC):
-    def __init__(self, val, size=BYTE_SIZE):
+    def __init__(self, size=BYTE_SIZE):
         if size not in SUPPORTED_SIZES:
             raise InvalidOperandSize("You have an invalid operand size!")
 
         super().__init__()
 
         self.size  = size
-        self.__value = val
 
     @property
     def value(self):
-        return self.__value
+        return self._value
 
     @value.setter
     def value(self, num):
-        self.__value = num
+        self._value = num
 
 
 class Constant(Operand):
     def __init__(self, val=0, size=DWORD_SIZE):
-        super().__init__(val, size)
+        super().__init__(size)
+
+        self._value = val
 
 
 class BaseRegister(Operand):
     def __init__(self, memory_handler, mem_offset, val=0, size=DWORD_SIZE):
-        super().__init__(val, size)
+        super().__init__(size)
 
         self.memory_handler = memory_handler
         self.offset = mem_offset
