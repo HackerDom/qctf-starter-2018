@@ -1,4 +1,5 @@
 .idea/
+core
 cmake-build-debug/
 nohup.out
 peda-session-main.txt

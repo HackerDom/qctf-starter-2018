@@ -8,13 +8,13 @@
 #include <fcntl.h>
 
 
-const int MAX_LEN  = 0xfffff;
-const int PASS_LEN = 50;
-const int IN_LEN   = 50;
-const int AGE_LEN  = 25;
+const int MAX_LEN   = 0xfffff;
+const int PASS_LEN  = 50;
+const int INPUT_LEN = 50;
+const int AGE_LEN   = 25;
 
-int GLOBAL_COUNT = 0;
-int PASS_NUMBER  = 0;
+int PASSENGERS_COUNT = 0;
+int PASSANGER_NUMBER = 0;
 
 
 struct passenger {
@@ -39,22 +39,11 @@ struct passenger *ship[50];
 struct passenger *applier;
 
 
-char* concat(char s1[], const char s2[]) {
-    int i, j;
-    char s3[MAX_LEN];
-
-    if (sizeof(s1) + sizeof(s2) > MAX_LEN)
-        return (char *) s1;
-
-    for (i = 0; s1[i] != '\x00'; i++) {
-        s3[i] = s1[i];
-    }
-    for (j = 0; s2[j] != '\x00'; j++, i++) {
-        s3[i] = s2[j];
-    }
-    s3[i] = '\x00';
-    char *s = &s3[0];
-    return s;
+char* concat(const char s1[], const char s2[]) {
+    char *buf = malloc(strlen(s1) + strlen(s2));
+    strcpy(buf, s1);
+    strcat(buf, s2);
+    return buf;
 }
 
 
@@ -84,22 +73,16 @@ void info(struct passenger *pass) {
 
 
 void pass_info(struct passenger *pass) {
-    char buf[MAX_LEN];
-    char buf2[MAX_LEN];
-    unsigned char age = pass->age;
-
-    sprintf(buf, "%d", (int) age);
-
-    printf("%s\n", strcpy(buf2, concat("    First name: ", pass->first_name)));
-    printf("%s\n", strcpy(buf2, concat("    Last name:  ", pass->last_name)));
-    printf("%s\n", strcpy(buf2, concat("    Age:        ", buf)));
+    printf("    First name: %s\n", pass->first_name);
+    printf("    Last name:  %s\n", pass->last_name);
+    printf("    Age:        %d\n", pass->age);
 }
 
 
 struct passenger* create_passenger(char *first_name, char *last_name, char *country, long age) {
-    struct passenger *passng = malloc(2 * sizeof(struct passenger));
+    struct passenger *passng = malloc(sizeof(struct passenger));
 
-    passng->id         = GLOBAL_COUNT++;
+    passng->id         = PASSENGERS_COUNT++;
     passng->is_frozen  = 0;
     passng->is_captain = 0;
 
@@ -121,13 +104,7 @@ struct passenger* create_passenger(char *first_name, char *last_name, char *coun
 }
 
 
-struct passenger set_captain(struct passenger pass) {
-    pass.is_captain = 1;
-    return pass;
-}
-
-
-struct passenger* raise2crewman(struct passenger *pass, char *token) {
+struct passenger* set_crewman_privilege(struct passenger *pass, char *token) {
     int len = strlen(token);
 
     if (len >= 7)
@@ -140,43 +117,22 @@ struct passenger* raise2crewman(struct passenger *pass, char *token) {
 
 
 int add_passenger(struct passenger *pass) {
-    if (PASS_LEN <= PASS_NUMBER) {
+    if (PASS_LEN <= PASSANGER_NUMBER) {
         return 1;
     }
-    ship[PASS_NUMBER] = pass;
-    PASS_NUMBER++;
+    ship[PASSANGER_NUMBER] = pass;
+    PASSANGER_NUMBER++;
     return 0;
 }
 
 
 void init_ship() {
-    add_passenger(raise2crewman(create_passenger("John",   "Smith",   "ENG", 39), "rim96z"));
-    add_passenger(raise2crewman(create_passenger("Maria",  "Garcia",  "ENG", 24), "tjqb2v"));
-    add_passenger(raise2crewman(create_passenger("Konata", "Izumi",   "JAP", 18), "99iap3"));
-    add_passenger(raise2crewman(create_passenger("Dmitry", "Sokolov", "RUS", 32), "nv7btm"));
-    add_passenger(raise2crewman(create_passenger("Lucas",  "Aris",    "FRA", 23), "th4a80"));
+    add_passenger(set_crewman_privilege(create_passenger("John", "Smith", "ENG", 39), "rim96z"));
+    add_passenger(set_crewman_privilege(create_passenger("Maria", "Garcia", "ENG", 24), "tjqb2v"));
+    add_passenger(set_crewman_privilege(create_passenger("Konata", "Izumi", "JAP", 18), "99iap3"));
+    add_passenger(set_crewman_privilege(create_passenger("Dmitry", "Sokolov", "RUS", 32), "nv7btm"));
+    add_passenger(set_crewman_privilege(create_passenger("Lucas", "Aris", "FRA", 23), "th4a80"));
 }
-
-
-//void __input_string(char *str, int size) {
-//    char c;
-//    char arr[MAX_LEN];
-//    int cur_size = 0;
-//
-//    if (size >= MAX_LEN)
-//        return;
-//
-//    while (c = getchar()) {
-//        arr[cur_size++] = c;
-//        if (cur_size >= MAX_LEN)
-//            break;
-//        if (c == '\n')
-//            break;
-//    }
-//    arr[(cur_size < size) ? (cur_size-1) : (size-1)] = '\x00';
-//    strcpy(str, arr);
-//    return;
-//}
 
 
 void input_string(char *str, int size) {
@@ -192,7 +148,7 @@ int input_choice() {
     input_string(buf, sizeof(buf));
     int sscanf_res = sscanf(buf, "%d", &choice);
 
-    if ((sscanf_res == 0) | (sscanf_res == EOF)) {
+    if ((sscanf_res == 0) || (sscanf_res == EOF)) {
         choice = -1;
     }
     return choice;
@@ -200,16 +156,8 @@ int input_choice() {
 
 
 long parse_long(char *s) {
-    long l = 0;
-    int i = 0;
-    for (int i = 0; i < strlen(s); i++) {
-        int b = (*(s + i) - '0');
-        if (b >= 0 && b < 10)
-            l = l * 10 + b;
-        else
-            return -1;
-    }
-    return l;
+    char *ptr;
+    return strtol(s, &ptr, 10);
 }
 
 
@@ -218,13 +166,13 @@ void header() {
 }
 
 
-int input_age(long *rage) {
+int input_age(long *real_age) {
     char age[MAX_LEN];
 
     input_string(age, AGE_LEN);
-    *rage = parse_long(age);
+    *real_age = parse_long(age);
 
-    if (*rage <= 18) {
+    if (*real_age <= 18) {
         printf("[-] Invalid age, try again!\n\n");
         return 0;
     } else return 1;
@@ -232,24 +180,24 @@ int input_age(long *rage) {
 
 
 struct passenger* apply() {
-    long rage = 0;
+    long real_age = 0;
     char firstname[MAX_LEN], lastname[MAX_LEN], country[MAX_LEN];
 
     printf("\nThank you for applying!\nPlease, full the fields below:\n");
     printf("============================\n");
     printf("     First name [50]: ");
-    input_string(firstname, IN_LEN);
+    input_string(firstname, INPUT_LEN);
 
     printf("     Last name [50]: ");
-    input_string(lastname, IN_LEN);
+    input_string(lastname, INPUT_LEN);
 
     printf("     Country [50]: ");
-    input_string(country, IN_LEN);
+    input_string(country, INPUT_LEN);
 
     printf("     Age: ");
-    if (!input_age(&rage)) return NULL;
+    if (!input_age(&real_age)) return NULL;
 
-    struct passenger *pass = create_passenger(firstname, lastname, country, rage);
+    struct passenger *pass = create_passenger(firstname, lastname, country, real_age);
     add_passenger(pass);
 
     printf("[+] Done!\n");
@@ -267,7 +215,7 @@ int crewman_enter(struct passenger *pass) {
     printf("[*] Checking is running...\n");
     sleep(2);
     if (pass->is_crewman == 1) {
-        for (int i = 0; i < PASS_NUMBER; i++) {
+        for (int i = 0; i < PASSANGER_NUMBER; i++) {
             if (ship[i]->is_crewman && !strcmp(ship[i]->token, pass->token))
                 printf("[+] Done. Welcome!\n");
                 return 1;
@@ -280,14 +228,14 @@ int crewman_enter(struct passenger *pass) {
 
 void crew_list() {
     char buf[MAX_LEN];
-    for (int i = 0; i < PASS_NUMBER; i++) {
+    for (int i = 0; i < PASSANGER_NUMBER; i++) {
         sprintf(buf, "%d", (int) ship[i]->age);
         printf("============================\n");
-        printf("%s\n", concat("    * First Name: ", ship[i]->first_name));
-        printf("%s\n", concat("    * Last Name:  ", ship[i]->last_name));
-        printf("%s\n", concat("    * Country:    ", ship[i]->country));
-        printf("%s\n", concat("    * Age:        ", buf));
-        printf("%s\n", concat("    * Token:      ", ship[i]->token));
+        printf("    * First Name: %s\n", ship[i]->first_name);
+        printf("    * Last Name:  %s\n", ship[i]->last_name);
+        printf("    * Country:    %s\n", ship[i]->country);
+        printf("    * Age:        %s\n", buf);
+        printf("    * Token:      %s\n", ship[i]->token);
     }
     printf("============================\n\n");
 }
@@ -299,7 +247,7 @@ void ship_info() {
 
 
 struct passenger* find_passenger(int id) {
-    for (int i = 0; i < PASS_NUMBER; i++)
+    for (int i = 0; i < PASSANGER_NUMBER; i++)
         if (ship[i]->id == id) {
             return ship[i];
         }
@@ -307,7 +255,7 @@ struct passenger* find_passenger(int id) {
 }
 
 
-void freeze(int performer_id, int object_id) {
+void freeze(int object_id) {
     struct passenger *pass_ptr = find_passenger(object_id);
     if (pass_ptr == NULL) {
         printf("[-] Invalid id for this operation.\n");
@@ -324,7 +272,7 @@ void freeze(int performer_id, int object_id) {
 }
 
 
-void unfreeze(int performer_id, int object_id) {
+void unfreeze(int object_id) {
     struct passenger *pass_ptr = find_passenger(object_id);
     if (pass_ptr == NULL) {
         printf("[-] Invalid id for this operation.\n");
@@ -369,7 +317,7 @@ void update_info() {
     }
 
     int choice = -1;
-    long rage;
+    long real_age;
     char buf[MAX_LEN];
 
     while (choice != 5) {
@@ -399,11 +347,11 @@ void update_info() {
                 strcpy(applier->country, buf);
                 break;
             case 4:
-                rage = 0;
+                real_age = 0;
                 printf("\nNew age: ");
-                if (input_age(&rage)) {
+                if (input_age(&real_age)) {
                     long *age = (long *) &applier->age;
-                    *age = rage;
+                    *age = real_age;
                 }
                 break;
             case 5:
@@ -415,7 +363,7 @@ void update_info() {
 }
 
 
-void crewman_menu(int crewman_id) {
+void crewman_menu() {
     int choice = -1, index;
 
     printf("\n\n++++=== WELCOME TO THE CREWMAN TERMINAL ===++++\n");
@@ -440,12 +388,12 @@ void crewman_menu(int crewman_id) {
             case 3:
                 printf("Passenger\'s index: ");
                 index = input_choice();
-                freeze(crewman_id, index);
+                freeze(index);
                 break;
             case 4:
                 printf("Passenger\'s index: ");
                 index = input_choice();
-                unfreeze(crewman_id, index);
+                unfreeze(index);
                 break;
             case 5:
                 print_file_content("./flag1");
@@ -478,7 +426,7 @@ void applicant_menu() {
         switch (choice) {
             case 31337:
                 if (crewman_enter(applier))
-                    crewman_menu(applier->id);
+                    crewman_menu();
                 break;
             case 1:
                 if (is_applied == 1) {
