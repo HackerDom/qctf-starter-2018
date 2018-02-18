@@ -9,9 +9,9 @@ class ShopHandler(RequestHandler):
     
     @gen.coroutine
     def get(self):
-        user = self.get_secure_cookie("user").decode()        
+        user = self.get_secure_cookie("user")
         if user:
-            balance = yield self.db.get_balance(user)
+            balance = yield self.db.get_balance(user.decode())
             self.render("shop.html", balance=balance)
         else:
             self.redirect("/login")  
