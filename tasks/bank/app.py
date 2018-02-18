@@ -23,7 +23,6 @@ def submit_credit_form():
     fdict = features.form_to_feature_dict(request.form)
     farray = features.feature_dict_to_array(fdict)
     interest = round(model.predict([farray])[0], 3)
-    print(fdict, interest)
 
     if interest >= 1.50:
         return jsonify({'result': 'negative'})
@@ -33,7 +32,6 @@ def submit_credit_form():
     monthly_payment = ceil(bank_asks / (12 * duration))
     flag = db.save_and_get_code(fdict, interest)
 
-    print(str(round((interest - 1) * 100, 1)), 'dbg')
     return jsonify({
         'result': 'positive',
         'interest_rate': str(round((interest - 1) * 100, 1)),
