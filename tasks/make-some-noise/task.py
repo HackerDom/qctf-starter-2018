@@ -7,9 +7,7 @@ from socket import socket, SOL_SOCKET, SO_REUSEADDR
 
 
 def get_noised_flag(flag, noise):
-    noised_flag = [add_noise(x, noise) for x in map(ord,flag)]
-    i = randint(1, len(noised_flag)//2)
-    return noised_flag[i:] + noised_flag[:i], i
+    return [add_noise(x, noise) for x in map(ord,flag)]
 
 def add_noise(x, noise):
     return x + choice(noise)
@@ -29,6 +27,6 @@ if __name__ == "__main__":
         s.listen(5)
         while True:
             conn, addr = s.accept()
-            noised_flag, shift = get_noised_flag(FLAG, noise)
-            conn.send("Shift: {}\r\nArray: {}\r\n".format(shift, str(noised_flag)).encode())
+            noised_flag = get_noised_flag(FLAG, noise)
+            conn.send("{}\r\n".format(str(noised_flag)).encode())
             conn.close()

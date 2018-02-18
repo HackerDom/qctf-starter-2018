@@ -6,11 +6,9 @@ from ast import literal_eval
 
 def get_flag():
     with socket() as s:
-        s.connect(('', 8888))
-        shift, array = s.recv(1024).decode().split('\r\n')[:-1]
-        shift = int(shift.split()[1])
-        array = literal_eval(array.split(' ',1)[1])
-        return array[-shift:] + array[:-shift]
+        s.connect(('', 5678))
+        array = s.recv(1024).decode().split('\r\n')[0]
+        return literal_eval(array)
 
 if __name__ == "__main__":
     array = []
