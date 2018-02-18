@@ -36,3 +36,16 @@ index 9ad582b..372c5b7 100644
  
  #if USE_COMPUTED_GOTOS
          _unknown_opcode:
+diff --git a/Python/opcode_targets.h b/Python/opcode_targets.h
+index 72d2408..f6f0b5b 100644
+--- a/Python/opcode_targets.h
++++ b/Python/opcode_targets.h
+@@ -199,7 +199,7 @@ static void *opcode_targets[256] = {
+     &&_unknown_opcode,
+     &&_unknown_opcode,
+     &&_unknown_opcode,
+-    &&_unknown_opcode,
++    &&TARGET_CALL_UNARY_FUNCTIONS,
+     &&_unknown_opcode,
+     &&_unknown_opcode,
+     &&_unknown_opcode,
