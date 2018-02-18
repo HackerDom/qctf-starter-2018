@@ -25,8 +25,18 @@
       <file leaf-file-name="main.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="286">
-              <caret line="426" column="39" lean-forward="false" selection-start-line="426" selection-start-column="39" selection-end-line="426" selection-end-column="39" />
+            <state relative-caret-position="421">
+              <caret line="477" column="28" lean-forward="false" selection-start-line="477" selection-start-column="28" selection-end-line="477" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="exploit.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../solutions/passengers/exploit.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="379">
+              <caret line="65" column="27" lean-forward="true" selection-start-line="65" selection-start-column="27" selection-end-line="65" selection-end-column="27" />
               <folding />
             </state>
           </provider>
@@ -51,6 +61,7 @@
         <option value="$PROJECT_DIR$/flag1" />
         <option value="$PROJECT_DIR$/applicants" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/../../solutions/passengers/exploit.py" />
         <option value="$PROJECT_DIR$/main.c" />
       </list>
     </option>
@@ -91,7 +102,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../solutions/passengers/exploit.py" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -135,12 +146,12 @@
       <workItem from="1517332636457" duration="1054000" />
       <workItem from="1518872396106" duration="5604000" />
       <workItem from="1518899701469" duration="3137000" />
-      <workItem from="1518962127999" duration="1698000" />
+      <workItem from="1518962127999" duration="4447000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="69625000" />
+    <option name="totallyTimeSpent" value="72374000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-27" width="1366" height="795" extended-state="6" />
@@ -293,10 +304,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../../solutions/passengers/exploit.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="379">
+          <caret line="65" column="27" lean-forward="true" selection-start-line="65" selection-start-column="27" selection-end-line="65" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="426" column="39" lean-forward="false" selection-start-line="426" selection-start-column="39" selection-end-line="426" selection-end-column="39" />
+        <state relative-caret-position="421">
+          <caret line="477" column="28" lean-forward="false" selection-start-line="477" selection-start-column="28" selection-end-line="477" selection-end-column="28" />
           <folding />
         </state>
       </provider>

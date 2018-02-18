@@ -332,17 +332,17 @@ void update_info() {
         switch(choice) {
             case 1:
                 printf("\nNew first name: ");
-                input_string(buf, sizeof(applier->first_name));
+                input_string(buf, 111);
                 strcpy(applier->first_name, buf);
                 break;
             case 2:
                 printf("\nNew last name: ");
-                input_string(buf, sizeof(applier->last_name) + 11);
+                input_string(buf, 111);
                 strcpy(applier->last_name, buf);
                 break;
             case 3:
                 printf("\nNew country: ");
-                input_string(buf, sizeof(applier->country));
+                input_string(buf, 111);
                 strcpy(applier->country, buf);
                 break;
             case 4:
@@ -460,23 +460,32 @@ void applicant_menu() {
 
 
 int main(int argc, char **argv) {
-//    if (argc != 2) {
-//        printf("Usage: ./passengers <token>");
-//        return 0;
-//    }
-//
-//    char *team_token = malloc(strlen(argv[1]));
-//    strcpy(team_token, argv[1]);
-
     setbuf(stdin, 0);
     setbuf(stdout, 0);
     setbuf(stderr, 0);
 
-    init_ship();
+    if (argc != 2) {
+        printf("Usage: ./passengers <token>");
+        return 0;
+    }
 
-    header();
+    char *token = malloc(50);
+    char *team_token = malloc(strlen(argv[1]));
+    strcpy(team_token, argv[1]);
 
-    applicant_menu();
+    printf("Input you token: ");
+
+    input_string(token, 30);
+
+    if (!strcmp(token, team_token)) {
+        init_ship();
+
+        header();
+
+        applicant_menu();
+    } else {
+        printf("[-] Incorrect token. Try again!");
+    }
 
     return 0;
 }
