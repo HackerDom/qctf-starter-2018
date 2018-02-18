@@ -25,8 +25,8 @@
       <file leaf-file-name="main.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="342">
-              <caret line="339" column="65" lean-forward="false" selection-start-line="339" selection-start-column="65" selection-end-line="339" selection-end-column="65" />
+            <state relative-caret-position="286">
+              <caret line="426" column="39" lean-forward="false" selection-start-line="426" selection-start-column="39" selection-end-line="426" selection-end-column="39" />
               <folding />
             </state>
           </provider>
@@ -55,7 +55,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="6" fullScreen="true">
     <option name="y" value="27" />
     <option name="width" value="1366" />
     <option name="height" value="741" />
@@ -134,15 +134,16 @@
       <workItem from="1517247844841" duration="26654000" />
       <workItem from="1517332636457" duration="1054000" />
       <workItem from="1518872396106" duration="5604000" />
-      <workItem from="1518899701469" duration="3000000" />
+      <workItem from="1518899701469" duration="3137000" />
+      <workItem from="1518962127999" duration="1698000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="67790000" />
+    <option name="totallyTimeSpent" value="69625000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="27" width="1366" height="741" extended-state="6" />
+    <frame x="0" y="-27" width="1366" height="795" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.11859444" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -194,6 +195,14 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4784">
@@ -286,8 +295,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="339" column="65" lean-forward="false" selection-start-line="339" selection-start-column="65" selection-end-line="339" selection-end-column="65" />
+        <state relative-caret-position="286">
+          <caret line="426" column="39" lean-forward="false" selection-start-line="426" selection-start-column="39" selection-end-line="426" selection-end-column="39" />
           <folding />
         </state>
       </provider>

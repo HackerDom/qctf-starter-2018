@@ -424,7 +424,7 @@ void applicant_menu() {
 
         switch (choice) {
             case 31337:
-                if (crewman_enter(applier))
+                if (applier != NULL && crewman_enter(applier))
                     crewman_menu();
                 break;
             case 1:
@@ -459,7 +459,15 @@ void applicant_menu() {
 }
 
 
-int main() {
+int main(int argc, char **argv) {
+//    if (argc != 2) {
+//        printf("Usage: ./passengers <token>");
+//        return 0;
+//    }
+//
+//    char *team_token = malloc(strlen(argv[1]));
+//    strcpy(team_token, argv[1]);
+
     setbuf(stdin, 0);
     setbuf(stdout, 0);
     setbuf(stderr, 0);
