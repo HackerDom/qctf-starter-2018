@@ -59,7 +59,13 @@ $(function () {
         $('#result-loading').show();
         $('#result-negative, #result-positive, #result-error').hide();
 
-        $.post('/api/submit_credit_form', $('#credit-page').find('form').serialize())
+        var form = $('#credit-page').find('form');
+        form.find('.amount-input').each(function (_, item) {
+            var el = $(item);
+            el.val(el.val().replace(/ /g, ''));
+        });
+
+        $.post('/api/submit_credit_form', form.serialize())
             .done(function (response) {
                 $('#result-loading').hide();
                 if (response.result === 'positive') {
@@ -77,6 +83,11 @@ $(function () {
                 $('#result-loading').hide();
                 $('#result-error').show();
             });
+
+        form.find('.amount-input').each(function (_, item) {
+            var el = $(item);
+            el.val(makeReadable(el.val()));
+        });
     }
 
     function changeStep(value) {
