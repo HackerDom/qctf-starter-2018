@@ -41,16 +41,41 @@ $(function () {
     var FINAL_STEP = 5;
     var step = 1;
 
+    function validateConstraint(el, constraint) {
+        if (constraint)
+            el.removeClass('is-invalid');
+        else
+            el.addClass('is-invalid');
+        return constraint;
+    }
+
     function validateForm() {
         if (step === 1) {
             var creditAmountInput = $('#credit_amount');
             var creditAmount = parseInt(creditAmountInput.val().replace(/ /g, ''));
-            if (1e5 <= creditAmount && creditAmount <= 3e6)
-                creditAmountInput.removeClass('is-invalid');
-            else {
-                creditAmountInput.addClass('is-invalid');
+
+            if (!validateConstraint(creditAmountInput,
+                    1e5 <= creditAmount && creditAmount <= 3e6))
                 return false;
-            }
+        } else
+        if (step === 2 || step === 3) {
+            var valid = true;
+            $('#step' + step).find('.extending-list').each(function (_, list) {
+                var rows = $(list).find('.row');
+                rows.each(function (_, row) {
+                    row = $(row);
+                    var typeSelect = row.find('select');
+                    var type = typeSelect.val();
+                    var amount = row.find('input').val();
+
+                    if (!validateConstraint(typeSelect,
+                            (step !== 2 || rows.length >= 2) &&
+                            (type !== 'unknown' || (amount === '0' || amount === ''))))
+                        valid = false;
+                });
+            });
+            if (!valid)
+                return false;
         }
         return true;
     }
@@ -91,7 +116,7 @@ $(function () {
     }
 
     function changeStep(value) {
-        if (!validateForm())
+        if (value > step && !validateForm())
             return;
         if (value === FINAL_STEP)
             submitForm();
@@ -131,6 +156,7 @@ $(function () {
         var list = $(item);
         var select = list.find('.row:last-child select');
         select.change(function () {
+            $(this).removeClass('is-invalid');
             return changeHandler(list, $(this));
         });
     });
