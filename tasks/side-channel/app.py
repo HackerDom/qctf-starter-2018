@@ -70,33 +70,40 @@ def find_digits(img):
     visited = np.zeros(img.size, dtype=np.bool)
     for x in range(img.width):
         for y in range(img.height):
-            if pixels[x, y] != 0 and not visited[x, y]:
-                rect = traverse_rect(img, pixels, visited, x, y)
-                rect_w = rect.x2 - rect.x1
-                rect_h = rect.y2 - rect.y1
+            if visited[x, y] or pixels[x, y] == 0:
+                continue
 
-                scale = max(rect_w / MNIST_CONTENT_WH,
-                            rect_h / MNIST_CONTENT_WH)
-                digit = img.crop(rect).resize((round(rect_w / scale),
-                                               round(rect_h / scale)))
-                wrapper = Image.new('L', (MNIST_WH, MNIST_WH))
-                wrapper.paste(digit, ((wrapper.width - digit.width) // 2,
-                                      (wrapper.height - digit.height) // 2))
-                w_pixels = np.array(wrapper).reshape(1, MNIST_WH, MNIST_WH, 1)
-                X = (w_pixels - w_pixels.min()) / (w_pixels.max() - w_pixels.min())
+            rect = traverse_rect(img, pixels, visited, x, y)
+            rect_w = rect.x2 - rect.x1
+            rect_h = rect.y2 - rect.y1
 
-                digit = np.argmax(mnist_cnn.predict(X)[0])
-                yield str(digit)
+            scale = max(rect_w / MNIST_CONTENT_WH,
+                        rect_h / MNIST_CONTENT_WH)
+            digit = img.crop(rect).resize((round(rect_w / scale),
+                                           round(rect_h / scale)))
+            wrapper = Image.new('L', (MNIST_WH, MNIST_WH))
+            wrapper.paste(digit, ((wrapper.width - digit.width) // 2,
+                                  (wrapper.height - digit.height) // 2))
+            w_pixels = np.array(wrapper).reshape(1, MNIST_WH, MNIST_WH, 1)
+            X = (w_pixels - w_pixels.min()) / (w_pixels.max() - w_pixels.min())
+
+            digit = np.argmax(mnist_cnn.predict(X)[0])
+            yield str(digit)
 
 
 NEIGH_DIRECTIONS = [(1, 0), (0, -1), (-1, 0), (0, 1)]
 
 
 def traverse_rect(img, pixels, visited, x0, y0):
+    width, height = img.size
+
     order = deque()
     order.append((x0, y0))
     visited[x0, y0] = True
-    rect = Rectangle(x0, y0, x0 + 1, y0 + 1)
+    min_x = x0
+    min_y = y0
+    max_x = x0 + 1
+    max_y = y0 + 1
 
     while len(order) > 0:
         x, y = order.popleft()
@@ -104,12 +111,18 @@ def traverse_rect(img, pixels, visited, x0, y0):
         for dx, dy in NEIGH_DIRECTIONS:
             new_x = x + dx
             new_y = y + dy
-            if not (0 <= new_x < img.width and 0 <= new_y < img.height):
+            if (
+                not (0 <= new_x < width and 0 <= new_y < height) or
+                visited[new_x, new_y] or
+                pixels[new_x, new_y] == 0
+            ):
                 continue
 
-            if pixels[new_x, new_y] != 0 and not visited[new_x, new_y]:
-                order.append((new_x, new_y))
-                visited[new_x, new_y] = True
-                rect = Rectangle(min(rect.x1, new_x), min(rect.y1, new_y),
-                                 max(rect.x2, new_x + 1), max(rect.y2, new_y + 1))
-    return rect
+            order.append((new_x, new_y))
+            visited[new_x, new_y] = True
+
+            min_x = min(min_x, new_x)
+            min_y = min(min_y, new_y)
+            max_x = max(max_x, new_x + 1)
+            max_y = max(max_y, new_y + 1)
+    return Rectangle(min_x, min_y, max_x, max_y)
