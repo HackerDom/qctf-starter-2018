@@ -1,7 +1,5 @@
 import os
-import random
 import time
-import string
 from collections import deque, namedtuple
 from itertools import zip_longest
 
@@ -11,8 +9,8 @@ from flask import Flask, abort, request, jsonify
 from keras.models import load_model
 
 
-PASSWORD = [random.choice(string.digits) for _ in range(10)]
-FLAG = 'QCTF_KEK'
+PASSWORD = '3081435172'
+FLAG = 'QCTF{VmRDwFKNzSGoBrWUJyGu}'
 
 assert len(PASSWORD) == 10
 
@@ -27,7 +25,8 @@ MNIST_CONTENT_WH = 20
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 1024 ** 2
 
-MAX_IMAGE_WH = 3000
+CRITICAL_IMAGE_WH = 3000
+MAX_IMAGE_W, MAX_IMAGE_H = 1000, 500
 
 
 @app.route('/')
@@ -40,8 +39,11 @@ def submit_image():
     start_time = time.time()
 
     img = Image.open(request.files['image'])
-    if img.width > MAX_IMAGE_WH or img.height > MAX_IMAGE_WH:
-        return abort(400)
+    if max(img.width, img.height) > CRITICAL_IMAGE_WH:
+        abort(400)
+
+    scale = min(MAX_IMAGE_W / img.width, MAX_IMAGE_H / img.height)
+    img = img.resize((round(img.width * scale), round(img.height * scale)))
     img = img.convert('L')
 
     correct = True
@@ -51,11 +53,10 @@ def submit_image():
             break
 
     if correct:
-        status = 'Верный пароль! Флаг: <b>{}</b>'.format(FLAG)
+        status = 'Верный пароль! Флаг: <span class="flag">{}</span>'.format(FLAG)
     else:
         status = 'Неверный пароль'
     elapsed_time = time.time() - start_time
-    status += ' ({} мс)'.format(round(elapsed_time * 1000))  # dbg
     return jsonify({
         'status': status,
         'elapsed_ms': round(elapsed_time * 1000),
@@ -77,10 +78,9 @@ def find_digits(img):
             rect_w = rect.x2 - rect.x1
             rect_h = rect.y2 - rect.y1
 
-            scale = max(rect_w / MNIST_CONTENT_WH,
-                        rect_h / MNIST_CONTENT_WH)
-            digit = img.crop(rect).resize((round(rect_w / scale),
-                                           round(rect_h / scale)))
+            scale = min(MNIST_CONTENT_WH / rect_w, MNIST_CONTENT_WH / rect_h)
+            digit = img.crop(rect)
+            digit = digit.resize((round(rect_w * scale), round(rect_h * scale)))
             wrapper = Image.new('L', (MNIST_WH, MNIST_WH))
             wrapper.paste(digit, ((wrapper.width - digit.width) // 2,
                                   (wrapper.height - digit.height) // 2))

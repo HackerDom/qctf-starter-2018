@@ -9,8 +9,8 @@ from sklearn.utils import shuffle
 
 TMP_IMAGE_PATH = '/tmp/image.png'
 
-DIGIT_COUNT = 30
-TRIES = 1
+DIGIT_COUNT = 50
+TRIES = 3
 
 
 def get_digits():
@@ -31,11 +31,11 @@ def get_digits():
 
 
 def send_password(password, digits, square):
-    img = Image.new('RGBA', (2000, 500), (0, 0, 0, 255))
+    img = Image.new('RGBA', (1000, 500), (0, 0, 0, 255))
 
     if square:
         draw = ImageDraw.Draw(img)
-        draw.rectangle((1000, 0, 2000, 500), fill='white')
+        draw.rectangle((28 * 2 * 10, 0, img.width, img.height), fill='white')
 
     for i, item in enumerate(password):
         img.paste(digits[item].resize((28 * 2, 28 * 2)), (i * 28 * 2, 0))
