@@ -1,0 +1,6 @@
+.idea
+research
+venv
+
+__pycache__
+.ipynb_checkpoints
