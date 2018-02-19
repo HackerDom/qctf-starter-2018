@@ -473,7 +473,7 @@ int main(int argc, char **argv) {
     char *team_token = malloc(strlen(argv[1]));
     strcpy(team_token, argv[1]);
 
-    printf("Input you token: ");
+    printf("Input your token: ");
 
     input_string(token, 30);
 
