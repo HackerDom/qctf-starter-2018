@@ -465,19 +465,17 @@ int main(int argc, char **argv) {
     setbuf(stderr, 0);
 
     if (argc != 2) {
-        printf("Usage: ./passengers <token>");
+        printf("Usage: ./passengers <team_token>");
         return 0;
     }
 
-    char *token = malloc(50);
-    char *team_token = malloc(strlen(argv[1]));
-    strcpy(team_token, argv[1]);
+    char *team_token = malloc(50);
 
     printf("Input your token: ");
 
-    input_string(token, 30);
+    input_string(team_token, 30);
 
-    if (!strcmp(token, team_token)) {
+    if (!strcmp(argv[1], team_token)) {
         init_ship();
 
         header();
