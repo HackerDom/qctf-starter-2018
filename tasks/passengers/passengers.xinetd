@@ -1,0 +1,13 @@
+service passengers
+{
+  disable = no
+  socket_type = stream
+  protocol = tcp
+  wait = no
+  user = kali
+  bind = 0.0.0.0
+  server = /home/kali/Development/CTF/dev/qctf-2017/tasks/passengers/passengers.sh
+  server_args = team_token_is_written_here
+  type = UNLISTED
+  port = 9999
+}

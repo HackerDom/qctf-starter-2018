@@ -471,7 +471,7 @@ int main(int argc, char **argv) {
 
     char *team_token = malloc(50);
 
-    printf("Input your token: ");
+    printf("Team token: ");
 
     input_string(team_token, 30);
 
