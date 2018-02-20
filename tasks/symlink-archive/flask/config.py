@@ -6,3 +6,4 @@ DATABASE_FILE = '/var/db/database.db'
 USER_DATA_DIR = '/var/user_data' # should exist
 TMP_USER_DATA_DIR = '/var/tmp_user_data' # should exist
 FAKE_USERS = ['admin']
+USERS_FILE = 'users.json'

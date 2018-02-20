@@ -7,15 +7,21 @@ SEED = 412
 LOGIN_LENGTH = 8
 PASSWORD_LENGTH = 10
 DIRECTORY_NAME_LENGTH = 10
+FLAG_PATTERN = 'QCTF{{VALIDATE_USER_DATA_{}}}'
+FLAG_SUFFIX_LEN = 10
 
 def get_rand_str(rand, l):
     return ''.join([rand.choice(string.ascii_lowercase) for _ in range(l)])
+
+def generate_flag(rand):
+    return FLAG_PATTERN.format(''.join([rand.choice(string.ascii_uppercase) for _ in range(FLAG_SUFFIX_LEN)]))
 
 def generate_user(rand):
     login = get_rand_str(rand, LOGIN_LENGTH)
     password = get_rand_str(rand, PASSWORD_LENGTH)
     directory = get_rand_str(rand, DIRECTORY_NAME_LENGTH)
-    return {'login': login, 'password': password, 'directory': directory}
+    flag = generate_flag(rand)
+    return {'login': login, 'password': password, 'directory': directory, 'flag': flag}
 
 def main():
     if len(sys.argv) < 2:
