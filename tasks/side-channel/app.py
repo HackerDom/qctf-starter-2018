@@ -62,7 +62,7 @@ def submit_image():
         if actual != expected:
             correct = False
             break
-    app.logger.info('recognized = {}  correct = {}'.format(recognized, correct))
+    app.logger.info('recognized = "{}"  correct = {}'.format(recognized, correct))
 
     if correct:
         status = 'Верный пароль! Флаг: <span class="flag">{}</span>'.format(FLAG)

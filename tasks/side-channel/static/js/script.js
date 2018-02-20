@@ -28,6 +28,7 @@ function redraw(context, strokes, start) {
 
 function submitImage(canvas) {
     $('#status-text').text('Проверка пароля...');
+    $('#enter-btn').attr('disabled', true);
     canvas[0].toBlob(function (blob) {
         var formData = new FormData();
         formData.append('image', blob);
@@ -43,6 +44,9 @@ function submitImage(canvas) {
             })
             .fail(function () {
                 $('#status-text').text('Не удалось подключиться к серверу');
+            })
+            .always(function () {
+                $('#enter-btn').removeAttr('disabled');
             });
     });
 }
