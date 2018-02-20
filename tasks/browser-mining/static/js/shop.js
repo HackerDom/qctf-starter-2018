@@ -14,5 +14,5 @@ function buy(){
             $('#balance').html(Number(resp['balance']));        
         }
     })
-    .catch(error=>showError('.shop-error', error));
+    .catch(error=>c0coc0('.shop-error', error));
 }
