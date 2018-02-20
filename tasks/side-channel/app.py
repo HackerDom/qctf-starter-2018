@@ -1,4 +1,6 @@
+import logging
 import os
+import re
 import time
 from collections import deque, namedtuple
 from itertools import zip_longest
@@ -12,17 +14,23 @@ from keras.models import load_model
 PASSWORD = '3081435172'
 FLAG = 'QCTF{VmRDwFKNzSGoBrWUJyGu}'
 
-assert len(PASSWORD) == 10
+assert re.fullmatch(r'\d{10}', PASSWORD) is not None
 
 
 # Source: cnn.h5 from https://github.com/EN10/KerasMNIST
-mnist_cnn = load_model(os.path.join(os.path.dirname(__file__), 'mnist_cnn.h5'))
+model_path = os.path.join(os.path.dirname(__file__), 'mnist_cnn.h5')
+mnist_cnn = load_model(model_path)
 
 MNIST_WH = 28
 MNIST_CONTENT_WH = 20
 
 
 app = Flask(__name__)
+
+app.logger.setLevel(logging.DEBUG)
+for handler in app.logger.handlers:
+    handler.setLevel(logging.DEBUG)
+
 app.config['MAX_CONTENT_LENGTH'] = 1024 ** 2
 
 CRITICAL_IMAGE_WH = 3000
@@ -46,11 +54,15 @@ def submit_image():
     img = img.resize((round(img.width * scale), round(img.height * scale)))
     img = img.convert('L')
 
+    recognized = ''
     correct = True
     for actual, expected in zip_longest(find_digits(img), PASSWORD):
+        if actual is not None:
+            recognized += actual
         if actual != expected:
             correct = False
             break
+    app.logger.info('recognized = {}  correct = {}'.format(recognized, correct))
 
     if correct:
         status = 'Верный пароль! Флаг: <span class="flag">{}</span>'.format(FLAG)
