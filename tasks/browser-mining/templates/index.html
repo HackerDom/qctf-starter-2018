@@ -34,8 +34,10 @@
     </span>
 </nav>
 <div class="mine-container">
-    <button class="btn btn-success btn-lg btn-mine" onclick="mine()">Start mining!</button>
-    <div class="loading-cubes">
+    <button class="btn btn-success btn-lg btn-mine" id="mining-start" onclick="mine()">Start mining!</button>
+    <button class="btn btn-danger btn-lg btn-mine" id="mining-stop" onclick="mineStop()">Stop!</button>
+
+    <div class="loading"><div class="loading-cubes">
         <div class="cube box1"></div>
         <div class="cube box2"></div>
         <div class="cube box3"></div>
@@ -46,7 +48,7 @@
             <div class="shadow box3"></div>
             <div class="shadow box4"></div>
         </div>
-    </div>
+    </div></div>
     <div class="alert alert-success alert-dismissible fade show success" id="success">
         Работа выполнена! Ваш баланс обновлён.
     </div>

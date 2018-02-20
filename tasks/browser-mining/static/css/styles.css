@@ -18,6 +18,10 @@ body {
     margin: auto;
 }
 
+#mining-stop{
+    display: none;
+}
+
 .mine-container {
     margin: 30px auto;
     width: 40%;
@@ -25,10 +29,13 @@ body {
 }
 
 .success,
-.error,
-.flag{
-    margin: 20px auto;
+.error{
+    margin: 160px auto;
     display: none;
+}
+
+.flag {
+    margin: 20px auto;
 }
 
 .flag-container{

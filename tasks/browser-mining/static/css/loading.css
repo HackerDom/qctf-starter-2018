@@ -9,6 +9,11 @@
     background-color: #57697e;
 }
 
+.loading{
+    position: relative;
+    margin: 60px auto;
+}
+
 .loading-cubes {
     display: none;
     position: absolute;
