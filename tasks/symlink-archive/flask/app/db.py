@@ -34,7 +34,7 @@ def init_users(users_file):
         users = json.load(f)
     db = get_db()
     for user in users:
-        db.execute('insert into users (login, password) values (?, ?)', [user['login'], user['password']])
+        db.execute('insert into users (login, password, directory) values (?, ?, ?)', [user['login'], user['password'], user['directory']])
     db.commit()
 
 @app.cli.command('initdb')

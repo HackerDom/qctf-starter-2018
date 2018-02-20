@@ -6,6 +6,7 @@ import string
 SEED = 412
 LOGIN_LENGTH = 8
 PASSWORD_LENGTH = 10
+DIRECTORY_NAME_LENGTH = 10
 
 def get_rand_str(rand, l):
     return ''.join([rand.choice(string.ascii_lowercase) for _ in range(l)])
@@ -13,7 +14,8 @@ def get_rand_str(rand, l):
 def generate_user(rand):
     login = get_rand_str(rand, LOGIN_LENGTH)
     password = get_rand_str(rand, PASSWORD_LENGTH)
-    return {'login': login, 'password': password}
+    directory = get_rand_str(rand, DIRECTORY_NAME_LENGTH)
+    return {'login': login, 'password': password, 'directory': directory}
 
 def main():
     if len(sys.argv) < 2:

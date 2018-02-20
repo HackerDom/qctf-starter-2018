@@ -1,4 +1,5 @@
 __pycache__
+.idea
 user_data
 tmp_user_data
 db

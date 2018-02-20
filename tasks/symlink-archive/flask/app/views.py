@@ -23,8 +23,7 @@ def unauthorized():
 @app.route('/')
 @login_required
 def index():
-    user_id = current_user.login
-    files = list_files_with_fakes(user_id)
+    files = list_files_with_fakes(current_user)
     return render_template('index.html', files=files)
 
 @app.route('/login', methods=["GET", "POST"])
@@ -70,13 +69,12 @@ def upload():
     if file_part is None or file_part.filename == '':
         return build_error('No selected file')
 
-    user_id = current_user.login
     error = None
     try:
         if os.path.splitext(file_part.filename)[1] == '.tar':
-            error = process_tar_or_get_error(file_part, user_id)
+            error = process_tar_or_get_error(file_part, current_user)
         else:
-            error = process_usual_file_or_get_error(file_part, user_id)
+            error = process_usual_file_or_get_error(file_part, current_user)
     except Exception:
         error = 'Invalid file or filename'
     if error is not None:
@@ -88,8 +86,7 @@ def upload():
 @nocache
 def download():
     path = request.args.get('path')
-    used_id = current_user.login
-    error = get_path_validation_error_or_none(path, used_id)
+    error = get_path_validation_error_or_none(path, current_user)
     if error is not None:
         return error
     try:
@@ -110,8 +107,7 @@ def download():
 @nocache
 def delete():
     path = request.args.get('path')
-    used_id = current_user.login
-    error = get_path_validation_error_or_none(path, used_id)
+    error = get_path_validation_error_or_none(path, current_user)
     if error is not None:
         return error
     try:
@@ -120,10 +116,10 @@ def delete():
         return build_error('Invalid path')
     return redirect('/')
 
-def process_tar_or_get_error(file_part, user_id):
-    tmp_user_dir = get_tmp_user_dir(user_id)
+def process_tar_or_get_error(file_part, current_user):
+    tmp_user_dir = get_tmp_user_dir(current_user)
     tar_path = os.path.join(tmp_user_dir, file_part.filename)
-    if not is_valid_tmp_path(tar_path, user_id):
+    if not is_valid_tmp_path(tar_path, current_user):
         return 'Invalid filename'
     if os.path.exists(tar_path):
         return 'Invalid filename'
@@ -133,88 +129,89 @@ def process_tar_or_get_error(file_part, user_id):
             if not (tarinfo.isreg() or tarinfo.issym()):
                 continue
             if tarinfo.issym():
-                if not is_valid_link_path(tarinfo.linkname, user_id):
+                if not is_valid_link_path(tarinfo.linkname, current_user):
                     continue
             result_path = os.path.join(tmp_user_dir, tarinfo.name)
-            if is_valid_tmp_path(result_path, user_id):
+            if is_valid_tmp_path(result_path, current_user):
                 tar.extract(tarinfo, path=tmp_user_dir)
-                os.rename(result_path, os.path.join(get_user_dir(user_id), os.path.split(result_path)[-1]))
+                os.rename(result_path, os.path.join(get_user_dir(current_user), os.path.split(result_path)[-1]))
     os.remove(tar_path)
 
-def process_usual_file_or_get_error(file_part, user_id):
-    path = os.path.join(get_user_dir(user_id), file_part.filename)
-    if not is_valid_path(path, user_id):
+def process_usual_file_or_get_error(file_part, current_user):
+    path = os.path.join(get_user_dir(current_user), file_part.filename)
+    if not is_valid_path(path, current_user):
         return 'Invalid filename'
     if os.path.exists(path):
         return 'File already exists'
     file_part.save(path)
 
-def get_path_validation_error_or_none(path, used_id):
+def get_path_validation_error_or_none(path, current_user):
     if path is None:
         return build_error('Path is requied')
-    if not is_valid_path(path, used_id):
-        if is_valid_fake_user_path(path):
+    if not is_valid_path(path, current_user):
+        if is_valid_fake_user_path(path, current_user):
             return build_error('Permission denied: you do not own this file')
         return build_error('Invalid path')
     if not os.path.isfile(path):
         return build_error('No such file')
 
-def is_valid_path(path, user_id):
-    current_user_dir = get_user_dir(user_id)
-    path = os.path.normpath(path)
+def is_valid_path(path, current_user):
+    current_user_dir = get_user_dir_internal(current_user.directory, current_user.login)
+    path = os.path.abspath(path)
     return path.startswith(current_user_dir)
 
-def is_valid_tmp_path(path, user_id):
-    current_user_dir = get_tmp_user_dir(user_id)
-    path = os.path.normpath(path)
+def is_valid_tmp_path(path, current_user):
+    current_user_dir = get_tmp_user_dir(current_user)
+    path = os.path.abspath(path)
     return path.startswith(current_user_dir)
 
-def is_valid_fake_user_path(path):
+def is_valid_fake_user_path(path, current_user):
+    path = os.path.abspath(path)
     for fake_user in app.config["FAKE_USERS"]:
-        if is_valid_path(path, fake_user):
+        fake_user_dir = get_user_dir_internal(current_user.directory, fake_user)
+        if path.startswith(fake_user_dir):
             return True
     return False
 
-def is_valid_link_path(path, user_id):
+def is_valid_link_path(path, current_user):
     if os.path.isabs(path):
-        return is_valid_path(path, user_id) or is_valid_fake_user_path(path)
-    abs_path = os.path.join(get_user_dir(user_id), path)
-    return is_valid_path(abs_path, user_id) or is_valid_fake_user_path(abs_path)
+        return is_valid_path(path, current_user) or is_valid_fake_user_path(path, current_user)
+    abs_path = os.path.join(get_user_dir(current_user), path)
+    return is_valid_path(abs_path, current_user) or is_valid_fake_user_path(abs_path, current_user)
 
-def list_files_for_user(user_name, personal):
-    current_user_dir = get_user_dir(user_name)
-    entries = [{'name': x, 'path': os.path.join(current_user_dir, x), 'personal': personal, 'owner': user_name} for x in os.listdir(current_user_dir)]
+def list_files_for_user(current_user_dir, user_name, personal):
+    user_dir = get_user_dir_internal(current_user_dir, user_name)
+    entries = [{'name': x, 'path': os.path.join(user_dir, x), 'personal': personal, 'owner': user_name} for x in os.listdir(user_dir)]
     return [entry for entry in entries if os.path.isfile(entry['path']) or os.path.islink(entry['path'])]
 
-def list_files_with_fakes(user_name):
-    result = list_files_for_user(user_name, True)
+def list_files_with_fakes(current_user):
+    result = list_files_for_user(current_user.directory, current_user.login, True)
     for fake_user in app.config["FAKE_USERS"]:
-        result += list_files_for_user(fake_user, False)
+        result += list_files_for_user(current_user.directory, fake_user, False)
     return result
 
-def get_user_dir(user_name):
-    if not is_safe_username(user_name):
-        raise Exception('Unsafe username: "{}"'.format(user_name))
-    current_user_dir = os.path.join(app.config['USER_DATA_DIR'], user_name)
-    ensure_dir_exists(current_user_dir)
-    if not os.path.isabs(current_user_dir):
-        raise Exception('Not an absolute path: "{}"'.format(current_user_dir))
-    return os.path.normpath(current_user_dir)
+def get_user_dir(current_user):
+    return get_user_dir_internal(current_user.directory, current_user.login)
 
-def get_tmp_user_dir(user_name):
-    if not is_safe_username(user_name):
-        raise Exception('Unsafe username: "{}"'.format(user_name))
-    current_user_dir = os.path.join(app.config['TMP_USER_DATA_DIR'], user_name)
+def get_user_dir_internal(directory, login):
+    if not is_safe_path_path(directory) or not is_safe_path_path(login):
+        raise Exception('Unsafe dir or username: "{}" "{}"'.format(directory, login))
+    current_user_dir = os.path.join(app.config['USER_DATA_DIR'], directory, login)
     ensure_dir_exists(current_user_dir)
-    if not os.path.isabs(current_user_dir):
-        raise Exception('Not an absolute path: "{}"'.format(current_user_dir))
-    return os.path.normpath(current_user_dir)
+    return os.path.abspath(current_user_dir)
 
-def is_safe_username(user_name):
+def get_tmp_user_dir(current_user):
+    if not is_safe_path_path(current_user.directory) or not is_safe_path_path(current_user.login):
+        raise Exception('Unsafe dir or username: "{}" "{}"'.format(current_user.directory, current_user.login))
+    current_user_dir = os.path.join(app.config['TMP_USER_DATA_DIR'], current_user.directory, current_user.login)
+    ensure_dir_exists(current_user_dir)
+    return os.path.abspath(current_user_dir)
+
+def is_safe_path_path(user_name):
     return re.fullmatch('[a-zA-Z0-9]+', user_name) != None
 
 def ensure_dir_exists(dir_name):
     if not os.path.exists(dir_name):
-        os.mkdir(dir_name)
+        os.makedirs(dir_name)
     if not os.path.isdir(dir_name):
         raise Exception('User path "{}" exists, but it is not a directory'.format(dir_name))
