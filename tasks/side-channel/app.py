@@ -6,7 +6,7 @@ from collections import deque, namedtuple
 from itertools import zip_longest
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
 from flask import Flask, abort, request, jsonify
 from keras.models import load_model
 
@@ -52,7 +52,8 @@ def submit_image():
 
     scale = min(MAX_IMAGE_W / img.width, MAX_IMAGE_H / img.height)
     img = img.resize((round(img.width * scale), round(img.height * scale)))
-    img = img.convert('L')
+    img = ImageOps.invert(img.convert('L'))
+    # Because the model trained on white digits on the black background
 
     recognized = ''
     correct = True
@@ -62,17 +63,16 @@ def submit_image():
         if actual != expected:
             correct = False
             break
-    app.logger.info('recognized = "{}"  correct = {}'.format(recognized, correct))
 
     if correct:
         status = 'Верный пароль! Флаг: <span class="flag">{}</span>'.format(FLAG)
     else:
         status = 'Неверный пароль'
-    elapsed_time = time.time() - start_time
-    return jsonify({
-        'status': status,
-        'elapsed_ms': round(elapsed_time * 1000),
-    })
+    elapsed_ms = round((time.time() - start_time) * 1000)
+
+    app.logger.info('recognized = "{}"  correct = {}  elapsed_ms = {}'.format(
+        recognized, correct, elapsed_ms))
+    return jsonify({'status': status, 'elapsed_ms': elapsed_ms})
 
 
 Rectangle = namedtuple('Rectangle', ['x1', 'y1', 'x2', 'y2'])

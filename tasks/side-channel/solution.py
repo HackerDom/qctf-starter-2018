@@ -2,7 +2,7 @@
 
 import numpy as np
 import requests
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageOps
 from sklearn.datasets import fetch_mldata
 from sklearn.utils import shuffle
 
@@ -11,6 +11,8 @@ TMP_IMAGE_PATH = '/tmp/image.png'
 
 DIGIT_COUNT = 50
 TRIES = 3
+
+DIGIT_SIZE = 28 * 2
 
 
 def get_digits():
@@ -26,19 +28,19 @@ def get_digits():
             for c in range(img.width):
                 pixels[c, r] = (data[r, c],)
 
-        digits.append(img)
+        digits.append(ImageOps.invert(img).resize((DIGIT_SIZE, DIGIT_SIZE)))
     return digits
 
 
 def send_password(password, digits, square):
-    img = Image.new('RGBA', (1000, 500), (0, 0, 0, 255))
+    img = Image.new('RGBA', (1000, 500), 'white')
 
     if square:
         draw = ImageDraw.Draw(img)
-        draw.rectangle((28 * 2 * 10, 0, img.width, img.height), fill='white')
+        draw.rectangle((DIGIT_SIZE * 10, 0, img.width, img.height), fill='black')
 
     for i, item in enumerate(password):
-        img.paste(digits[item].resize((28 * 2, 28 * 2)), (i * 28 * 2, 0))
+        img.paste(digits[item], (i * DIGIT_SIZE, 0))
     img.save(TMP_IMAGE_PATH)
 
     with open(TMP_IMAGE_PATH, 'rb') as img_file:

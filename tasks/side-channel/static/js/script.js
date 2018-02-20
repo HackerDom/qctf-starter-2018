@@ -4,8 +4,11 @@ function initCanvas(canvas) {
 
     var context = canvas[0].getContext('2d');
     context.strokeStyle = '#df4b26';
+    context.fillStyle = 'white';
     context.lineJoin = 'round';
     context.lineWidth = 20;
+
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
     return context;
 }
 
@@ -89,7 +92,7 @@ $(function () {
     canvas.mouseleave(stopPainting);
 
     $('#clear-btn').click(function () {
-        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
         strokes = [];
     });
     $('#enter-btn').click(function () {
