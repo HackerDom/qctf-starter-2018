@@ -10,6 +10,6 @@ COPY . /app
 
 EXPOSE 80
 
-RUN python /app/generate_flags.py 400
+RUN ./generate_flags.sh
 
 CMD ["./run-with-gunicorn.sh"]
