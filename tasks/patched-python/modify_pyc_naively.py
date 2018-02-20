@@ -4,6 +4,12 @@ import re
 import py_compile
 
 
+# 3.6.4 is the only stable version tested
+# Other versions may have compatible bytecode but the magic number is likely to differ
+if sys.version_info[:3] != (3, 6, 4):
+    raise ImportError('This script should be executed with Pyhon 3.6.4')
+
+
 CALL_FUNCTION_TEMPLATE = re.compile(b'(\x83\x01)+')
 CALL_UNARY_FUNCTIONS_OPCODE = 200
 NOP_OPCODE = 9
@@ -33,9 +39,9 @@ def modify(bytecode):
     result = bytearray(bytecode)
     for match in CALL_FUNCTION_TEMPLATE.finditer(bytecode):
         first_index = match.start()
-        argument_count = (match.end() - match.start()) // 2
+        function_count = (match.end() - match.start()) // 2
         result[first_index] = CALL_UNARY_FUNCTIONS_OPCODE
-        result[first_index + 1] = argument_count
+        result[first_index + 1] = function_count
         result[first_index + 2: match.end()] = generate_compex_nops(match.end() - first_index - 2)
 
     return bytes(result)
