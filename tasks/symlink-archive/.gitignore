@@ -2,3 +2,4 @@ __pycache__
 user_data
 tmp_user_data
 db
+flask/users.json

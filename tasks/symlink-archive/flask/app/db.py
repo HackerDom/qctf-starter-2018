@@ -1,4 +1,6 @@
+import json
 import sqlite3
+import click
 from flask import g
 from app import app
 
@@ -27,10 +29,20 @@ def init_db():
         db.cursor().executescript(f.read())
     db.commit()
 
+def init_users(users_file):
+    with open(users_file) as f:
+        users = json.load(f)
+    db = get_db()
+    for user in users:
+        db.execute('insert into users (login, password) values (?, ?)', [user['login'], user['password']])
+    db.commit()
+
 @app.cli.command('initdb')
-def initdb_command():
+@click.option('--users')
+def initdb_command(users):
     """Initializes the database."""
     init_db()
+    init_users(users)
     print('Initialized the database.')
 
 @app.teardown_appcontext

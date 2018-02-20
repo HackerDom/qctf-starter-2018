@@ -8,6 +8,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app
 
+RUN ./initdb.sh 
+
 EXPOSE 80
 
 CMD ["./run-with-gunicorn.sh"]
