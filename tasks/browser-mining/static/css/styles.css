@@ -18,7 +18,7 @@ body {
     margin: auto;
 }
 
-#mining-stop{
+#mining-stop {
     display: none;
 }
 
@@ -29,33 +29,35 @@ body {
 }
 
 .success,
-.error{
+.error {
     margin: 160px auto;
     display: none;
 }
 
+.shop-error,
 .flag {
     margin: 20px auto;
+    display: none;
 }
 
-.flag-container{
+.flag-container {
     width: 30%;
     margin: 30px auto;
 }
 
-.flag-img{
+.flag-img {
     width: 50%;
     display: block;
     margin: auto;
 }
 
 .itemName,
-.price{
+.price {
     margin-top: 10px;
     text-align: center;
 }
 
-.buy{
+.buy {
     display: block;
     margin: auto;
 }

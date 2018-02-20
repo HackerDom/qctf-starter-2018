@@ -5,11 +5,12 @@
     padding: 1em;
     cursor: pointer;
 }
+
 .toggle:hover {
     background-color: #57697e;
 }
 
-.loading{
+.loading {
     position: relative;
     margin: 60px auto;
 }
@@ -101,6 +102,7 @@
         transform: translate(32px, 0);
     }
 }
+
 @-webkit-keyframes cube2 {
     0%,
     50% {
@@ -112,6 +114,7 @@
         transform: translate(48px, 9.5px);
     }
 }
+
 @keyframes cube2 {
     0%,
     50% {
@@ -123,6 +126,7 @@
         transform: translate(48px, 9.5px);
     }
 }
+
 @-webkit-keyframes cube3 {
     0% {
         -webkit-transform: translate(48px, 9.5px);
@@ -137,6 +141,7 @@
         transform: translate(16px, 9.5px);
     }
 }
+
 @keyframes cube3 {
     0% {
         -webkit-transform: translate(48px, 9.5px);
@@ -151,6 +156,7 @@
         transform: translate(16px, 9.5px);
     }
 }
+
 @-webkit-keyframes cube4 {
     0%,
     50% {
@@ -162,6 +168,7 @@
         transform: translate(0, 0);
     }
 }
+
 @keyframes cube4 {
     0%,
     50% {

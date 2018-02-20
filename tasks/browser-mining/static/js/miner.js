@@ -51,11 +51,11 @@ function checkResult(result) {
             startFront();
             setTimeout(() => miner.isPrime());
         })
-        .catch(showError);
+        .catch(error=>showError('.error', error));
 }
 
-function showError(error) {
-    $('.error').html(`Произошла ошибка: ${error}`).show().fadeOut(2000);
+function showError(element, error) {
+    $(element).html(`Произошла ошибка: ${error}`).show().fadeOut(2000);
 }
 
 class PrimeFinder {
