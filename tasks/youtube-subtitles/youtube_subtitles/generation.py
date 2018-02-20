@@ -11,7 +11,7 @@ import srt
 from youtube_subtitles.voice import create_recording
 
 
-SENTENCE_RE = re.compile(r'([^.!?\n]+[.!?\n]+)\s*', re.MULTILINE)
+SENTENCE_RE = re.compile(r'([^.!?\r\n]+(?:\r?\n[^.!?\r\n]+)*[.!?\r\n]+)\s*', re.MULTILINE)
 FFMPEG_COMMAND_TEMPLATE = \
     'ffmpeg -y -f concat -safe 0 -i {tracklist_path} -filter_complex' \
     ' "[0:a]asplit=3[out1][a][b]; [a]showwaves=s=1280x120[waves];' \
@@ -20,7 +20,8 @@ FFMPEG_COMMAND_TEMPLATE = \
 
 
 def parse_sentences(text):
-    return SENTENCE_RE.findall(text)
+    sentences = SENTENCE_RE.findall(text)
+    return [sentence.replace('\n', ' ') for sentence in sentences]
 
 
 def get_sentences_with_flag(text_path, flag):
