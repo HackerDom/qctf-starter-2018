@@ -3,14 +3,13 @@
 TITLE = "TODO Коты и собаки"
 STATEMENT_TEMPLATE = '''
 TODO
-: `{}`
 [Картинка](/static/yykjklijlxtwmxe/{})
 '''
 
 def generate(context):
     participant = context['participant']
-    encryption = secrets[participant.id % len(secrets)]['filename']
-    return TaskStatement(TITLE, STATEMENT_TEMPLATE.format(encryption))
+    filename = secrets[participant.id % len(secrets)]['filename']
+    return TaskStatement(TITLE, STATEMENT_TEMPLATE.format(filename))
 
 secrets = [
     {
