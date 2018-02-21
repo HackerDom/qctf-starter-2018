@@ -21,6 +21,15 @@ namespace Level2
     {
         public static void Main(string[] args)
         {
+            if (Authorize())
+            {
+                Console.WriteLine("Security check complete. Starting application...");
+            }
+            else
+            {
+                Console.WriteLine("Security check failed. Exiting...");
+                return;
+            }
             var fileName = Path.GetTempFileName();
             var assembly = Assembly.GetExecutingAssembly();
             var resourceStream = assembly.GetManifestResourceStream(nameof(Level2) + ".level3.dll");
@@ -37,6 +46,15 @@ namespace Level2
             check();
             Win32.FreeLibrary(library);
             File.Delete(fileName);
+        }
+
+        private static bool Authorize()
+        {
+            Console.WriteLine("Please, complete security check to run this application.");
+            Console.Write("Enter PIN: ");
+            var input = Console.ReadLine();
+            long pin;
+            return long.TryParse(input, out pin) && pin == 9260188346513337;
         }
 
         private static byte Deobfuscate(byte obfuscated)
