@@ -6,8 +6,8 @@ service passengers
   wait = no
   user = kali
   bind = 0.0.0.0
-  server = /home/kali/Development/CTF/dev/qctf-2017/tasks/passengers/passengers.sh
-  server_args = team_token_is_written_here
+  server = /usr/bin/python3
+  server_args = /tmp/passengers/router.py
   type = UNLISTED
   port = 9999
 }

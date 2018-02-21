@@ -464,26 +464,11 @@ int main(int argc, char **argv) {
     setbuf(stdout, 0);
     setbuf(stderr, 0);
 
-    if (argc != 2) {
-        printf("Usage: ./passengers <team_token>");
-        return 0;
-    }
+    init_ship();
 
-    char *team_token = malloc(50);
+    header();
 
-    printf("Team token: ");
-
-    input_string(team_token, 30);
-
-    if (!strcmp(argv[1], team_token)) {
-        init_ship();
-
-        header();
-
-        applicant_menu();
-    } else {
-        printf("[-] Incorrect token. Try again!");
-    }
+    applicant_menu();
 
     return 0;
 }
