@@ -1,5 +1,5 @@
 body {
-    background-color: #e1e1e1;
+    background-color: rgba(225, 225, 225, 0.38);
     font-size: 30px;
     text-align: center;
 }
@@ -10,16 +10,8 @@ a {
 }
 
 .flag_button {
-    width: 200px;
-    height: 50px;
+    font-size: 2rem;
     margin: 50px auto;
-    padding: 10px;
-    background-color: #cd0f0f;
-    color: #000;
-}
-
-.flag_button:hover {
-    background-color: #ef0f0f;
 }
 
 .redirect {
