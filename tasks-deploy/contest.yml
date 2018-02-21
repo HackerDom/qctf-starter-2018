@@ -15,14 +15,17 @@ task_set: !TaskSet
   context: !DirectoryContext
     directory: /contest_import
   task_paths:
-  - tasks-deploy/getflagchar/getflagchar.yml
+  - tasks-deploy/getflagchar/getflagchar.yaml
   - tasks-deploy/symlink-archive/symlink-archive.yml
   - tasks-deploy/bank/bank.yml
   - tasks-deploy/cyclic-one-time-pad/cyclic-one-time-pad.yml
   - tasks-deploy/make-some-noise/make-some-noise.yml
   - tasks-deploy/minecrypt/minecrypt.yml
   - tasks-deploy/browser-mining/browser-mining.yml
+  - tasks-deploy/youtube-subtitles/youtube-subtitles.yml
   - tasks-deploy/permanent-302/permanent-302.yml
   - tasks-deploy/unpack-reverse/unpack-reverse.yaml
+  - tasks-deploy/email-confirmations/email-confirmations.yml
   - tasks-deploy/side-channel/side-channel.yml
+  - tasks-deploy/patched-python/patched-python.yml
   - tasks-deploy/cats-vs-dogs/cats-vs-dogs.yml
