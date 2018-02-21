@@ -1,0 +1,24 @@
+!TaskBasedContest
+name: QCTF
+is_visible_in_list: true
+registration_type: Closed
+participation_mode: Individual
+start_time: 2018-02-20 10:00:00+5
+finish_time: 2018-02-26 20:00:00+5
+registration_start_time: null
+registration_finish_time: null
+short_description: ""
+description: ""
+tasks_grouping: One by one
+task_opening_policy: All
+task_set: !TaskSet
+  context: !DirectoryContext
+    directory: /contest_import
+  task_paths:
+  - tasks-deploy/bank/bank.yml
+  - tasks-deploy/cats-vs-dogs/cats-vs-dogs.yml
+  - tasks-deploy/cyclic-one-time-pad/cyclic-one-time-pad.yml
+  - tasks-deploy/getflagchar/getflagchar.yml
+  - tasks-deploy/permanent-302/permanent-302.yml
+  - tasks-deploy/side-channel/side-channel.yml
+  - tasks-deploy/symlink-archive/symlink-archive.yml
