@@ -1,3 +1,7 @@
+function showError(element, error) {
+    $(element).html(`Произошла ошибка: ${error}`).show().fadeOut(2000);
+}
+
 function buy(){
     fetch('/shop', {method: 'POST', credentials: 'include'})
     .then(resp=>{
@@ -14,5 +18,5 @@ function buy(){
             $('#balance').html(Number(resp['balance']));        
         }
     })
-    .catch(error=>c0coc0('.shop-error', error));
+    .catch(error=>showError('.shop-error', error));
 }
