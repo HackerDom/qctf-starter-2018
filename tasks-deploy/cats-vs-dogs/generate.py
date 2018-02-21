@@ -9,7 +9,7 @@ TODO
 
 def generate(context):
     participant = context['participant']
-    encryption = secrets[participant.id % len(flag_ids)]['filename']
+    encryption = secrets[participant.id % len(secrets)]['filename']
     return TaskStatement(TITLE, STATEMENT_TEMPLATE.format(encryption))
 
 secrets = [
