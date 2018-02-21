@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
-from socket import socket
 from ast import literal_eval
+import requests
 
+TEAM_ID = "SOmxD7RqEXLQDFd2CRtB"
 
 def get_flag():
-    with socket() as s:
-        s.connect(('', 5678))
-        array = s.recv(1024).decode().split('\r\n')[0]
-        return literal_eval(array)
+    r = requests.get("http://127.0.0.1:8889/{}".format(TEAM_ID))
+    return literal_eval(r.text)
 
 if __name__ == "__main__":
     array = []
