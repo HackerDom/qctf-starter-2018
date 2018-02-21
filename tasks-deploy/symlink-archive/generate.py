@@ -9,8 +9,8 @@ Storage credentials: login - `{}` password - `{}`
 
 def generate(context):
     participant = context['participant']
-    login = secrets[participant.id % len(flag_ids)]['login']
-    password = secrets[participant.id % len(flag_ids)]['password']
+    login = secrets[participant.id % len(secrets)]['login']
+    password = secrets[participant.id % len(secrets)]['password']
     return TaskStatement(TITLE, STATEMENT_TEMPLATE.format(login, password))
 
 secrets = [
