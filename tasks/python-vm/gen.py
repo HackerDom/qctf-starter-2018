@@ -1,117 +1,125 @@
+import os
 import sys
 import random
-import string
-import hashlib
+import shutil
 
-from vm import HEAP_SECTION_RANGE, MEMORY_SIZE
-from interpreter import gen_bytecode
+from hashlib import md5
 
 
-INPUT_STR_LEN = 12
-ALPHABET      = string.ascii_letters + string.digits
-HARDCODED     = 'konata'
-XOR_NUMBER    = 42
+SEED = 881488
+
+TEAM_COUNT = 400
+TOKEN_SIZE = 20
+
+TASK_ID = 'vqrqngizskvqtjk'
+
+DIR_PREFIX     = '/tmp/'
+TASK_FILENAME  = 'teams'
 
 
-def gen_enc_flag(flag):
-    if len(flag) != 36:
-        print('[-] Invalid flag length! Must be 36.')
-        return
-
-    numbers = [123, 28, 72, 41, 15, 55]
-    cur     = []
-
-    for i in range(len(flag)//6):
-        cur.append(''.join([chr(ord(x) ^ numbers[i]) for x in flag[i*6:i*6+6]]))
-
-    cur[0], cur[-1] = cur[-1], cur[0]
-    cur[1], cur[3]  = cur[3], cur[1]
-    cur[2], cur[4]  = cur[4], cur[2]
-
-    return ''.join(cur)
+rand = random.Random()
+rand.seed(SEED)
 
 
-def gen_enc_str(input_str):
-    if len(input_str) != INPUT_STR_LEN:
-        print('[-] Invalid length of input string!')
-        return
-
-    to_validate = input_str  + input_str[::-1]
-    nvalid      = ''
-
-    for i in range(len(to_validate)):
-        nvalid += chr((ord(to_validate[i]) + 4) ^ ord(HARDCODED[i % len(HARDCODED)]))
-    return nvalid
+def list2str(array):
+    str = ''
+    for elem in array:
+        str += '"{}", '.format(elem)
+    return str[:-2]
 
 
-def gen_checks(val):
-    last_hash = hashlib.sha1()
-    last_hash.update(val[-3:].encode('utf-8'))
-    last_hash = last_hash.hexdigest()
+def generate_check(filename, flags):
+    flags_string = list2str(flags)
 
-    mid_hash  = hashlib.md5()
-    mid_hash.update(val[-6:-3].encode('utf-8'))
-    mid_hash = mid_hash.hexdigest()
-
-    return {
-        'first_bytes':       ''.join([chr(ord(x) ^ XOR_NUMBER) for x in val[:-6]]),
-        'middle_bytes_hash': mid_hash,
-        'last_bytes_hash':   last_hash
-    }
+    with open(filename, 'w') as f:
+        f.write('''#!/usr/bin/env python3
 
 
-def gen_task(enflag, checks):
-    def insert2mem(mem, s, bytes):
-        mem[s:s+len(bytes)] = bytes
+flags = [{}]
 
-    hp_s, hp_f = HEAP_SECTION_RANGE
-    m_hp       = hp_s + (hp_f - hp_s) // 2
-
-    r_mem    = MEMORY_SIZE * bytearray(b'\x00')
-
-    bytecode = gen_bytecode()
-
-    insert2mem(r_mem, 0, bytecode)
-    insert2mem(r_mem, m_hp,     bytearray(checks['first_bytes'].encode()))
-    insert2mem(r_mem, m_hp+100, bytearray(checks['middle_bytes_hash'].encode()))
-    insert2mem(r_mem, m_hp+200, bytearray(checks['last_bytes_hash'].encode()))
-    insert2mem(r_mem, m_hp+300, bytearray(enflag.encode()))
-    insert2mem(r_mem, m_hp+400, bytearray(b"[-] Incorrect input! You're failed :c"))
-    insert2mem(r_mem, m_hp+500, bytearray(HARDCODED.encode()))
-    insert2mem(r_mem, m_hp+600, bytearray(b"Enter a string: "))
-
-    with open('memory', 'wb') as mem:
-        mem.write(r_mem)
+def check(attempt, context):
+    if attempt.answer == flags[attempt.participant.id % len(flags)]:
+        return Checked(True)
+    if attempt.answer in flags:
+        return CheckedPlagiarist(False, flags.index(attempt.answer))
+    return Checked(False)'''.format(flags_string))
 
 
-def validating_algo(inp, checks):
-    val = gen_enc_str(inp)
+def generate_generate(filename, statement, tokens):
+    tokens_string = list2str(tokens)
+
+    with open(filename, 'w') as f:
+        f.write('''#!/usr/bin/env python3
+
+TITLE = "TODO ВМ"
+
+STATEMENT = \'\'\'
+{}
+\'\'\'
+
+task_ids = [{}]
 
 
-def gen_input(flag):
-    hs = hashlib.sha1()
-    md = hashlib.md5()
-    hs.update(flag.encode())
-    md.update(hs.hexdigest().encode())
-    return md.hexdigest()[:INPUT_STR_LEN]
+def generate(context):
+    participant = context['participant']
+
+    task_id = task_ids[participant.id % len(task_ids)]
+
+    return TaskStatement(TITLE, STATEMENT.format(task_id))'''.format(statement, tokens_string))
+
+
+def randstring():
+    inner = ''.join([chr(rand.choice(list(range(255)))) for _ in range(32)])
+    hash = md5()
+    hash.update(inner.encode())
+    return hash.hexdigest()
+
+
+def generate_dirs():
+    flags  = []
+    tokens = []
+
+    try:
+        os.mkdir(os.path.join(DIR_PREFIX, TASK_FILENAME))
+    except FileExistsError:
+        pass
+    
+    for _ in range(TEAM_COUNT):
+        flag  = 'QCTF{' +  randstring()[:-2] + '}'
+        token = randstring()
+        
+        teamdir = os.path.join(DIR_PREFIX, TASK_FILENAME, token)
+
+        try:
+            os.mkdir(teamdir)
+        except FileExistsError:
+            pass
+        
+        print('Team token: ' + token)
+        os.system('python3 task_gen.py {}'.format(flag))
+        print()
+
+        shutil.copy('vm.py', teamdir)
+        shutil.copy('memory', teamdir)
+
+        flags.append(flag)
+        tokens.append(token)
+
+    return flags, tokens
+
 
 
 def main():
-    if len(sys.argv) != 2:
-        print('Usage: gen.py <flag>')
-        return
-    flag = sys.argv[1]
-    inp  = gen_input(flag)
-    val  = gen_enc_str(inp)
+    flags, tokens = generate_dirs()
 
-    checks = gen_checks(val)
-    enflag = gen_enc_flag(flag)
+    statement = '''TODO Какое-то описание
 
-    gen_task(enflag, checks)
+Виртуальная машина: [vm.py](static/files/vqrqngizskvqtjk/teams/{0}/vm.py)
+Память для ВМ: [memory](static/files/vqrqngizskvqtjk/teams/{0}/memory)'''
 
-    print('Correct input: ' + inp)
+    generate_check('./check.py', flags)
+    generate_generate('./generate.py', statement, tokens)
 
 
 if __name__ == '__main__':
     main()
-

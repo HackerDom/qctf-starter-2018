@@ -12,9 +12,11 @@ FILE_MATCHING    = 'token_file_matching'
 ROOTDIR_PREFIX   = '/tmp/passengers/'
 TEAMS_DIR_PREFIX = '/tmp/passengers/teams/'
 
+TASK_ID = 'jbcyjetzzpumsvt'
+
 SEED = 31337
 
-TEAM_COUNT  = 400
+TEAM_COUNT = 400
 TOKEN_SIZE = 20
 
 
@@ -60,14 +62,15 @@ class Router:
             shutil.copytree(os.path.join(get_current_dir(), 'service'), os.path.join(TEAMS_DIR_PREFIX, rootdir, 'service'))
 
             for flag_index, flagarray in zip(['1', '2'], [flags1, flags2]):
-                with open(os.path.join(get_current_dir(), 'service', 'flag' + flag_index), 'w') as f:
+                with open(os.path.join(TEAMS_DIR_PREFIX, rootdir, 'service', 'flag' + flag_index), 'w') as f:
                     hash = md5()
                     hash.update(''.join([chr(self.rand.choice(list(range(255)))) for _ in range(32)]).encode())
                     flag = 'QCTF{' + hash.hexdigest() + '}'
 
                     f.write(flag)
                     flagarray[team_id] = flag
-                    tokens[team_id]    = token
+                    tokens[team_id]    = (token, rootdir)
+
         return tokens, flags1, flags2
 
 
@@ -100,10 +103,14 @@ def main():
     p.communicate()
 
 
-def list2str(array):
+def list2str(array, inner_list=False):
     str = ''
-    for elem in array:
-        str += '"{}", '.format(elem)
+    if inner_list:
+        for elem in array:
+            str += '["{}", "{}"], '.format(elem[0], elem[1])
+    else:
+        for elem in array:
+            str += '"{}", '.format(elem)
     return str[:-2]
 
 def generate_check(filename, flags):
@@ -124,7 +131,7 @@ def check(attempt, context):
 
 
 def generate_generate(filename, title, statement, tokens):
-    tokens_string = list2str(tokens)
+    tokens_string = list2str(tokens, True)
 
     with open(filename, 'w') as f:
         f.write('''#!/usr/bin/env python3
@@ -143,7 +150,7 @@ def generate(context):
 
     task_id = task_ids[participant.id % len(task_ids)]
 
-return TaskStatement(TITLE, STATEMENT % task_id)'''.format(title, statement, tokens_string))
+    return TaskStatement(TITLE, STATEMENT.format(task_id[1], task_id[0]))'''.format(title, statement, tokens_string))
 
 
 def prepare():
@@ -161,7 +168,10 @@ def prepare():
     statement ='''
 НЕСА проводит очередной набор исследователей в свою космическую команду. На текущий момент уже готова система для подачи заявок, и разработчики из НЕСА рады поделиться её прототипом!
 Для того, чтобы зайти на сервис, необходимо указать токен вашей команды.
-Токен: %s
+
+Прототип: [main](static/files/jbcyjetzzpumsvt/teams/{0}/service/main)
+Исходный код: [main.c](static/files/jbcyjetzzpumsvt/teams/{0}/service/main.c)
+Токен: {1}
 '''
 
     generate_check('./1/check.py', flags1)
