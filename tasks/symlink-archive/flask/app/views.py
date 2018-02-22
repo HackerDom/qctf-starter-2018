@@ -117,6 +117,7 @@ def delete():
     return redirect('/')
 
 def process_tar_or_get_error(file_part, current_user):
+    files_count = len(list_files_for_user(current_user.directory, current_user.login, True))
     tmp_user_dir = get_tmp_user_dir(current_user)
     tar_path = os.path.join(tmp_user_dir, file_part.filename)
     if not is_valid_tmp_path(tar_path, current_user):
@@ -125,6 +126,8 @@ def process_tar_or_get_error(file_part, current_user):
         return 'Invalid filename'
     file_part.save(tar_path)
     with tarfile.open(tar_path, 'r:') as tar:
+        if len(tar.getnames) + files_count > app.config['MAX_FILES_COUNT_PER_USER']:
+            return 'There will be too many files in your directory after upload: not more than {} is allowed'.format(app.config['MAX_FILES_COUNT_PER_USER'])
         for tarinfo in tar:
             if not (tarinfo.isreg() or tarinfo.issym()):
                 continue
@@ -138,6 +141,9 @@ def process_tar_or_get_error(file_part, current_user):
     os.remove(tar_path)
 
 def process_usual_file_or_get_error(file_part, current_user):
+    files_count = len(list_files_for_user(current_user.directory, current_user.login, True))
+    if files_count + 1 > app.config['MAX_FILES_COUNT_PER_USER']:
+        return 'There will be too many files in your directory after upload: not more than {} is allowed'.format(app.config['MAX_FILES_COUNT_PER_USER'])
     path = os.path.join(get_user_dir(current_user), file_part.filename)
     if not is_valid_path(path, current_user):
         return 'Invalid filename'
