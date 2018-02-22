@@ -3,7 +3,13 @@
 import os
 import random
 import string
+import shutil
+import json
 from PIL import Image, ImageDraw, ImageFont
+
+FLAGS_FILE = 'flags.txt'
+OUTPUT_DIR = './output'
+RAND_SEED = 453
 
 class TextMatrixGenerator:
     def __init__(self):
@@ -76,14 +82,29 @@ def get_random_string(rand, l):
     return ''.join([rand.choice(string.ascii_uppercase) for _ in range(l)])
 
 def main():
-    rand = random.Random(1)
-    flag = 'QCTF_CATDOG_{}'.format(get_random_string(rand, 9))
 
-    matrix_generator = TextMatrixGenerator()
-    matrix = matrix_generator.generate_matrix_with_text(flag, 300, 30)
+    if os.path.exists(OUTPUT_DIR):
+        shutil.rmtree(OUTPUT_DIR)
+    os.mkdir(OUTPUT_DIR)
 
-    cat_and_dog_generator = CatAndDogImageGenerator(rand)
-    cat_and_dog_generator.gen_mask_by_matrix(matrix, 50, "output/generated_mask.png")
-    cat_and_dog_generator.gen_by_matrix(matrix, 50, "output/image.png")
+    print("Going to read flags from {}".format(FLAGS_FILE))
+    with open('flags.txt') as f:
+        secrets = json.load(f)
+
+    print("Going to generate {} files and save them to {} using random seed {}".format(len(secrets), OUTPUT_DIR, RAND_SEED))
+    rand = random.Random(RAND_SEED)
+    for i, secret in enumerate(secrets):
+        flag = secret['flag']
+        assert len(flag) <= 21
+        output_name = secret['filename']
+
+        matrix_generator = TextMatrixGenerator()
+        matrix = matrix_generator.generate_matrix_with_text(flag, 300, 30)
+
+        cat_and_dog_generator = CatAndDogImageGenerator(rand)
+        # cat_and_dog_generator.gen_mask_by_matrix(matrix, 50, "output/generated_mask.png") # for debug
+        cat_and_dog_generator.gen_by_matrix(matrix, 50, os.path.join(OUTPUT_DIR, output_name))
+        print('{}/{} done'.format(i + 1, len(secrets)))
+    print('Generation done'.format(i, len(secrets)))
 
 main()
