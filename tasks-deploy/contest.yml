@@ -26,6 +26,8 @@ task_set: !TaskSet
   - tasks-deploy/permanent-302/permanent-302.yml
   - tasks-deploy/python-vm/python-vm.yaml
   - tasks-deploy/unpack-reverse/unpack-reverse.yaml
+  - tasks-deploy/passengers-1/passengers-1.yml
+  - tasks-deploy/passengers-2/passengers-2.yml
   - tasks-deploy/email-confirmations/email-confirmations.yml
   - tasks-deploy/side-channel/side-channel.yml
   - tasks-deploy/patched-python/patched-python.yml
