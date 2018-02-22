@@ -16,4 +16,4 @@ def generate(context):
 
     task_id = task_ids[participant.id % len(task_ids)]
 
-return TaskStatement(TITLE, STATEMENT % task_id)
+    return TaskStatement(TITLE, STATEMENT % task_id)
