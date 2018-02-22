@@ -3,7 +3,7 @@
 TITLE = "TODO Коты и собаки"
 STATEMENT_TEMPLATE = '''
 TODO
-[Картинка](/static/yykjklijlxtwmxe/{})
+[Картинка](/static/files/yykjklijlxtwmxe/{})
 '''
 
 def generate(context):
