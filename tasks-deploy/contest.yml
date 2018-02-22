@@ -24,6 +24,7 @@ task_set: !TaskSet
   - tasks-deploy/browser-mining/browser-mining.yml
   - tasks-deploy/youtube-subtitles/youtube-subtitles.yml
   - tasks-deploy/permanent-302/permanent-302.yml
+  - tasks-deploy/python-vm/python-vm.yaml
   - tasks-deploy/unpack-reverse/unpack-reverse.yaml
   - tasks-deploy/email-confirmations/email-confirmations.yml
   - tasks-deploy/side-channel/side-channel.yml
