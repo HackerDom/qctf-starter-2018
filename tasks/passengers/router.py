@@ -110,8 +110,7 @@ def generate_check(filename, flags):
     flags_string = list2str(flags)
 
     with open(filename, 'w') as f:
-        f.write('''
-#!/usr/bin/env python3
+        f.write('''#!/usr/bin/env python3
 
 
 flags = [{}]
@@ -121,16 +120,14 @@ def check(attempt, context):
         return Checked(True)
     if attempt.answer in flags:
         return CheckedPlagiarist(False, flags.index(attempt.answer))
-    return Checked(False)
-'''.format(flags_string))
+    return Checked(False)'''.format(flags_string))
 
 
 def generate_generate(filename, title, statement, tokens):
     tokens_string = list2str(tokens)
 
     with open(filename, 'w') as f:
-        f.write('''
-#!/usr/bin/env python3
+        f.write('''#!/usr/bin/env python3
 
 TITLE = "{}"
 
@@ -146,8 +143,7 @@ def generate(context):
 
     task_id = task_ids[participant.id % len(task_ids)]
 
-return TaskStatement(TITLE, STATEMENT % task_id)
-'''.format(title, statement, tokens_string))
+return TaskStatement(TITLE, STATEMENT % task_id)'''.format(title, statement, tokens_string))
 
 
 def prepare():
