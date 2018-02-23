@@ -33,7 +33,7 @@ char getche(void)
 int main() {
     puts("Welcome to flag scanner! Enter your flag:");
 
-    int result = getche() == 'Q' && getche() == 'C' && getche() == 'T' && getche() == 'F' && getche() == '{' && getche() == '9' && getche() == '1' && getche() == 'd' && getche() == '8' && getche() == '9' && getche() == '5' && getche() == '6' && getche() == '3' && getche() == '7' && getche() == 'b' && getche() == 'f' && getche() == '2' && getche() == '1' && getche() == '8' && getche() == '4' && getche() == '9' && getche() == 'd' && getche() == '8' && getche() == 'a' && getche() == 'c' && getche() == '9' && getche() == '7' && getche() == '0' && getche() == '7' && getche() == '2' && getche() == 'd' && getche() == '9' && getche() == 'a' && getche() == 'a' && getche() == '6' && getche() == '6' && getche() == 'c' && getche() == '}';
+    int result = getche() == 'Q' && getche() == 'C' && getche() == 'T' && getche() == 'F' && getche() == '{' && getche() == '6' && getche() == 'd' && getche() == '3' && getche() == '6' && getche() == 'f' && getche() == '2' && getche() == '5' && getche() == '7' && getche() == 'd' && getche() == '2' && getche() == '4' && getche() == 'e' && getche() == 'e' && getche() == '0' && getche() == '6' && getche() == 'c' && getche() == 'c' && getche() == '4' && getche() == '0' && getche() == '2' && getche() == 'c' && getche() == '3' && getche() == 'b' && getche() == '1' && getche() == '2' && getche() == '5' && getche() == 'd' && getche() == '5' && getche() == 'e' && getche() == 'a' && getche() == 'a' && getche() == '7' && getche() == '}';
 
     putchar('\n');
 
