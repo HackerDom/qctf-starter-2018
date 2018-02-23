@@ -16,6 +16,12 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     games = db.relationship('Game', back_populates='player', order_by='Game.id')
     balance = db.Column(db.Integer, nullable=False, default=INITIAL_BALANCE, server_default=str(INITIAL_BALANCE))
+    has_withdrawn = db.Column(db.Boolean, nullable=False, default=False, server_default='false')
+
+    def codes(self):
+        if self.has_withdrawn:
+            return [db.get_app().config['FLAG']]
+        return []
 
     def is_authenticated(self):
         return True

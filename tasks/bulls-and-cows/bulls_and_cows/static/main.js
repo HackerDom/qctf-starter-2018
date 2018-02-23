@@ -28,7 +28,7 @@ function renderNewMoveForm(game) {
     var lastMove = game.moves[game.moves.length - 1];
     var lastMoveNumber = lastMove === undefined ? 0 : lastMove.number;
     return (
-        '<form action="/move" method="POST">' +
+        '<form id="newMoveForm" action="/move" method="POST">' +
         '   <input type="hidden" name="game_id" value="' + game.id + '">' +
         '   <input type="hidden" name="number" value="' + (lastMoveNumber + 1) + '">' +
         '   <input type="text" name="guess" placeholder="Guess">' +
@@ -39,7 +39,7 @@ function renderNewMoveForm(game) {
 
 function renderEndGameForm(game) {
     return (
-        '<form action="/end_game" method="POST">' +
+        '<form id="endGameForm" action="/end_game" method="POST">' +
         '   <input type="hidden" name="game_id" value="' + game.id + '">' +
         '   <input type="submit" value="End this game">' +
         '</form>'
@@ -60,16 +60,15 @@ function renderLastGame(game) {
 
 function renderNewGameForm() {
     return (
-        '<form action="/games" method="POST">' +
+        '<form id="newGameForm" action="/games" method="POST">' +
         '   <input type="text" name="bet" placeholder="Bet">' +
         '   <input type="submit" value="Start game">' +
         '</form>'
     );
 }
 
-function renderMainSection(me) {
+function renderMainSection(lastGame) {
     var result = [];
-    var lastGame = me.games[me.games.length - 1];
     if (lastGame === undefined || lastGame.has_ended) {
         result.push(renderNewGameForm());
     }
@@ -79,8 +78,25 @@ function renderMainSection(me) {
     return result.join('');
 }
 
-function renderAccountInfo(me) {
-    return 'Balance: ' + me.balance;
+function renderWithdrawMoneyForm() {
+    return (
+        '<form id="withdrawMoneyForm" action="/withdraw" method="POST">' +
+        '   <input type="text" name="amount" placeholder="Amount">' +
+        '   <input type="submit" value="Withdraw">' +
+        '</form>'
+    );
+}
+
+function renderCodes(codes) {
+    return 'Your codes: ' + codes.join(', ');
+}
+
+function renderAccount(me) {
+    return (
+        'Balance: ' + me.balance +
+        renderWithdrawMoneyForm() +
+        renderCodes(me.codes)
+    );
 }
 
 function renderGameSummary(game) {
@@ -102,24 +118,54 @@ function renderGameSummaries(games) {
     );
 }
 
-function renderAll(me) {
-    getElement('accountInfo').innerHTML = renderAccountInfo(me);
+function updateLastGame(lastGame) {
+    getElement('mainSection').innerHTML = renderMainSection(lastGame);
+    subscribeToForm('newMoveForm');
+    subscribeToForm('endGameForm');
+    subscribeToForm('newGameForm');
+}
+
+function updateAll(me) {
+    getElement('account').innerHTML = renderAccount(me);
+    subscribeToForm('withdrawMoneyForm');
     getElement('gameSummaries').innerHTML = renderGameSummaries(me.games);
-    getElement('mainSection').innerHTML = renderMainSection(me);
+    var lastGame = me.games[me.games.length - 1];
+    updateLastGame(lastGame);
 }
 
-
-function fetchAll() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState === 4 && this.status === 200) {
-            var me = JSON.parse(this.responseText);
-            renderAll.call(undefined, me);
+function dispatchStateChange() {
+    if (this.readyState === 4 && this.status === 200) {
+        var response = JSON.parse(this.responseText);
+        if (response.errors.length !== 0) {
+            console.log(response.errors);
+            return;
         }
-    };
-    xhttp.open('GET', '/me', true);
-    xhttp.send();
+
+        if ('me' in response) {
+            updateAll.call(null, response.me);
+        } else if ('game' in response) {
+            updateLastGame.call(null, response.game);
+        }
+    }
+}
+
+function fetch(method, address, data) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = dispatchStateChange;
+    xhttp.open(method, address, true);
+    xhttp.send(data);
+}
+
+function subscribeToForm(formId) {
+    var form = getElement(formId);
+    if (form !== null) {
+        form.addEventListener('submit', function (e) {
+            var data = new FormData(form);
+            fetch(form.method, form.action, data);
+            e.preventDefault();
+        })
+    }
 }
 
 
-fetchAll();
+fetch('GET', '/me');

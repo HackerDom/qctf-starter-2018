@@ -17,3 +17,10 @@ def validate_form(form_class):
         return decorated
 
     return decorator
+
+
+def dump_with_empty_errors(key, value, value_schema):
+    return jsonify({
+        'errors': [],
+        key: value_schema.dump(value).data
+    })

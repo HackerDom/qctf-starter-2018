@@ -2,7 +2,7 @@ from wtforms import Form, IntegerField, StringField, validators
 from flask_login import current_user
 
 from bulls_and_cows.models import Game, Move, check_game_number
-from bulls_and_cows.consts import MAXIMAL_BET
+from bulls_and_cows.consts import MAXIMAL_BET, MINIMAL_WITHDRAWAL_AMOUNT
 
 
 def load_game(game_id, fail_if_ended=True):
@@ -77,4 +77,18 @@ class NewGameForm(Form):
             return False
 
         self.game = Game(bet=self.bet.data, player=current_user)
+        return True
+
+
+class WithdrawMoneyForm(Form):
+    amount = IntegerField(validators=[validators.number_range(min=MINIMAL_WITHDRAWAL_AMOUNT)])
+
+    def validate(self):
+        if not super().validate():
+            return False
+
+        if current_user.balance < self.amount.data:
+            self.amount.errors.append('You cannot withdraw more than you have')
+            return False
+
         return True

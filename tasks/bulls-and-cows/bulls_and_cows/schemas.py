@@ -17,4 +17,5 @@ class GameSchema(Schema):
 
 class UserSchema(Schema):
     balance = fields.Int()
+    codes = fields.Function(lambda obj: obj.codes())
     games = fields.Nested(GameSchema, many=True)
