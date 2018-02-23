@@ -2,6 +2,7 @@ version: '2'
 services:
   symlink-archive:
     build: ./flask
+    command: web
     restart: always
     volumes:
       - ./volumes/user_data:/var/user_data

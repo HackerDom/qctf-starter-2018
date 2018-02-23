@@ -10,4 +10,4 @@ COPY . /app
 
 EXPOSE 80
 
-CMD ["./run-with-gunicorn.sh"]
+ENTRYPOINT ["./docker-entry-point.sh"]
