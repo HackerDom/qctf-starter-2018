@@ -11,7 +11,7 @@ SEED = 881488
 TEAM_COUNT = 400
 TOKEN_SIZE = 20
 
-TASK_ID = 'vqrqngizskvqtjk'
+TASK_ID = 'eujiyqlgrginkij'
 
 DIR_PREFIX     = '/tmp/'
 TASK_FILENAME  = 'teams'
@@ -114,8 +114,8 @@ def main():
 
     statement = '''TODO Какое-то описание
 
-Виртуальная машина: [vm.py](static/files/vqrqngizskvqtjk/teams/{0}/vm.py)
-Память для ВМ: [memory](static/files/vqrqngizskvqtjk/teams/{0}/memory)'''
+Виртуальная машина: [vm.py](static/files/%s/teams/{0}/vm.py)
+Память для ВМ: [memory](static/files/%s/teams/{0}/memory)''' % (TASK_ID, TASK_ID)
 
     generate_check('./check.py', flags)
     generate_generate('./generate.py', statement, tokens)

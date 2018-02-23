@@ -12,7 +12,7 @@ FILE_MATCHING    = 'token_file_matching'
 ROOTDIR_PREFIX   = '/tmp/passengers/'
 TEAMS_DIR_PREFIX = '/tmp/passengers/teams/'
 
-TASK_ID = 'jbcyjetzzpumsvt'
+TASK_ID = 'dnljlrahncokpgr'
 
 SEED = 31337
 
@@ -169,10 +169,10 @@ def prepare():
 НЕСА проводит очередной набор исследователей в свою космическую команду. На текущий момент уже готова система для подачи заявок, и разработчики из НЕСА рады поделиться её прототипом!
 Для того, чтобы зайти на сервис, необходимо указать токен вашей команды.
 
-Прототип: [main](static/files/jbcyjetzzpumsvt/teams/{0}/service/main)
-Исходный код: [main.c](static/files/jbcyjetzzpumsvt/teams/{0}/service/main.c)
+Прототип: [main](static/files/%s/teams/{0}/service/main)
+Исходный код: [main.c](static/files/%s/teams/{0}/service/main.c)
 Токен: {1}
-'''
+''' % (TASK_ID, TASK_ID)
 
     generate_check('./1/check.py', flags1)
     generate_generate('./1/generate.py', 'Пассажиры. Часть первая', statement, tokens)

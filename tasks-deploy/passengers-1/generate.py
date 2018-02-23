@@ -7,8 +7,8 @@ STATEMENT = '''
 НЕСА проводит очередной набор исследователей в свою космическую команду. На текущий момент уже готова система для подачи заявок, и разработчики из НЕСА рады поделиться её прототипом!
 Для того, чтобы зайти на сервис, необходимо указать токен вашей команды.
 
-Прототип: [main](static/files/jbcyjetzzpumsvt/teams/{0}/service/main)
-Исходный код: [main.c](static/files/jbcyjetzzpumsvt/teams/{0}/service/main.c)
+Прототип: [main](static/files/dnljlrahncokpgr/teams/{0}/service/main)
+Исходный код: [main.c](static/files/dnljlrahncokpgr/teams/{0}/service/main.c)
 Токен: {1}
 
 '''
