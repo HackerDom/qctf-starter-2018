@@ -14,7 +14,7 @@ TOKEN_SIZE = 20
 TASK_ID = 'eujiyqlgrginkij'
 
 DIR_PREFIX     = '/tmp/'
-TASK_FILENAME  = 'teams'
+TASK_FILENAME  = ''
 
 
 rand = random.Random()
@@ -114,8 +114,8 @@ def main():
 
     statement = '''TODO Какое-то описание
 
-Виртуальная машина: [vm.py](/static/files/%s/teams/{0}/vm.py)
-Память для ВМ: [memory](/static/files/%s/teams/{0}/memory)''' % (TASK_ID, TASK_ID)
+Виртуальная машина: [vm.py](/static/files/%s/{0}/vm.py)
+Память для ВМ: [memory](/static/files/%s/{0}/memory)''' % (TASK_ID, TASK_ID)
 
     generate_check('./check.py', flags)
     generate_generate('./generate.py', statement, tokens)

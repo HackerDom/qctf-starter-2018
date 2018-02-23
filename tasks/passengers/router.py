@@ -10,7 +10,7 @@ from subprocess import Popen
 
 FILE_MATCHING    = 'token_file_matching'
 ROOTDIR_PREFIX   = '/tmp/passengers/'
-TEAMS_DIR_PREFIX = '/tmp/passengers/teams/'
+TEAMS_DIR_PREFIX = '/tmp/passengers/'
 
 TASK_ID = 'dnljlrahncokpgr'
 
@@ -169,8 +169,8 @@ def prepare():
 НЕСА проводит очередной набор исследователей в свою космическую команду. На текущий момент уже готова система для подачи заявок, и разработчики из НЕСА рады поделиться её прототипом!
 Для того, чтобы зайти на сервис, необходимо указать токен вашей команды.
 
-Прототип: [main](/static/files/%s/teams/{0}/service/main)
-Исходный код: [main.c](/static/files/%s/teams/{0}/service/main.c)
+Прототип: [main](/static/files/%s/{0}/service/main)
+Исходный код: [main.c](/static/files/%s/{0}/service/main.c)
 Токен: {1}
 ''' % (TASK_ID, TASK_ID)
 
