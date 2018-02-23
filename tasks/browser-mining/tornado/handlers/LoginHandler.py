@@ -1,10 +1,10 @@
 from tornado.web import RequestHandler
 from tornado import gen
-
+from db import DbHandler
 
 class LoginHandler(RequestHandler):
-    def initialize(self, db):
-        self.db = db
+    def initialize(self):
+        self.db = DbHandler.get_db()
     
     def get(self):
         self.clear_cookie('user')

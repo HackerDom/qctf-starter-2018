@@ -1,6 +1,7 @@
 from tornado import gen
 from tornado_mysql import pools
 from gmpy2 import next_prime
+from config import db_config
 
 class DbHandler():
     def __init__(self, config):
@@ -12,6 +13,13 @@ class DbHandler():
         self.LOGIN = "SELECT * FROM users WHERE login=%s LIMIT 1"
         self.REGISTER = "INSERT INTO users(login, password, balance, task) VALUES (%s, %s, 0, 0)"
         self.UPDATE_SCORE = "UPDATE users SET balance=%s, task=%s WHERE login=%s"
+    
+    @staticmethod
+    def get_db():
+        db = getattr(DbHandler, '_database', None)
+        if db is None:
+            db = DbHandler._database = DbHandler(db_config)
+        return db
 
     @gen.coroutine
     def login(self, login, password):

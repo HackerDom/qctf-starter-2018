@@ -1,10 +1,11 @@
 from tornado.web import RequestHandler
 from tornado import gen
 from json import dumps
+from db import DbHandler
 
 class ShopHandler(RequestHandler):
-    def initialize(self, db, flag):
-        self.db = db
+    def initialize(self, flag):
+        self.db = DbHandler.get_db()
         self.flag = flag
     
     @gen.coroutine

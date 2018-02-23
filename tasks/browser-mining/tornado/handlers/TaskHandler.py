@@ -2,11 +2,11 @@ from tornado.web import RequestHandler
 from tornado import gen
 from json import dumps, loads
 from random import randint
-
+from db import DbHandler
 
 class TaskHandler(RequestHandler):
-    def initialize(self, db):
-        self.db = db
+    def initialize(self):
+        self.db = DbHandler.get_db()
 
     @gen.coroutine
     def post(self):

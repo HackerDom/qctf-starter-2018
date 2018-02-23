@@ -1,24 +1,27 @@
+import sys
+import socket
+
 from config import db_config
 from tornado_mysql import connect
 from getpass import getpass
 from tornado import gen, ioloop
 
 @gen.coroutine
-def db_adj(root, passwd):
+def db_adj():
     #############################################################
     # Если этот блок не сработал, то нужно создать пользователя #
     # вручную и, закоментировав блок, запустить скрипт ещё раз  #
     #############################################################
-    conn = yield connect(host=db_config['host'], charset=db_config['charset'], user=root, passwd=passwd)
-    cur = conn.cursor()
-    yield cur.execute('DROP USER IF EXISTS %s@%s', (db_config['user'], db_config['host']))
-    yield cur.execute('CREATE USER %s@%s IDENTIFIED BY %s', (db_config['user'], db_config['host'], db_config['passwd']))
-    yield cur.execute('GRANT ALL PRIVILEGES ON * . * TO %s@%s', (db_config['user'], db_config['host']))
-    yield cur.execute('FLUSH PRIVILEGES')
-    cur.close()
-    conn.commit()
-    conn.close()
-    print('USER CREATED!')
+    # conn = yield connect(host=db_config['host'], charset=db_config['charset'], user=root, passwd=passwd)
+    # cur = conn.cursor()
+    # yield cur.execute('DROP USER IF EXISTS %s@%s', (db_config['user'], host))
+    # yield cur.execute('CREATE USER %s@%s IDENTIFIED BY %s', (db_config['user'], host, db_config['passwd']))
+    # yield cur.execute('GRANT ALL PRIVILEGES ON * . * TO %s@%s', (db_config['user'], host))
+    # yield cur.execute('FLUSH PRIVILEGES')
+    # cur.close()
+    # conn.commit()
+    # conn.close()
+    # print('USER CREATED!')
     #############################################################
 
     conn = yield connect(host=db_config['host'], charset=db_config['charset'], user=db_config['user'], passwd=db_config['passwd'])
@@ -41,7 +44,9 @@ def db_adj(root, passwd):
     print('Done!')
 
 if __name__ == "__main__":
-    root = input('Your root login for mysql: ')
-    passwd = getpass('Your root password: ')
+    # if len(sys.argv) < 3:
+    #     print('Usage: {} login password'.format(sys.argv[0]))
+    # user = sys.argv[1]  # Your root login for mysql
+    # passwd = sys.argv[2]  # Your root password
 
-    ioloop.IOLoop.current().run_sync(lambda: db_adj(root, passwd))
+    ioloop.IOLoop.current().run_sync(lambda: db_adj())
