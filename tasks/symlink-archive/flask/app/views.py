@@ -2,6 +2,7 @@ import os
 import tarfile
 import re
 import urllib.parse
+import shutil
 
 from flask import render_template, flash, redirect, request, send_file, make_response
 from werkzeug.utils import secure_filename
@@ -107,7 +108,7 @@ def download():
 @nocache
 def delete():
     path = request.args.get('path')
-    error = get_path_validation_error_or_none(path, current_user)
+    error = get_path_validation_error_or_none(path, current_user, True)
     if error is not None:
         return error
     try:
@@ -125,20 +126,22 @@ def process_tar_or_get_error(file_part, current_user):
     if os.path.exists(tar_path):
         return 'Invalid filename'
     file_part.save(tar_path)
-    with tarfile.open(tar_path, 'r:') as tar:
-        if len(tar.getnames) + files_count > app.config['MAX_FILES_COUNT_PER_USER']:
-            return 'There will be too many files in your directory after upload: not more than {} is allowed'.format(app.config['MAX_FILES_COUNT_PER_USER'])
-        for tarinfo in tar:
-            if not (tarinfo.isreg() or tarinfo.issym()):
-                continue
-            if tarinfo.issym():
-                if not is_valid_link_path(tarinfo.linkname, current_user):
+    try:
+        with tarfile.open(tar_path, 'r:') as tar:
+            if len(tar.getnames()) + files_count > app.config['MAX_FILES_COUNT_PER_USER']:
+                return 'There will be too many files in your directory after upload: not more than {} is allowed'.format(app.config['MAX_FILES_COUNT_PER_USER'])
+            for tarinfo in tar:
+                if not (tarinfo.isreg() or tarinfo.issym()):
                     continue
-            result_path = os.path.join(tmp_user_dir, tarinfo.name)
-            if is_valid_tmp_path(result_path, current_user):
-                tar.extract(tarinfo, path=tmp_user_dir)
-                os.rename(result_path, os.path.join(get_user_dir(current_user), os.path.split(result_path)[-1]))
-    os.remove(tar_path)
+                if tarinfo.issym():
+                    if not is_valid_link_path(tarinfo.linkname, current_user):
+                        continue
+                result_path = os.path.join(tmp_user_dir, tarinfo.name)
+                if is_valid_tmp_path(result_path, current_user):
+                    tar.extract(tarinfo, path=tmp_user_dir)
+                    shutil.move(result_path, os.path.join(get_user_dir(current_user), os.path.split(result_path)[-1]))
+    finally:
+        os.remove(tar_path)
 
 def process_usual_file_or_get_error(file_part, current_user):
     files_count = len(list_files_for_user(current_user.directory, current_user.login, True))
@@ -151,7 +154,7 @@ def process_usual_file_or_get_error(file_part, current_user):
         return 'File already exists'
     file_part.save(path)
 
-def get_path_validation_error_or_none(path, current_user):
+def get_path_validation_error_or_none(path, current_user, allow_broken_link=False):
     if path is None:
         return build_error('Path is requied')
     if not is_valid_path(path, current_user):
@@ -159,6 +162,8 @@ def get_path_validation_error_or_none(path, current_user):
             return build_error('Permission denied: you do not own this file')
         return build_error('Invalid path')
     if not os.path.isfile(path):
+        if allow_broken_link and os.path.islink(path):
+            return
         return build_error('No such file')
 
 def is_valid_path(path, current_user):
