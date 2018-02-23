@@ -4,6 +4,6 @@ services:
     build: .
     restart: always
     ports:
-      - "127.0.0.1:50001:9999"
+      - "0.0.0.0:50001:9999"
     volumes:
       - ./passengers.xinetd:/etc/xinetd.d/passengers:ro
