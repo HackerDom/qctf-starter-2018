@@ -19,7 +19,7 @@ class UserProvider:
             return None
         if login in app.config['FAKE_USERS']:
             return None
-        directory = [random.choice(string.ascii_lowercase) for _ in range(10)]
+        directory = ''.join([random.choice(string.ascii_lowercase) for _ in range(10)])
         query_db_and_commit('insert into users (login, password, directory) values (?, ?, ?)', [login, password, directory])
         return User(login, password, directory)
         
