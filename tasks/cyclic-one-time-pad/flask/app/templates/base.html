@@ -17,25 +17,14 @@
 			<div class="inner">
 				<h3 class="masthead-brand">Cipher</h3>
 				<nav class="nav nav-masthead justify-content-center">
-					<a class="nav-link {% if active == 'encrypt' %} active {% endif %}" href="/encrypt">Encrypt</a>
-					<a class="nav-link {% if active == 'decrypt' %} active {% endif %}" href="/decrypt">Decrypt</a>
-					<a class="nav-link {% if active == 'about' %} active {% endif %}" href="/about">About</a>
+					<a class="nav-link {% if active == 'encrypt' %} active {% endif %}" href="/encrypt">Зашифровать</a>
+					<a class="nav-link {% if active == 'decrypt' %} active {% endif %}" href="/decrypt">Расшифровать</a>
+					<a class="nav-link {% if active == 'about' %} active {% endif %}" href="/about">О сервисе</a>
 				</nav>
 			</div>
 		</header>
 
-		<main role="main" class="inner cover">
-		<!--<hr>
-			{% with messages = get_flashed_messages() %}
-			{% if messages %}
-			<ul>
-			{% for message in messages %}
-				<li>{{ message }} </li>
-			{% endfor %}
-			</ul>
-			{% endif %}
-		</hr>
-		{% endwith %}-->
+		<main role="main" class="inner cover page-content">
 			{% block content %}{% endblock %}
 		</main>
 

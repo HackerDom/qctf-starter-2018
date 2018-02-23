@@ -1,33 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
 
-<form action="/encrypt" method="post" name="encrypt">
-	<img class="mb-4" src="/static/images/lock.png" alt="" width="72" height="72">
-	
-	<h1 class="h3 mb-3 font-weight-normal">Encrypt your data</h1>
+<div class="narrow-content">
+	<form action="/encrypt" method="post" name="encrypt">
+		<img class="mb-4" src="/static/images/lock.png" alt="" width="72" height="72">
+		
+		<h1 class="h3 mb-3 font-weight-normal">Зашифровать данные</h1>
 
-	<div class="mb-1">
-		<div class="d-block my-3">
-		  <div class="custom-control custom-radio inline-radio">
-			<input id="plain" name="data_format" class="custom-control-input" checked="" required="" value="plain" type="radio">
-			<label class="custom-control-label" for="plain">Plain</label>
-		  </div>
-		  <!--<div class="custom-control custom-radio inline-radio">
-			<input id="hex_repr" name="data_format" class="custom-control-input" required="" value="hex_repr" type="radio">
-			<label class="custom-control-label" for="hex_repr">Hex</label>
-		  </div>-->
-		  <div class="custom-control custom-radio inline-radio">
-			<input id="base64" name="data_format" class="custom-control-input" required="" value="base64" type="radio">
-			<label class="custom-control-label" for="base64">Base64</label>
-		  </div>
+		<div class="mb-1">
+			<div class="d-block my-3">
+			  <div class="custom-control custom-radio inline-radio">
+				<input id="plain" name="data_format" class="custom-control-input" checked="" required="" value="plain" type="radio">
+				<label class="custom-control-label" for="plain">Plain</label>
+			  </div>
+			  <div class="custom-control custom-radio inline-radio">
+				<input id="base64" name="data_format" class="custom-control-input" required="" value="base64" type="radio">
+				<label class="custom-control-label" for="base64">Base64</label>
+			  </div>
+			</div>
 		</div>
-	</div>
-	<div class="mb-1">
-		{{form.data(class='form-control', rows='5', id='data', placeholder='Put here the data you want to encrypt')}}
-	</div>
-	<div class="mb-3"></div>
-	<div class="mb-3">
-		<button class="btn btn-lg btn-primary btn-block" type="submit">Encrypt!</button>
-	</div>
-</form>
+		<div class="mb-1">
+			{{form.data(class='form-control', rows='5', id='data', placeholder='Введите данные для шифрования')}}
+		</div>
+		<div class="mb-3"></div>
+		<div class="mb-3">
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Зашифровать</button>
+		</div>
+	</form>
+</div>
 {% endblock %}

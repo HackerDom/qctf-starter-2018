@@ -20,14 +20,21 @@ body {
 
 .cover-container {
   width: 100%;
-  max-width: 42em;
+  max-width: 70em;
 }
 
+.narrow-content {
+  width: 38rem;	
+  margin-left: auto;
+  margin-right: auto;
+}
 
 /*
  * Header
  */
 .masthead {
+  margin-left: 7rem;
+  margin-right: 7rem;
   margin-bottom: 2rem;
 }
 
