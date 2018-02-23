@@ -1,17 +1,16 @@
 import os
-from ids_generator import task_ids, flags
+from ids_generator import task_ids, pins, flags
 from subprocess import Popen, PIPE
 from time import sleep
 
 PACKAGE_PATH = "./generated/"
 GENERATOR = "task_generator.py"
-LEVEL2_PIN = "9260188346513337"
 BINARY_NAME = "protected.exe"
 
 
-def is_valid(task_file, flag):
+def is_valid(task_file, pin, flag):
     with Popen(task_file, stdin=PIPE, stdout=PIPE) as p:
-        p.stdin.write(LEVEL2_PIN.encode() + b"\n")
+        p.stdin.write(pin.encode() + b"\n")
         p.stdin.flush()
         sleep(1)
         p.stdin.write(flag.encode() + b"\n")
@@ -22,8 +21,9 @@ def is_valid(task_file, flag):
 
 def main():
     for team_id, task_id in enumerate(task_ids):
-        print("Generating task for team" , team_id)
+        print("Generating task for team", team_id)
 
+        pin = pins[team_id]
         flag = flags[team_id]
         
         task_folder = os.path.join(PACKAGE_PATH, task_id)
@@ -31,9 +31,9 @@ def main():
         
         task_file = os.path.join(task_folder, BINARY_NAME)
         
-        os.system("python3 {} {} {}".format(GENERATOR, flag, task_file))
+        os.system("python3 {} {} {} {}".format(GENERATOR, pin, flag, task_file))
 
-        assert is_valid(task_file, flag)
+        assert is_valid(task_file, pin, flag)
 
 
 if __name__ == '__main__':
