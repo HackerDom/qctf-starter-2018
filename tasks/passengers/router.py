@@ -9,8 +9,8 @@ from subprocess import Popen
 
 
 FILE_MATCHING    = 'token_file_matching'
-ROOTDIR_PREFIX   = '/tmp/passengers/'
-TEAMS_DIR_PREFIX = '/tmp/passengers/'
+ROOTDIR_PREFIX   = '/passengers/'
+TEAMS_DIR_PREFIX = '/passengers/teams'
 
 TASK_ID = 'dnljlrahncokpgr'
 
@@ -40,7 +40,7 @@ class Router:
                 rootdir  += self.rand.choice(list(string.ascii_letters))
             self.token_file_matching[(team_id, token)] = rootdir
 
-        with open(FILE_MATCHING, 'w') as f:
+        with open(os.path.join(ROOTDIR_PREFIX, FILE_MATCHING), 'w') as f:
             f.write('\n'.join(['{}:{}:{}'.format(key[0], key[1], value) for key, value in self.token_file_matching.items()]))
 
     def generate_dirs(self):
@@ -99,7 +99,7 @@ def main():
     rootdir = token_matching[token]
     os.chdir(os.path.join(TEAMS_DIR_PREFIX, rootdir, 'service'))
 
-    p = Popen(['./main', token])
+    p = Popen(['su', 'passengers', '-c', './main {}'.format(token)])
     p.communicate()
 
 
