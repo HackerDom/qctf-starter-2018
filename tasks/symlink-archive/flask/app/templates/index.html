@@ -21,7 +21,7 @@
             <div class="col-md-4">
               <div class="card mb-4 box-shadow">
                 <div class="card-body">
-                  <p class="card-text">Stored file</p>
+                  <p class="card-text">Файл</p>
                   <p class="card-text file-name">{{ file.name }}</p>
 				  <form action="/download" id="download_form_{{ loop.index }}">
 					<input type="hidden" name="path" value="{{ file.path }}"/>
@@ -32,8 +32,8 @@
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
 				  	{% if file.personal %}
-					  <button type="submit" class="btn btn-sm btn-outline-secondary" form="download_form_{{ loop.index }}">Open</button>
-					  <button type="submit" class="btn btn-sm btn-outline-secondary" form="delete_form_{{ loop.index }}">Delete</button>
+					  <button type="submit" class="btn btn-sm btn-outline-secondary" form="download_form_{{ loop.index }}">Открыть</button>
+					  <button type="submit" class="btn btn-sm btn-outline-secondary" form="delete_form_{{ loop.index }}">Удалить</button>
 					{% endif %}
                     </div>
                     <small class="text-muted owner-name">@{{ file.owner }}</small>
@@ -45,15 +45,15 @@
             <div class="col-md-4">
               <div class="card mb-4 box-shadow">
                 <div class="card-body">
-                  <p class="card-text">Upload new</p>
+                  <p class="card-text">Загрузить</p>
                   <p class="card-text file-name" id="new-file-name">...</p>
 				  <form action="/upload" id="upload_form" method="POST" enctype="multipart/form-data">
 					<input type="file" name="file" id="file-input" hidden/>
 				  </form>
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
-				      <button type="submit" class="btn btn-sm btn-outline-primary" id="select-file-btn">Select file</button>
-					  <button type="submit" class="btn btn-sm btn-outline-secondary" id="send-file-btn" form="upload_form">Upload</button>
+				      <button type="submit" class="btn btn-sm btn-outline-primary" id="select-file-btn">Выбрать файл</button>
+					  <button type="submit" class="btn btn-sm btn-outline-secondary" id="send-file-btn" form="upload_form">Загрузить</button>
                     </div>
                   </div>
                 </div>
