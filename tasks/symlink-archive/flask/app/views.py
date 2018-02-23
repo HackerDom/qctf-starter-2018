@@ -37,16 +37,16 @@ def login():
         return redirect('/')
     return render_template('login.html', form=login_form)
 
-@app.route('/register', methods=["GET", "POST"])
-def register():
-    login_form = LoginForm()
-    if login_form.validate_on_submit():
-        user = UserProvider.create_user(login_form.login.data, login_form.password.data)
-        if user is None:
-            return build_error('User already exists')
-        login_user(user)
-        return redirect('/')
-    return render_template('register.html', form=login_form)
+# @app.route('/register', methods=["GET", "POST"])
+# def register():
+#     login_form = LoginForm()
+#     if login_form.validate_on_submit():
+#         user = UserProvider.create_user(login_form.login.data, login_form.password.data)
+#         if user is None:
+#             return build_error('User already exists')
+#         login_user(user)
+#         return redirect('/')
+#     return render_template('register.html', form=login_form)
 
 @app.route('/logout', methods=["GET"])
 @login_required
