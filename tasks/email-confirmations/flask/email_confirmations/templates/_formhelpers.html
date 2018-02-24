@@ -1,0 +1,15 @@
+{% macro render_field(field) %}
+    <div class="form-group">
+        <dt><span class="control-label">{{ field.label }}</span>
+        <dd>
+        {{ field(class='form-control')|safe }}
+        {% if field.errors %}
+            <ul class="errors">
+                {% for error in field.errors %}
+                    <li class="text-danger">{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</dd>
+{% endmacro %}

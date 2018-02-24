@@ -1,0 +1,2 @@
+git+git://github.com/DeepHorizons/tts.git@960ebcb3#egg=tts
+srt==1.6.0

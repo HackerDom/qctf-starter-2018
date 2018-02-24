@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% from "_formhelpers.html" import render_field %}
+{% block body %}
+    <div class="row login-row">
+        <div class="col-md-6">
+            <form method="post">
+                <dl>
+                    {{ render_field(login_form.username) }}
+                    {{ render_field(login_form.password) }}
+                </dl>
+                <input type="hidden" name="action" value="login">
+                <p><input type="submit" value="Log in" class="btn">
+            </form>
+        </div>
+        <div class="col-md-6">
+            {% if show_confirmation_message %}
+                <h6>Confirmation email has been sent to {{ form.email.data }}</h6>
+            {% endif %}
+            <form method="post">
+                <dl>
+                    {{ render_field(registration_form.username) }}
+                    {{ render_field(registration_form.email) }}
+                    {{ render_field(registration_form.password) }}
+                </dl>
+                <input type="hidden" name="action" value="register">
+                <p><input type="submit" value="Register" class="btn">
+            </form>
+        </div>
+    </div>
+{% endblock %}
