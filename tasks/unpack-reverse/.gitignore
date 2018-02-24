@@ -1,2 +1,4 @@
 .idea/
 obj/
+__pycache__/
+generated/

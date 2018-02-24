@@ -54,7 +54,7 @@ namespace Level2
             Console.Write("Enter PIN: ");
             var input = Console.ReadLine();
             long pin;
-            return long.TryParse(input, out pin) && pin == 10189621839546868;
+            return long.TryParse(input, out pin) && pin == $PIN;
         }
 
         private static byte Deobfuscate(byte obfuscated)
