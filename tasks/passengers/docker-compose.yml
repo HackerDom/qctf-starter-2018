@@ -1,0 +1,9 @@
+version: '2'
+services:
+  passengers:
+    build: .
+    restart: always
+    ports:
+      - "0.0.0.0:50001:9999"
+    volumes:
+      - ./passengers.xinetd:/etc/xinetd.d/passengers:ro

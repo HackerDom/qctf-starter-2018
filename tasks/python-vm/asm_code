@@ -1,0 +1,203 @@
+mov   R0, 10839
+puts  R0
+mov   R0, 8191
+gets  R0         ; enter string from stding
+mov   R1, 0
+mov   R2, 0
+
+start_len_calc:
+load  R3B, R0
+cmp   R3B, 0       ; calculate length of entered string
+je    end_len_calc
+inc   R0
+inc   R1
+jmp   start_len_calc
+
+end_len_calc:
+cmp   R1, 12     ; entered_str.length == 12
+je    correct_len
+
+print_fail_message:
+mov   R0, 10639  ; print fail message
+puts  R0
+exit
+
+correct_len:
+mov   R0, 8203
+mov   R1, 8202
+
+add_reverse_loop:
+cmp   R1, 8191   ; add reversed string to the entered one
+jl    end_adding_loop
+load  R4, R1
+store R4B, R0
+dec   R1
+inc   R0
+jmp   add_reverse_loop
+
+end_adding_loop:
+mov   R2, 0      ; null byte to the end of the new string
+store R2B, R0
+mov   R1, R0
+mov   R0, 8191
+mov   R4, 0
+
+start_str_encoding:
+cmp   R0, R1            ; encode string like that:
+je    end_str_encoding  ; str[i] = (str[i] + 4) ^ "konata"[i % 6]
+load  R6B, R0           ; get str[i]
+add   R6, 4             ; str[i] + 4
+mov   R8, R4
+add   R8, 10739
+load  R7B, R8           ; "konata"[i % 6]
+xor   R6, R7            ; xor them
+store R6B, R0           ; put into [R0]
+inc   R0
+inc   R4
+mod   R4, 6
+jmp   start_str_encoding
+
+end_str_encoding:
+mov R0,   8212
+hash_sha1 R0, 9000
+
+mov R0, 9000
+mov R1, 10439
+
+strcmp R0, R1
+jne print_fail_message
+
+mov R0, 8209
+mov R1, 8800
+
+start_middle_substring:
+cmp   R0, 8212
+je    end_middle_substring
+load  R2B, R0
+store R2B, R1
+inc   R0
+inc   R1
+jmp   start_middle_substring
+
+end_middle_substring:
+mov   R2, 0
+store R2, R1
+
+mov R0, 8800
+hash_md5 R0, 8900
+
+mov R0, 8900
+mov R1, 10339
+
+strcmp R0, R1
+jne print_fail_message
+
+mov R0, 8800
+mov R1, 8191
+
+start_prefix_substring:
+cmp R1, 8209
+je end_prefix_substring
+load R2B, R1
+store R2B, R0
+inc R1
+inc R0
+jmp start_prefix_substring
+
+end_prefix_substring:
+mov R0, 0
+store R0B, R1
+
+mov R0, 8800
+
+start_encode_prefix:
+cmp R0, 8818
+je end_encode_prefix
+load R1B, R0
+xor R1, 42
+store R1B, R0
+inc R0
+jmp start_encode_prefix
+
+end_encode_prefix:
+mov R0, 8800
+mov R1, 10239
+
+strcmp R0, R1
+jne print_fail_message
+
+flag_decoding:
+mov R0, 10539
+mov R1, 10545
+mov R2, 10551
+mov R3, 10557
+mov R4, 10563
+mov R5, 10569
+
+mov R6, 8800
+
+1_decoding:
+cmp R5, 10575    ; decoding is just a
+je 2_decoding    ; reshuffle of blocks of the flag
+load R7B, R5
+xor R7, 123
+store R7B, R6
+inc R5
+inc R6
+jmp 1_decoding
+
+2_decoding:
+cmp R3, 10563
+je 3_decoding
+load R7B, R3
+xor R7, 28
+store R7B, R6
+inc R3
+inc R6
+jmp 2_decoding
+
+3_decoding:
+cmp R4, 10569
+je 4_decoding
+load R7B, R4
+xor R7, 72
+store R7B, R6
+inc R4
+inc R6
+jmp 3_decoding
+
+4_decoding:
+cmp R1, 10551
+je 5_decoding
+load R7B, R1
+xor R7, 41
+store R7B, R6
+inc R1
+inc R6
+jmp 4_decoding
+
+5_decoding:
+cmp R2, 10557
+je 6_decoding
+load R7B, R2
+xor R7, 15
+store R7B, R6
+inc R2
+inc R6
+jmp 5_decoding
+
+6_decoding:
+cmp R0, 10545
+je end_decoding
+load R7B, R0
+xor R7, 55
+store R7B, R6
+inc R0
+inc R6
+jmp 6_decoding
+
+end_decoding:
+mov R6, 8800
+puts R6         ; print the flag
+
+exit

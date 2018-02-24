@@ -1,0 +1,13 @@
+service passengers
+{
+  disable = no
+  socket_type = stream
+  protocol = tcp
+  wait = no
+  user = root
+  bind = 0.0.0.0
+  server = /usr/local/bin/python3
+  server_args = /app/router.py
+  type = UNLISTED
+  port = 9999
+}
