@@ -8,4 +8,4 @@ def generate(flag):
     for y in range(5):
         draw.text((127,y*80+50),flag[y*5:(y+1)*5],(0,0,0), font=font)
     im = prepare_image(im)
-    return ''.join(map(reverse_second_part, map(cipher_block, read_as_rgb_2x2_blocks(im))))
+    return ''.join(map(reverse_second_part, map(encrypt_block, read_as_rgb_2x2_blocks(im))))

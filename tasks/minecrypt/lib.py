@@ -52,7 +52,7 @@ def read_as_rgb_2x2_blocks(image):
                 ))
     return pixels
 
-def cipher_block(block):
+def encrypt_block(block):
     a, b, c, d = block
     a = a[0] + 20*a[1] + 100*a[2]
     b = 201*b[0] + 11*b[1] + 2*b[2]

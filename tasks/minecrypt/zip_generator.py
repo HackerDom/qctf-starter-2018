@@ -19,7 +19,10 @@ if __name__ == "__main__":
     with open('task.py', 'r') as f:
         task_file = f.read()
 
+    i = 0
     for id, flag in zip(ids, flags):
+        i += 1
+        print(i)
         encrypted = generate(flag)
         in_memory_zip = io.BytesIO()
         with zipfile.ZipFile(in_memory_zip, "a", zipfile.ZIP_DEFLATED, False) as zf:
