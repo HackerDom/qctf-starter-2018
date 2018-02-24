@@ -3,27 +3,131 @@
 <head>
     <meta charset="utf-8">
     <title>Quirky Casino</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="container">
-                    <div class="row" id="account">
-                        Account
-                    </div>
-                    <div class="row" id="gameSummaries">
-                        Games
-                    </div>
+    <div class="modal fade vertical-align" id="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body alert-danger pl-4">
                 </div>
-            </div>
-            <div class="col-md-8" id="mainSection">
-                Main
             </div>
         </div>
     </div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <span class="navbar-brand">Quirky Casino</span>
+            <ul class="navbar-nav pl-4 mr-auto">
+                <li class="navbar-text mr-2">
+                    Выберите игру:
+                </li>
+                <li class="nav-item game-disabled">
+                    <a class="nav-link" href="#">Покер</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link">Быки и коровы</a>
+                </li>
+                <li class="nav-item game-disabled">
+                    <a class="nav-link" href="#">Рулетка</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+
+        <div class="row mb-3">
+            <div class="col-md-3 pl-5">
+                <h1 class="mt-4 text-center">Аккаунт</h1>
+            </div>
+            <div class="col-md-9">
+                <div class="container-fluid ml-0">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h1 class="mt-4 text-center">Игра</h1>
+                        </div>
+                        <div class="col-md-4">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mx-1">
+
+            <div class="col-md-3">
+                <div class="card mb-4">
+                    <h5 class="card-header">Баланс</h5>
+                    <div class="card-body" id="balance">
+                        Загрузка...
+                    </div>
+                </div>
+
+                <div class="card my-4">
+                    <h5 class="card-header">История игр</h5>
+                    <div class="card-body" id="gameSummaries">
+                        Загрузка...
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9 pr-0">
+                <div class="container-fluid ml-0">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card mb-4">
+                                <div class="card-body" id="mainSection">
+                                    Загрузка...
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <h5 class="card-header">Правила игры</h5>
+                                <div class="card-body">
+                                    <p>В игре «Быки и коровы» казино загадывает четырёхзначное число без повторяющихся цифр, а вам нужно его отгадать за как можно меньшее число попыток.</p>
+                                    <p>Каждая попытка заключается в том, что вы отправляете подходящее число, а казино отвечает, сколько в нём <strong>«быков»</strong> и <strong>«коров»</strong>.</p>
+                                    <p>Цифра вашего числа называется <strong>«быком»</strong>, если в загаданном числе на том же месте стоит та же цифра.</p>
+                                    <p>Цифра вашего числа называется <strong>«коровой»</strong>, если в загаданном числе есть такая цифра, но она стоит на другом месте.</p>
+                                    <p class="mb-0">Например, если загадано число <strong>0352</strong>, а игрок отправил <strong>2301</strong>, то казино вернёт <strong>1Б 2К</strong>.</p>
+                                </div>
+                            </div>
+
+                            <div class="card my-4">
+                                <h5 class="card-header">Правила ставок</h5>
+                                <div class="card-body">
+                                    <p>Минимальная ставка — <strong>1</strong>, максимальная — <strong>100000</strong>. Поставить можно не больше денег, чем есть на счёте.</p>
+                                    <p>Ставка за игру всегда списывается со счёта, но если игрок угадал число, то он получает обратно <strong>k × ставка</strong>, округлённое вниз, где коэффициент <strong>k</strong> зависит от числа попыток следующим образом:</p>
+                                    <div style="display: inline-block; text-align: right;">
+                                        <strong>≤ 5</strong> попыток — <br />
+                                        <strong>6</strong> попыток — <br />
+                                        <strong>7</strong> попыток — <br />
+                                        <strong>8</strong> попыток — <br />
+                                        <strong>≥ 9</strong> попыток — <br />
+                                    </div><!--
+                                 --><div style="display: inline-block">
+                                        <strong>k = 3</strong><br />
+                                        <strong>k = 2</strong><br />
+                                        <strong>k = 0.5</strong><br />
+                                        <strong>k = 0.25</strong><br />
+                                        <strong>k = 0</strong><br />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='vendor/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>

@@ -1,17 +1,18 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, missing
 
 
 class MoveSchema(Schema):
     number = fields.Int()
     guess = fields.Str()
-    bulls = fields.Function(lambda obj: obj.bulls())
-    cows = fields.Function(lambda obj: obj.cows())
+    bulls = fields.Function(lambda move: move.bulls())
+    cows = fields.Function(lambda move: move.cows())
 
 
 class GameSchema(Schema):
     id = fields.Int()
     bet = fields.Int()
     has_ended = fields.Bool()
+    secret_number = fields.Function(lambda game: game.secret_number if game.has_ended else missing)
     moves = fields.Nested(MoveSchema, many=True)
 
 

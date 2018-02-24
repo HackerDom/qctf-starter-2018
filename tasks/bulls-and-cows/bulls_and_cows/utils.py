@@ -10,12 +10,9 @@ def validate_form(form_class):
             form = form_class(request.form)
             if form.validate():
                 return func(form)
-
-            all_errors = sum(form.errors.values(), [])
-            return jsonify({'errors': all_errors}), 403
+            return jsonify({'errors': form.errors}), 403
 
         return decorated
-
     return decorator
 
 

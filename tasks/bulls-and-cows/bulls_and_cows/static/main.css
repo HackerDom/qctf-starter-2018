@@ -1,0 +1,17 @@
+.modal .alert-danger {
+    border-radius: .3rem;
+}
+
+.modal-dialog {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.green {
+    color: green;
+}
+
+.red {
+    color: red;
+}

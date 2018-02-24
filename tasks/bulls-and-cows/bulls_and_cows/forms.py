@@ -15,8 +15,8 @@ def load_game(game_id, fail_if_ended=True):
 
 
 class NewMoveForm(Form):
-    game_id = IntegerField()
-    number = IntegerField()
+    game_id = IntegerField(validators=[validators.DataRequired()])
+    number = IntegerField(validators=[validators.DataRequired()])
     guess = StringField(validators=[lambda form, field: check_game_number(field.data)])
 
     def __init__(self, *args, **kwargs):
@@ -46,7 +46,7 @@ class NewMoveForm(Form):
 
 
 class EndGameForm(Form):
-    game_id = IntegerField()
+    game_id = IntegerField(validators=[validators.DataRequired()])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
