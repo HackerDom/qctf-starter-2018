@@ -39,13 +39,13 @@ function renderShortForm(props) {
     }
 
     return (
-        '<form' + idAttribute + classAttribute + ' action="' + props.action + '" method="' + props.method + '">' +
+        '<div><form' + idAttribute + classAttribute + ' action="' + props.action + '" method="' + props.method + '">' +
         '   <div class="input-group' + (props.inlineBlock ? 'd-inline-block' : '') + '">' +
                 textInput +
                 props.additionalFields +
                 submitInput +
         '   </div>' +
-        '</form>'
+        '</form></div>'
     );
 }
 
@@ -107,7 +107,7 @@ function renderGameProgress(game) {
         '   <div class="card"><div class="card-header p-0 pt-1">' +
         '       <div class="row">' +
         '           <div class="col-md-5 text-right">' +
-        '               <h4>Казино загадало:</h4>' +
+        '               <h4>Загадано:</h4>' +
         '           </div>' +
         '           <div class="col-md-7">' +
         '               <h4>' + (game.secret_number || '????') + '</h4>' +
@@ -117,7 +117,7 @@ function renderGameProgress(game) {
         '   <div class="card-body py-2 px-0">' +
         '       <div class="row">' +
         '           <div class="col-md-5 text-right">' +
-        '               <h4>Ваши попытки:</h4>' +
+        '               <h4>Попытки:</h4>' +
         '           </div>' +
         '           <div class="col-md-7">' +
                         renderMoves(game.moves) +
