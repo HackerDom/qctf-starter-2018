@@ -19,7 +19,7 @@ STATEMENT = '''
 за любые найденные недочёты.
 
 [Сайт системы](https://auth-system.contest.qctf.ru)
-[Исходный код](/static/files/eahhsqjzaoaogxq/public-src.zip)
+[Исходный код](/static/files/eahhsqjzaoaogxq/auth-system-src.zip)
 '''
 
 

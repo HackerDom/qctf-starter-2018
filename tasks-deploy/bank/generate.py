@@ -10,7 +10,7 @@ STATEMENT = '''
 чтобы те помогли с поиском бэкдора и расследованием инцидента.
 
 [Сайт банка](https://bank.contest.qctf.ru)
-[Исходный код](/static/files/aquacclvbmkaiwk/public-src.zip)
+[Исходный код](/static/files/aquacclvbmkaiwk/bank-src.zip)
 '''
 
 
