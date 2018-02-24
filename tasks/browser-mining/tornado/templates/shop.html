@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QCTF coins</title>
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script src="{{ static_url('js/miner.js') }}"></script>
+    <script src="{{ static_url('js/shop.js') }}"></script>
+    <link rel="stylesheet" href="{{ static_url('css/styles.css') }}">
+</head>
+<body>
+<nav class="navbar navbar-dark navbar-expand">
+    <a href="#" class="navbar-brand">Miner</a>
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a href="/" class="nav-link">Заработать</a>
+        </li>
+        <li class="nav-item active">
+            <a href="#" class="nav-link">Купить</a>
+        </li>
+    </ul>
+    <span class="navbar-text">
+        Баланс:
+        <span id="balance">{{ balance }}</span>
+        <img src="{{ static_url('images/coin.png') }}" alt="coin" class="coin">
+    </span>
+</nav>
+<div class="flag-container">
+    <div class="item">
+        <img src="{{ static_url('images/flag.jpg') }}" alt="flag" class="flag-img">
+        <p class="itemName">То, что Вам нужно ;)</p>
+        <p class="price">Цена: 10000 <img src="{{ static_url('images/coin.png') }}" alt="coin" class="coin"></p>
+        <button class="btn btn-success buy" onclick="buy()">Купить!</button>
+    </div>
+    <div class="alert alert-success flag"></div>
+    <div class="alert alert-danger shop-error"></div>
+</div>
+</body>
+</html>

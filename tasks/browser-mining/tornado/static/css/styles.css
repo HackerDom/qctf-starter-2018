@@ -1,0 +1,63 @@
+.coin {
+    width: 5%;
+}
+
+.navbar-text {
+    text-align: right;
+}
+
+.navbar {
+    background-color: #000000dd;
+}
+
+body {
+    background-color: #eeeeef;
+}
+
+.btn-mine {
+    margin: auto;
+}
+
+#mining-stop {
+    display: none;
+}
+
+.mine-container {
+    margin: 30px auto;
+    width: 40%;
+    text-align: center;
+}
+
+.success,
+.error {
+    margin: 160px auto;
+    display: none;
+}
+
+.shop-error,
+.flag {
+    margin: 20px auto;
+    display: none;
+}
+
+.flag-container {
+    width: 30%;
+    margin: 30px auto;
+}
+
+.flag-img {
+    width: 50%;
+    display: block;
+    margin: auto;
+}
+
+.itemName,
+.price {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.buy {
+    display: block;
+    margin: auto;
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QCTF coins</title>
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{{ static_url('js/miner.js') }}"></script>
+    <link rel="stylesheet" href="{{ static_url('css/loading.css') }}">
+    <link rel="stylesheet" href="{{ static_url('css/styles.css') }}">
+</head>
+<body>
+<nav class="navbar navbar-dark navbar-expand">
+    <a href="#" class="navbar-brand">Miner</a>
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+            <a href="#" class="nav-link">Заработать</a>
+        </li>
+        <li class="nav-item">
+            <a href="shop" class="nav-link">Купить</a>
+        </li>
+    </ul>
+    <span class="navbar-text">
+        Баланс:
+        <span id="balance"> {{ balance }}</span>
+        <img src="{{ static_url('images/coin.png') }}" alt="coin" class="coin">
+    </span>
+</nav>
+<div class="mine-container">
+    <button class="btn btn-success btn-lg btn-mine" id="mining-start" onclick="coc0Co()">Start mining!</button>
+    <button class="btn btn-danger btn-lg btn-mine" id="mining-stop" onclick="coCoc0()">Stop!</button>
+
+    <div class="loading">
+        <div class="loading-cubes">
+            <div class="cube box1"></div>
+            <div class="cube box2"></div>
+            <div class="cube box3"></div>
+            <div class="cube box4"></div>
+            <div class="cube-shadows">
+                <div class="shadow box1"></div>
+                <div class="shadow box2"></div>
+                <div class="shadow box3"></div>
+                <div class="shadow box4"></div>
+            </div>
+        </div>
+    </div>
+    <div class="alert alert-success alert-dismissible fade show success" id="success">
+        Работа выполнена! Ваш баланс обновлён.
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show error">
+    </div>
+</div>
+</body>
+</html>
