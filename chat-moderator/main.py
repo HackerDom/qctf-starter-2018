@@ -1,7 +1,7 @@
 import re
 import os
 
-from telegram.ext import Updater, MessageHandler, BaseFilter
+from telegram.ext import Updater, RegexHandler
 
 
 def getenv(name):
@@ -11,7 +11,9 @@ def getenv(name):
     return value
 
 
-FLAG_RE = re.compile(r'QCTF_?{?(\w+)}?')
+FLAG_PATTERN_RE = re.compile(r'QCTF_?{?(\w+)}?', re.IGNORECASE)
+CATCHALL_FLAG_RE = re.compile(r'.*QCTF[-\w_{}]{5,}.*', re.IGNORECASE)
+
 TOKEN = getenv('TOKEN')
 ADMIN_CHAT_ID = int(getenv('ADMIN_CHAT_ID'))
 FLAGS_PATH = getenv('FLAGS_PATH')
@@ -25,36 +27,28 @@ def read_flag_patterns(path):
 
     flag_patterns = []
     for line in lines:
-        match = FLAG_RE.match(line)
+        match = FLAG_PATTERN_RE.match(line)
         if not match:
             raise ValueError('Invalid flag: {}'.format(line))
         flag_patterns.append(match.group(1))
     return flag_patterns
 
 
-class RegexFilter(BaseFilter):
-    def __init__(self, regex):
-        self.regex = regex
-
-    def filter(self, message):
-        return message.text and self.regex.search(message.text)
-
-
 def process_cheater(bot, update):
-    message = update.message
+    message = update.edited_message or update.message
     if message.chat.id == ADMIN_CHAT_ID:
         return
-    update.message.forward(ADMIN_CHAT_ID)
-    update.message.delete()
+    message.forward(ADMIN_CHAT_ID)
+    message.delete()
 
 
 def main():
     flag_patterns = read_flag_patterns(FLAGS_PATH)
-    cheater_re = re.compile('(' + '|'.join(map(re.escape, flag_patterns)) + ')')
+    cheater_re = re.compile('.*(' + '|'.join(map(re.escape, flag_patterns)) + ').*', re.IGNORECASE)
 
     updater = Updater(token=TOKEN)
-    updater.dispatcher.add_handler(
-        MessageHandler(RegexFilter(cheater_re), process_cheater))
+    updater.dispatcher.add_handler(RegexHandler(cheater_re, process_cheater, edited_updates=True))
+    updater.dispatcher.add_handler(RegexHandler(CATCHALL_FLAG_RE, process_cheater, edited_updates=True))
 
     updater.start_polling()
     updater.idle()
