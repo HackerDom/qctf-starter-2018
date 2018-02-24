@@ -32,6 +32,7 @@ task_set: !TaskSet
   - tasks-deploy/side-channel/side-channel.yml
   - tasks-deploy/patched-python/patched-python.yml
   - tasks-deploy/cats-vs-dogs/cats-vs-dogs.yml
+  - tasks-deploy/bulls-and-cows/bulls-and-cows.yml
 regions:
   - {finish_time: '2018-02-25 19:00:00+03:00', name: "\u0410\u0433\u0440\u044B\u0437",
     start_time: '2018-02-25 11:00:00+03:00'}
