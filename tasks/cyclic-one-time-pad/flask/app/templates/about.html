@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="lead">В нашем сервисе использован криптостойкий шифр собственной разработки. В его основе лежит неуязвимый механизм одноразового блокнота, совмещенный с дополнительными элементами для обеспечения устойчивости к взлому даже при многократном использовании. Алгоритм признан абсолютно безопасным, а потому мы не боимся поделиться им с вами, чтобы и вы убедились в том, что ваши данные в безопасности.</p>
+<pre class="lead code">
+class Cipher:
+    def __init__(self, key, seed):
+        self.key = key
+        self.seed = seed
+
+    def encrypt(self, data):
+        if len(data) &gt; len(self.key):
+            raise Exception(&quot;Can encrypt only blocks which are no longer than key length&quot;)
+        data = [x ^ y for (x, y) in zip(data, self.key)]
+        random.seed(self.seed)
+        random.shuffle(data)
+        data = [x ^ y for (x, y) in zip(data, self.key)]
+        return bytes(data)
+
+    def decrypt(self, data):
+        if len(data) &gt; len(self.key):
+            raise Exception(&quot;Can decrypt only blocks which are no longer than key length&quot;)
+        data = [x ^ y for (x, y) in zip(data, self.key)]
+        perm = list(range(len(data)))
+        random.seed(self.seed)
+        random.shuffle(perm)
+        unshuffled = [0] * len(data)
+        for pos, value in enumerate(perm):
+            unshuffled[value] = data[pos]
+        data = [x ^ y for (x, y) in zip(unshuffled, self.key)]
+        return bytes(data)
+</pre>
+{% endblock %}
