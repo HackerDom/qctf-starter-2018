@@ -12,16 +12,20 @@ def encrypt():
     form = EncryptForm()
     app.logger.info(form.data_format.data)
     if form.validate_on_submit():
-        #flash('Encrypt requested for data="' + form.data.data + '", receiver=' + str(form.receiver.data))
         try:
             raw_data = form.data.data.encode()
             if form.data_format.data == 'plain':
                 data = raw_data
             elif form.data_format.data == 'base64':
-                data = b64decode(raw_data)
+                try:
+                    data = b64decode(raw_data)
+                except Exception as e:
+                    flash('Входные данные не являются валидным base64')
+                    return render_template('encrypt.html', form=form, active='encrypt')
             else:
                 raise Exception('Form is empty')
         except Exception as e:
+            flash('Произошла ошибка')
             app.logger.info("Exception while parsing data: {}".format(e))
             return render_template('encrypt.html', form=form, active='encrypt')
 

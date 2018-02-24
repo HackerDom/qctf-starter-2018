@@ -106,3 +106,9 @@ body {
 	padding-top: 3px;
 	padding-right: 7px;
 }
+
+.inline-description {
+	display: inline;
+	padding-top: 3px;
+	padding-right: 0.5rem;
+}
