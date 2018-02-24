@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from string import digits, ascii_letters
 from random import choice, seed
 from task_generator import generate
@@ -7,11 +9,12 @@ import zipfile, io
 
 
 ALPHA = digits+ascii_letters
+NUMBER_OF_TEAMS = 600
 
 if __name__ == "__main__":
     seed(54345)
-    ids = [''.join(choice(ALPHA) for _ in range(20)) for x in range(400)]
-    flags = ['QCTF{{{}}}'.format(''.join(choice(ALPHA) for _ in range(14))).upper() for x in range(400)]
+    ids = [''.join(choice(ALPHA) for _ in range(20)) for x in range(NUMBER_OF_TEAMS)]
+    flags = ['QCTF{{{}}}'.format(''.join(choice(ALPHA) for _ in range(14))).upper() for x in range(NUMBER_OF_TEAMS)]
     with open('ids_and_flags.py', 'w') as f:
         f.write('ids = {}\n'.format(repr(ids)))
         f.write('flags = {}'.format(repr(flags)))
