@@ -12,23 +12,21 @@ description: ""
 tasks_grouping: One by one
 task_opening_policy: All
 task_set: !TaskSet
-  context: !DirectoryContext
-    directory: /contest_import
   task_paths:
-  - tasks-deploy/getflagchar/getflagchar.yaml
-  - tasks-deploy/symlink-archive/symlink-archive.yml
-  - tasks-deploy/bank/bank.yml
-  - tasks-deploy/cyclic-one-time-pad/cyclic-one-time-pad.yml
-  - tasks-deploy/make-some-noise/make-some-noise.yml
-  - tasks-deploy/minecrypt/minecrypt.yml
-  - tasks-deploy/browser-mining/browser-mining.yml
-  - tasks-deploy/youtube-subtitles/youtube-subtitles.yml
-  - tasks-deploy/permanent-302/permanent-302.yml
-  - tasks-deploy/python-vm/python-vm.yaml
-  - tasks-deploy/unpack-reverse/unpack-reverse.yaml
-  - tasks-deploy/passengers-1/passengers-1.yml
-  - tasks-deploy/passengers-2/passengers-2.yml
-  - tasks-deploy/email-confirmations/email-confirmations.yml
-  - tasks-deploy/side-channel/side-channel.yml
-  - tasks-deploy/patched-python/patched-python.yml
-  - tasks-deploy/cats-vs-dogs/cats-vs-dogs.yml
+  - getflagchar/getflagchar.yaml
+  - symlink-archive/symlink-archive.yml
+  - bank/bank.yml
+  - cyclic-one-time-pad/cyclic-one-time-pad.yml
+  - make-some-noise/make-some-noise.yml
+  - minecrypt/minecrypt.yml
+  - browser-mining/browser-mining.yml
+  - youtube-subtitles/youtube-subtitles.yml
+  - permanent-302/permanent-302.yml
+  - python-vm/python-vm.yaml
+  - unpack-reverse/unpack-reverse.yaml
+  - passengers-1/passengers-1.yml
+  - passengers-2/passengers-2.yml
+  - email-confirmations/email-confirmations.yml
+  - side-channel/side-channel.yml
+  - patched-python/patched-python.yml
+  - cats-vs-dogs/cats-vs-dogs.yml
