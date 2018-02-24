@@ -5,7 +5,7 @@ task_ids = ['ja2j5gdj', 'ex0r3dtw', 'y4slpt1b', '9df7v7by', 'scickcnv', 'h2n5zv4
 TITLE = '''Взломан сайт Dementia Software'''
 
 STATEMENT='''
-Сегодня утром [сайт](https://get-flag.contest.qctf.ru/%s) компании Dementia Software оказался недоступен.
+Сегодня утром [сайт](https://get-flag.contest.qctf.ru/{}) компании Dementia Software оказался недоступен.
 Эксперт Dementia по ИБ Грегус Танкер считает, что вычислительные мощности
 серверов используются для майнинга криптовалюты, однако независимое
 исследование анонимной группы white hat хакеров показало, что сайт, скорее всего,
@@ -18,4 +18,4 @@ def generate(context):
 
     task_id = task_ids[participant.id % len(task_ids)]
 
-    return TaskStatement(TITLE, STATEMENT % task_id)
+    return TaskStatement(TITLE, STATEMENT.format(task_id))
