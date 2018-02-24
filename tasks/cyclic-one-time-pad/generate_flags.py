@@ -14,12 +14,12 @@ sys.path.append(root + "/flask")
 from cipher import CipherProvider
 import config
 
-FLAG_PREFIX = 'QCTF_DONT_USE_CUSTOM_CIPHERS_'
+FLAG_TEMPLATE = 'QCTF{{DONT_USE_CUSTOM_CIPHERS_{}}}'
 FLAG_SUFFIX_LENGTH = 10
 
 def generate_flag(rand):
     suffix = ''.join([rand.choice(string.ascii_uppercase) for _ in range(FLAG_SUFFIX_LENGTH)])
-    return FLAG_PREFIX + suffix
+    return FLAG_TEMPLATE.format(suffix)
 
 def main():
     if len(sys.argv) < 2:
