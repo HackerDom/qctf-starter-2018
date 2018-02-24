@@ -1,6 +1,7 @@
 import string
 import random
 import math
+from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -10,7 +11,12 @@ from bulls_and_cows.consts import INITIAL_BALANCE
 db = SQLAlchemy()
 
 
-class User(db.Model):
+class DateTimeMixin:
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class User(db.Model, DateTimeMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -53,7 +59,7 @@ def check_game_number(digits):
         raise ValueError('Invalid game number')
 
 
-class Game(db.Model):
+class Game(db.Model, DateTimeMixin):
     __tablename__ = 'games'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -99,7 +105,7 @@ class Game(db.Model):
         self.player.balance = User.balance + balance_change
 
 
-class Move(db.Model):
+class Move(db.Model, DateTimeMixin):
     __tablename__ = 'moves'
 
     id = db.Column(db.Integer, primary_key=True)
