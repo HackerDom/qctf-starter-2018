@@ -1,0 +1,16 @@
+version: '2'
+services:
+  bank:
+    build: ./flask
+    restart: always
+
+  nginx:
+    image: nginx
+    depends_on:
+      - bank
+    ports:
+      - "127.0.0.1:30002:80"
+    restart: always
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./static:/var/www/static

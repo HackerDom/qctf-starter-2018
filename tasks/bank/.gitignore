@@ -1,0 +1,7 @@
+model_dev/data.pickle
+
+.idea
+venv
+
+__pycache__
+.ipynb_checkpoints

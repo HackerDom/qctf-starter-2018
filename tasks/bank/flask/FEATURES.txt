@@ -1,0 +1,29 @@
+- purpose (cat)
+- amount (int)
+- duration (int, years)
+
+- education (cat)
+- married (bool)
+- dependents (int)
+
+applicant_income:
+    - type (cat)
+    - amount (int)
+    - job_experience (int)
+
+spouse_income:
+    - type (cat)
+    - amount (int)
+    - job_experience (int)
+
+expense:
+    - type (cat)
+    - amount (int)
+
+property:
+    - type (cat)
+    - price (int)
+
+- have_overdue_debts (bool)
+- missed_deadlines (bool)
+- was_bankrupt (bool)

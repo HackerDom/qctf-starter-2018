@@ -1,0 +1,16 @@
+version: '2'
+services:
+  side-channel:
+    build: ./flask
+    restart: always
+
+  nginx:
+    image: nginx
+    depends_on:
+      - side-channel
+    ports:
+      - "127.0.0.1:30008:80"
+    restart: always
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./static:/var/www/static

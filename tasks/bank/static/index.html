@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Кредиты в банке Мечта</title>
+
+  <link rel="stylesheet" href="/static/css/bootswatch-lux.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="pt-5">
+<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 bg-white border-bottom box-shadow fixed-top">
+  <h5 class="my-0 mr-md-auto font-weight-normal">Банк Мечта</h5>
+  <nav class="my-2 my-md-0 mr-md-3">
+    <a class="p-3 text-dark" id="credits-link" href="#">Кредиты</a>
+    <a class="p-3 text-dark" id="deposits-link" href="#">Вклады</a>
+    <a class="p-3 text-dark" id="support-link" href="#">Поддержка</a>
+  </nav>
+</div>
+
+<div class="row m-0">
+  <div class="col-md-6 position-fixed photo-col">
+    <img class="photo" src="/static/img/happy-woman-cropped.jpg" />
+  </div>
+  <div class="col-md-6 form-col">
+    <div class="container" id="unavailable-page" style="display: none;">
+      <div class="card border-secondary my-5">
+        <div class="card-header">Сервис недоступен</div>
+        <div class="card-body">
+          <p class="card-text">
+            Форма подачи заявки на открытие вклада и форма для общения со службой поддержки
+            в данный момент недоступны. Для совершения этих операций обратитесь, пожалуйста,
+            в ближайшее отделение банка.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" id="credit-page">
+      <div class="pricing-header mx-auto text-center pt-5 pb-4">
+        <h1 class="display-5 font-weight-light">ВОЗЬМИТЕ КРЕДИТ</h1>
+        <p class="lead">Воплотите свою мечту в жизнь</p>
+      </div>
+
+      <div class="bs-component">
+        <form>
+          <fieldset id="step1">
+            <legend class="pb-2">Первый шаг</legend>
+
+            <div class="card bg-light mb-4 border-secondary">
+              <div class="card-header">Заполните анкету</div>
+              <div class="card-body">
+                <p class="card-text">
+                  По этим данным мы вычислим процентную ставку, которую мы готовы вам предоставить.
+                  Банк обязуется выдать кредит по этой ставке в случае, если все данные достоверны.
+                </p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="purpose">Цель кредита:</label>
+              <select class="form-control" id="purpose" name="purpose">
+                <option value="real_estate">Покупка недвижимости</option>
+                <option value="car">Покупка автомобиля</option>
+                <option value="education">Оплата высшего образования</option>
+                <option value="capital">Начальный капитал для бизнеса</option>
+                <option value="other">Другое</option>
+              </select>
+            </div>
+
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="credit_amount">Сумма (от 100 тыс до 3 млн):</label>
+                <div class="input-group">
+                  <input type="text" class="form-control amount-input"
+                         id="credit_amount" name="credit_amount" value="500 000">
+                  <div class="input-group-append">
+                    <span class="input-group-text px-4">₽</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group col-sm-6">
+                <label for="duration">Срок:</label>
+                <select class="form-control" id="duration" name="duration">
+                  <option value="1">1 год</option>
+                  <option value="2">2 года</option>
+                  <option value="3" selected>3 года</option>
+                  <option value="4">4 года</option>
+                  <option value="5">5 лет</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="education">Ваше образование:</label>
+              <select class="form-control" id="education" name="education">
+                <option value="1">Среднее</option>
+                <option value="2">Неоконченное высшее</option>
+                <option value="3">Высшее</option>
+              </select>
+            </div>
+
+            <div class="row">
+              <div class="form-group col-sm-6">
+                <label for="married">Семейное положение:</label>
+                <select class="form-control" id="married" name="married">
+                  <option value="0">Не женат/не замужем</option>
+                  <option value="1">Женат/замужем</option>
+                </select>
+              </div>
+
+              <div class="form-group col-sm-6">
+                <label for="dependents">Дети и иждивенцы:</label>
+                <select class="form-control" id="dependents" name="dependents">
+                  <option value="0">Нет</option>
+                  <option value="1">1 человек</option>
+                  <option value="2">2 человека и более</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset id="step2" style="display: none;">
+            <legend class="pb-2">Второй шаг</legend>
+
+            <p>Укажите доходы вашей семьи (за один месяц):</p>
+
+            <div class="extending-list">
+              <div class="row">
+                <div class="form-group col-sm-6">
+                  <select class="form-control" name="income_type">
+                    <option value="unknown">Не выбрано</option>
+                    <option value="employee_wage">Зарплата (наёмный сотрудник)</option>
+                    <option value="state_wage">Зарплата (госслужащий)</option>
+                    <option value="dividents">Проценты и дивиденды</option>
+                    <option value="rent">Сдача в аренду недвижимости</option>
+                    <option value="other">Другое</option>
+                  </select>
+                </div>
+                <div class="form-group col-sm-6">
+                  <div class="input-group">
+                    <input type="text" class="form-control amount-input"
+                           name="income_amount" value="0">
+                    <div class="input-group-append">
+                      <span class="input-group-text px-4">₽</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p>Укажите расходы вашей семьи (за один месяц):</p>
+
+            <div class="extending-list">
+              <div class="row">
+                <div class="form-group col-sm-6">
+                  <select class="form-control" name="expense_type">
+                    <option value="unknown">Не выбрано</option>
+                    <option value="housing">Жильё и питание</option>
+                    <option value="car_service">Обслуживание автомобиля</option>
+                    <option value="taxes">Налоги</option>
+                    <option value="alimony">Алименты</option>
+                    <option value="credits">Выплаты по кредитам</option>
+                    <option value="insurance">Страховые платежи</option>
+                    <option value="other">Другое</option>
+                  </select>
+                </div>
+                <div class="form-group col-sm-6">
+                  <div class="input-group">
+                    <input type="text" class="form-control amount-input"
+                           name="expense_amount" value="0">
+                    <div class="input-group-append">
+                      <span class="input-group-text px-4">₽</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset id="step3" style="display: none;">
+            <legend class="pb-2">Третий шаг</legend>
+
+            <p>Укажите имущество вашей семьи и его стоимость:</p>
+
+            <div class="extending-list">
+              <div class="row">
+                <div class="form-group col-sm-6">
+                  <select class="form-control" name="property_type">
+                    <option value="unknown">Не выбрано</option>
+                    <option value="apartment">Квартира</option>
+                    <option value="house">Загородный дом</option>
+                    <option value="car">Автомобиль</option>
+                  </select>
+                </div>
+                <div class="form-group col-sm-6">
+                  <div class="input-group">
+                    <input type="text" class="form-control amount-input"
+                           name="property_amount" value="0">
+                    <div class="input-group-append">
+                      <span class="input-group-text px-4">₽</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset id="step4" style="display: none;">
+            <legend class="pb-2">Последний шаг</legend>
+
+            <p>Отметьте соответствующие пункты, если вы:</p>
+
+            <div class="form-group">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="have_overdue_debts"
+                       name="has_overdue_debts" value="1">
+                <label class="custom-control-label" for="have_overdue_debts">
+                  Имеете просроченные долги
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="missed_deadlines"
+                       name="missed_deadlines" value="1">
+                <label class="custom-control-label" for="missed_deadlines">
+                  Когда-либо задерживали выплаты по кредитам на срок более 3 месяцев
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="was_bankrupt"
+                       name="was_bankrupt" value="1">
+                <label class="custom-control-label" for="was_bankrupt">
+                  Когда-либо проходили процедуру банкротства физического лица
+                </label>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset id="step5" style="display: none;">
+            <div id="result-loading">
+              <h5 class="pb-4 text-center">Вычисляем ставку...</h5>
+            </div>
+
+            <div id="result-error">
+              <h5 class="pb-4 text-center">Ошибка</h5>
+
+              <p>Не удалось подключиться к серверу. Нажмите кнопку "Назад" и попробуйте ещё раз.</p>
+            </div>
+
+            <div id="result-negative" style="display: none;">
+              <h5 class="pb-4 text-center">Результат по вашей заявке</h5>
+
+              <p>
+                Мы проанализировали ваши данные и пришли к выводу, что, к сожалению, мы не готовы дать вам кредит.
+                Попробуйте подать заявку через некоторое время &mdash; наши условия могут измениться.
+              </p>
+            </div>
+
+            <div id="result-positive" style="display: none;">
+              <div class="pb-4 text-center">
+                <h5>Ваша ставка</h5>
+                <div class="font-weight-light" id="interest-rate"></div>
+                <div>годовых</div>
+              </div>
+
+              <div class="py-4 text-center">
+                <h5>Ежемесячные выплаты</h5>
+                <div class="font-weight-light" id="monthly-payment"></div>
+                <div>рублей</div>
+              </div>
+
+              <div class="py-4">
+                <h5 class="text-center">Что дальше?</h5>
+                <div class="card bg-light mt-4 border-secondary">
+                  <div class="card-header">Подойдите в отделение банка</div>
+                  <div class="card-body">
+                    <p class="card-text">
+                      Мы сохранили введённые вами данные и вычисленную процентную ставку.
+                      Вам остаётся подойти в отделение банка,
+                      назвать код <b id="bank-code"></b> и
+                      заполнить ваши паспортные данные. Деньги уже почти на вашем счету!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="row mt-3 mb-5">
+            <button type="button" class="btn btn-outline-secondary mx-3"
+                    id="prev-page-btn" style="display: none;">Назад</button>
+            <button type="button" class="btn btn-primary mx-3"
+                    id="next-page-btn">Дальше</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/jquery-3.3.1.min.js"></script>
+
+<script src="/static/js/form.js"></script>
+
+</body>
+</html>
