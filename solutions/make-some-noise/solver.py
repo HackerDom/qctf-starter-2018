@@ -1,17 +1,16 @@
-#!/usr/bin/env python3
-
-from ast import literal_eval
 import requests
+import numpy as np
 
-TEAM_ID = "SOmxD7RqEXLQDFd2CRtB"
+def main():
+    results=[]
+    for i in range(100):
+        r=requests.get('http://make-some-noise.contest.qctf.ru/<team_id>')
+        results.append([ord(x) for x in r.text])
+    flag=[]
+    for i in range(len(results[0])):
+        flag.append(chr(int(round(np.mean(list(map(lambda arr:arr[i], results)))))))
+    print(''.join(flag))
 
-def get_flag():
-    r = requests.get("http://127.0.0.1:8889/{}".format(TEAM_ID))
-    return literal_eval(r.text)
 
-if __name__ == "__main__":
-    array = []
-    for i in range(100000):
-        res = get_flag()
-        array.append(res)
-        print(i, ''.join(map(chr, (round(sum(x) / len(x)) for x in zip(*array)))))
+if __name__ == '__main__':
+    main()

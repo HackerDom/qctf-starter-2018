@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 
 import logging
-from random import choice, randint
-from math import sqrt
-from sys import argv
-from flask import Flask
+import numpy as np
+from flask import Flask, abort
 from ids_and_flags import ids, flags
 
 
 def get_noised_flag(flag):
-    n = 35
-    noise = list(range(-n, n+1))
-    return [add_noise(x, noise) for x in map(ord,flag)]
+    with_noise = [np.random.normal(x, 2, 1)[0] for x in map(ord, flag)]
+    return ''.join(list(map(lambda num: chr(int(round(num))), with_noise)))
 
-def add_noise(x, noise):
-    return x + choice(noise)
 
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
@@ -27,12 +22,17 @@ def hello(team_id):
     try:
         id = ids.index(team_id)
         return str(get_noised_flag(flags[id]))
-    except Exception:
+    except ValueError:
         return "Wrong team id!"
+    except Exception as e:
+        app.logger.exception(e)
+        abort(500)
+
 
 @app.route('/')
 def index():
     return "Wrong team id!"
+
 
 if __name__ == "__main__":
     app.run()
