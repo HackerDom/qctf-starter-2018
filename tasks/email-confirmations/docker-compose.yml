@@ -1,0 +1,27 @@
+version: '2'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: fousv6Q0w6Xu
+    volumes:
+     - ./volumes/pgdata:/var/lib/postgresql/data
+
+  email-confirmations:
+    build: ./flask
+    command: web
+    env_file: ./production.env
+    restart: always
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx
+    depends_on:
+      - email-confirmations
+    ports:
+      - "127.0.0.1:30007:80"
+    restart: always
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro

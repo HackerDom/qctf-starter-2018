@@ -1,0 +1,41 @@
+.modal .alert-danger {
+    border-radius: .3rem;
+}
+
+.modal-dialog {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.green {
+    color: green;
+}
+
+.red {
+    color: red;
+}
+
+@media (min-width: 1400px) {
+    .col-custom-4 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 33.333333%;
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+    }
+
+    .col-custom-8 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 66.666666%;
+        flex: 0 0 66.666666%;
+        max-width: 66.666666%;
+    }
+}
+
+.col-custom-4, .col-custom-8 {
+    position: relative;
+    width: 100%;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}

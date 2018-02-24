@@ -1,0 +1,45 @@
+.user-status {
+    color: white;
+}
+
+.user-status form {
+    margin-left: 10px;
+    display: inline;
+}
+
+.notes-header {
+    min-height: 120px;
+}
+
+.notes-header h1 {
+    width: 100%;
+}
+
+.vertical-align {
+    display: flex;
+    align-items: center;
+}
+
+.navbar {
+    height: 60px;
+}
+
+.navbar .container {
+    height: 100%;
+}
+
+.note-col {
+    padding-bottom: 20px;
+}
+
+.new-note-form > h4 {
+    height: 35px;
+}
+
+.login-row {
+    padding-top: 30px;
+}
+
+.errors {
+    list-style: none;
+}
