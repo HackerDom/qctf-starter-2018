@@ -1,7 +1,5 @@
 FROM python:3.5
 
-RUN echo 123
-
 RUN apt-get update
 RUN apt-get install -y xinetd && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
