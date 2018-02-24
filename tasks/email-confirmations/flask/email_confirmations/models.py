@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import generate_password_hash, check_password_hash
 
@@ -5,7 +7,12 @@ from flask_bcrypt import generate_password_hash, check_password_hash
 db = SQLAlchemy()
 
 
-class User(db.Model):
+class DateTimeMixin:
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class User(db.Model, DateTimeMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -37,7 +44,7 @@ class User(db.Model):
         return str(self.id)
 
 
-class Note(db.Model):
+class Note(db.Model, DateTimeMixin):
     __tablename__ = 'notes'
 
     id = db.Column(db.Integer, primary_key=True)
