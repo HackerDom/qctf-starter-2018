@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block scripts %}
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#select-file-btn').on('click', function() {
+			$('#file-input').click();
+		});
+		$('#file-input').bind('input', function() { 
+		    $('#new-file-name').text($(this).val());
+		    $('#select-file-btn').removeClass('btn-outline-primary').addClass('btn-outline-secondary');
+		    $('#send-file-btn').removeClass('btn-outline-secondary').addClass('btn-outline-primary');
+		});
+	});
+</script>
+{% endblock %}
+{% block content %}
+      <div class="album py-5 bg-light">
+        <div class="container">
+          <div class="row">
+		  	{% for file in files %}
+            <div class="col-md-4">
+              <div class="card mb-4 box-shadow">
+                <div class="card-body">
+                  <p class="card-text">Файл</p>
+                  <p class="card-text file-name">{{ file.name }}</p>
+				  <form action="/download" id="download_form_{{ loop.index }}">
+					<input type="hidden" name="path" value="{{ file.path }}"/>
+				  </form>
+				  <form action="/delete" id="delete_form_{{ loop.index }}">
+					<input type="hidden" name="path" value="{{ file.path }}"/>
+				  </form>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+				  	{% if file.personal %}
+					  <button type="submit" class="btn btn-sm btn-outline-secondary" form="download_form_{{ loop.index }}">Открыть</button>
+					  <button type="submit" class="btn btn-sm btn-outline-secondary" form="delete_form_{{ loop.index }}">Удалить</button>
+					{% endif %}
+                    </div>
+                    <small class="text-muted owner-name">@{{ file.owner }}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+			{% endfor %}
+            <div class="col-md-4">
+              <div class="card mb-4 box-shadow">
+                <div class="card-body">
+                  <p class="card-text">Загрузить файл или архив .tar</p>
+                  <p class="card-text file-name" id="new-file-name">...</p>
+				  <form action="/upload" id="upload_form" method="POST" enctype="multipart/form-data">
+					<input type="file" name="file" id="file-input" hidden/>
+				  </form>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+				      <button type="submit" class="btn btn-sm btn-outline-primary" id="select-file-btn">Выбрать файл</button>
+					  <button type="submit" class="btn btn-sm btn-outline-secondary" id="send-file-btn" form="upload_form">Загрузить</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+{% endblock %}

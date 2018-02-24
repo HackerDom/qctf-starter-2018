@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<title>Storage</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="https://getbootstrap.com/dist/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link href="static/css/storage.css" rel="stylesheet">
+		<link rel="icon" type="image/png" href="/static/images/favicon.png" />
+		{% block scripts %}{% endblock %}
+	</head>
+<body class="text-center">
+<header>
+      <div class="navbar navbar-dark bg-dark box-shadow">
+        <div class="container d-flex justify-content-between">
+          <a href="/" class="navbar-brand d-flex align-items-center">
+			<img class="mr-2" widht="25" height="25" src="/static/images/icon.png"/>
+            <strong>Storage</strong>
+          </a>
+		  {% if current_user.is_authenticated %}
+          <a href="/logout" class="navbar-brand d-flex align-items-center">
+            <button class="btn btn-secondary my-2 my-sm-0"><strong>Выйти ({{ current_user.login }})</strong></button>
+          </a>
+		  {% endif %}
+        </div>
+      </div>
+    </header>
+
+    <main role="main">
+		{% block content %}{% endblock %}
+    </main>
+
+    <footer class="text-muted">
+      <div class="container">
+        <p>Storage&#8482; Безопасность ваших файлов - наш главный приоритет.</p>
+      </div>
+    </footer>
+</body>
+</html>

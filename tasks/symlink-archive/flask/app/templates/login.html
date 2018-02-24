@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="text-center">
+	<div class="body-container">
+	  <h1 class="jumbotron-heading">Войдите в систему</h1>
+		<form action="/login" method="post" name="login" class="form-signin">
+			{{form.hidden_tag()}}
+			</p>
+				{{form.login(placeholder='Login', class='form-control')}}
+				{{form.password(placeholder='Password', class='form-control')}}
+			</p>
+			<p>
+				<input type="submit" id="action" class="btn btn-primary my-2" value="Войти">
+			</p>
+		</form>
+	</div>
+  </section>
+{% endblock %}
