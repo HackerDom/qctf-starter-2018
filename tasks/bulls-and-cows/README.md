@@ -1,4 +1,16 @@
-# Запуск #
+# Запуск через docker #
+
+Перед самым первым запуском для инициализации данных в базе:
+
+`docker-compose build`
+
+`docker-compose run --rm bulls-and-cows init; docker-compose down`
+
+Для последующих запусков:
+
+`docker-compose up`
+
+# Запуск вручную #
 
 0. `pip install -r requirements.txt`
 1. Создать базу в Postgres

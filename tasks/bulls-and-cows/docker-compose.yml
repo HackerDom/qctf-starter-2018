@@ -1,0 +1,27 @@
+version: '2'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: T5WKTAugAsWpZ
+    volumes:
+     - ./volumes/pgdata:/var/lib/postgresql/data
+
+  bulls-and-cows:
+    build: ./flask
+    command: web
+    env_file: ./production.env
+    restart: always
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx
+    depends_on:
+      - bulls-and-cows
+    ports:
+      - "127.0.0.1:30010:80"
+    restart: always
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
