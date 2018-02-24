@@ -8,13 +8,13 @@ from hashlib import md5
 
 SEED = 881488
 
-TEAM_COUNT = 400
+TEAM_COUNT = 600
 TOKEN_SIZE = 20
 
 TASK_ID = 'eujiyqlgrginkij'
 
-DIR_PREFIX     = '/tmp/'
-TASK_FILENAME  = ''
+DIR_PREFIX     = '/tmp/teams/'
+TASK_FILENAME  = 'task'
 
 
 rand = random.Random()

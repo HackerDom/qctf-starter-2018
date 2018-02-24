@@ -16,7 +16,7 @@ TASK_ID = 'dnljlrahncokpgr'
 
 SEED = 31337
 
-TEAM_COUNT = 400
+TEAM_COUNT = 600
 TOKEN_SIZE = 20
 
 
