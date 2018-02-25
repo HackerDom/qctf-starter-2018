@@ -12,9 +12,5 @@ def getenv(variable_name):
 DEBUG = False
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-MAIL_SERVER = 'smtp.gmail.com'
-MAIL_PORT = 465
-MAIL_USE_SSL = True
-MAIL_USERNAME = getenv('MAIL_USERNAME')
-MAIL_PASSWORD = getenv('MAIL_PASSWORD')
-MAIL_DEFAULT_SENDER = MAIL_USERNAME
+MAIL_TOKEN = getenv('MAIL_TOKEN')
+MAIL_DEFAULT_SENDER = 'notemaster.noreply@contest.qctf.ru'

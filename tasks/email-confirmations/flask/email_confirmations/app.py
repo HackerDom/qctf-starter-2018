@@ -3,10 +3,11 @@ import traceback
 
 from flask import Flask, render_template, request, url_for, redirect, g, abort
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
+from postmarker.core import PostmarkClient
 
 from email_confirmations.models import db, User, Note
 from email_confirmations.forms import LoginForm, RegistrationForm, NewNoteForm
-from email_confirmations.utils import mail_manager, send_confirmation_email
+from email_confirmations.utils import send_confirmation_email_through_postmark
 
 
 app = Flask(__name__)
@@ -20,7 +21,8 @@ app.jinja_env.add_extension('jinja2.ext.do')
 db.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-mail_manager.init_app(app)
+
+postmark_client = PostmarkClient(app.config['MAIL_TOKEN'])
 
 
 @login_manager.user_loader
@@ -73,7 +75,10 @@ def login():
 
                 errors = True
                 try:
-                    send_confirmation_email(registration_form.user)
+                    send_confirmation_email_through_postmark(
+                        postmark_client,
+                        registration_form.user,
+                        from_=app.config['MAIL_DEFAULT_SENDER'])
                     registration_form.password.errors.append(
                         'To complete the registration, please check your email')
                 except Exception:
