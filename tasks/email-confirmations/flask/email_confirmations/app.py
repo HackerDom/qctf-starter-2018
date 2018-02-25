@@ -1,4 +1,5 @@
 import os
+import traceback
 
 from flask import Flask, render_template, request, url_for, redirect, g, abort
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
@@ -76,6 +77,9 @@ def login():
                     registration_form.password.errors.append(
                         'To complete the registration, please check your email')
                 except Exception:
+                    app.logger.warning(
+                        'Could not send the confirmation email. Traceback:\n' +
+                        traceback.format_exc())
                     db.session.delete(registration_form.user)
                     db.session.commit()
                     registration_form.password.errors.append(
