@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, url_for, redirect, jsonify
+from flask import Flask, render_template, redirect, jsonify, url_for as original_url_for
 from flask_login import LoginManager, login_required, login_user, current_user
 
 from bulls_and_cows.models import db, User
@@ -19,6 +19,15 @@ else:
 with app.app_context():
     db.init_app(app)
     login_manager = LoginManager(app)
+
+
+redirect_scheme = app.config.get('SCHEME', 'http')
+
+def url_for(*args, **kwargs):
+    kwargs.update(dict(
+        _scheme=redirect_scheme,
+        _external=True))
+    return original_url_for(*args, **kwargs)
 
 
 @login_manager.user_loader
