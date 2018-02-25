@@ -34,7 +34,9 @@ class LoginForm(Form):
 class RegistrationForm(Form):
     username = StringField('Username', [validators.Length(min=3, max=50)])
     password = PasswordField('Password', [validators.InputRequired()])
-    email = StringField('Email address', [validators.Length(min=6, max=100), validators.email()])
+    email = StringField(
+        'Email address (please use a real one, we\'ll send a confirmation email)',
+        [validators.Length(min=6, max=100), validators.email()])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
