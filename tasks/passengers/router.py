@@ -40,8 +40,11 @@ class Router:
                 rootdir  += self.rand.choice(list(string.ascii_letters))
             self.token_file_matching[(team_id, token)] = rootdir
 
+        data = [None] * TEAM_COUNT
+        for k, v in self.token_file_matching.items():
+            data[k[0]] = (k[1], v)
         with open(os.path.join(ROOTDIR_PREFIX, FILE_MATCHING), 'w') as f:
-            f.write('\n'.join(['{}:{}:{}'.format(key[0], key[1], value) for key, value in self.token_file_matching.items()]))
+            f.write('\n'.join(['{}:{}:{}'.format(i, pair[0], pair[1]) for i, pair in enumerate(data)]))
 
     def generate_dirs(self):
         try:
