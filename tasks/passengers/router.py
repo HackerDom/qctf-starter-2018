@@ -57,7 +57,7 @@ class Router:
         flags2 = [None] * TEAM_COUNT
         tokens = [None] * TEAM_COUNT
 
-        for key, rootdir in self.token_file_matching.items():
+        for key, rootdir in sorted(self.token_file_matching.items(), key=lambda x: x[0][0]):
             team_id = key[0]
             token   = key[1]
 
