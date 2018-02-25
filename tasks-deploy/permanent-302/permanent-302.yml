@@ -1,6 +1,6 @@
 !Task
 name: permanent-302
-max_score: 50
+max_score: 150
 checker: !SimplePyChecker
   source_path: check.py
 statement_generator: !SimplePyStatementGenerator

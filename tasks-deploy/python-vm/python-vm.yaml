@@ -1,6 +1,6 @@
 !Task
 name: python-vm
-max_score: 1000
+max_score: 900
 checker: !SimplePyChecker
   source_path: check.py
 statement_generator: !SimplePyStatementGenerator

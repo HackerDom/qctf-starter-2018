@@ -1,6 +1,6 @@
 !Task
 name: cipher
-max_score: 200
+max_score: 300
 checker: !SimplePyChecker
   source_path: check.py
 statement_generator: !SimplePyStatementGenerator

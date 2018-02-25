@@ -1,6 +1,6 @@
 !Task
 name: passengers-2
-max_score: 1000
+max_score: 800
 checker: !SimplePyChecker
   source_path: check.py
 statement_generator: !SimplePyStatementGenerator
