@@ -3,7 +3,7 @@ flags = ['QCTF{1379bae3fba0b9b5279f09d3f6191b98}', 'QCTF{789d8f8ccbbabc0931c867d
 
 def check(attempt, context):
     if attempt.answer == flags[attempt.participant.id % len(flags)]:
-		return Checked(is_answer_correct=True)
-	if attempt.answer in flags:
-		return CheckedPlagiarist(is_answer_correct=False, plagiarized_from=flags.index(attempt.answer))
-	return Checked(is_answer_correct=False)
+        return Checked(is_answer_correct=True)
+    if attempt.answer in flags:
+        return CheckedPlagiarist(is_answer_correct=False, plagiarized_from=flags.index(attempt.answer))
+    return Checked(is_answer_correct=False)
