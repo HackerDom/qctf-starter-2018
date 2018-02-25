@@ -10,3 +10,4 @@ def getenv(variable_name):
 SECRET_KEY = getenv('SECRET_KEY')
 SQLALCHEMY_DATABASE_URI = getenv('POSTGRES_CONNECTION_STRING')
 FLAG = getenv('FLAG')
+SCHEME = getenv('SCHEME')
