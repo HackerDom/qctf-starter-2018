@@ -15,7 +15,7 @@ MarkupSafe==1.0
 numpy==1.14.0
 Pillow==5.0.0
 protobuf==3.5.1
-PyYAML==3.12
+PyYAML==5.4
 requests==2.18.4
 scikit-learn==0.19.1
 scipy==1.0.0
